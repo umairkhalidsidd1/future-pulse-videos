@@ -86,31 +86,128 @@ def _pixabay(query: str, vertical: bool) -> list[dict]:
     return out
 
 
+def _pixabay_photos(query: str, vertical: bool) -> list[dict]:
+    """Pixabay photos: a much bigger library than its videos. Shown with slow pan/zoom."""
+    key = secret("PIXABAY_API_KEY")
+    if not key:
+        return []
+    data = _cached_get("https://pixabay.com/api/",
+                       {"key": key, "q": query[:100], "image_type": "photo", "per_page": 20, "safesearch": "true",
+                        "orientation": "vertical" if vertical else "horizontal"}, {})
+    out = []
+    for v in data.get("hits", []):
+        tags = v.get("tags", "").lower()
+        words = [x for x in query.lower().split() if len(x) > 2]
+        if v.get("isAiGenerated") or (words and not any(re.search(rf"\b{re.escape(x[:5])}", tags) for x in words)):
+            continue
+        out.append({"id": f"pixabayimg_{v['id']}", "url": v.get("largeImageURL", ""), "kind": "image",
+                    "duration": 999, "tall": v.get("imageHeight", 0) > v.get("imageWidth", 1),
+                    "thumb": v.get("webformatURL", "")})
+    return out
+
+
+WIKI_API = "https://en.wikipedia.org/w/api.php"
+WIKI_UA = {"User-Agent": "RealityShockwavesBot/1.0 (https://github.com/umairkhalidsidd1/future-pulse-videos)"}
+FREE_LICENSES = re.compile(r"^(public domain|pd|cc0|cc by( \d(\.\d)?)?)$", re.I)
+
+
+def _plain(html: str) -> str:
+    return " ".join(re.sub(r"<[^>]+>", " ", html or "").split())[:80]
+
+
+def _wiki(title: str) -> list[dict]:
+    """Real photos from a Wikipedia article (files on Wikimedia Commons). Only public domain, CC0 and CC BY:
+    'share-alike' and 'non-commercial' licences are skipped. Each photo carries its credit line."""
+    if not title:
+        return []
+    data = _cached_get(WIKI_API, {"action": "query", "format": "json", "titles": title, "redirects": 1,
+                                  "generator": "images", "gimlimit": 40, "prop": "imageinfo",
+                                  "iiprop": "url|size|extmetadata|mime", "iiurlwidth": 1600}, WIKI_UA)
+    out = []
+    for p in data.get("query", {}).get("pages", {}).values():
+        ii = (p.get("imageinfo") or [{}])[0]
+        md = ii.get("extmetadata", {})
+        lic = md.get("LicenseShortName", {}).get("value", "").strip()
+        w, h = ii.get("width", 0), ii.get("height", 0)
+        if ii.get("mime") not in ("image/jpeg", "image/png") or not FREE_LICENSES.match(lic):
+            continue
+        if min(w, h) < 600 or not 0.45 < w / max(1, h) < 2.3:     # skips logos, icons and banners
+            continue
+        url = ii.get("thumburl") or ii.get("url", "")
+        artist = _plain(md.get("Artist", {}).get("value", "")) or "unknown"
+        out.append({"id": "wiki_" + re.sub(r"[^A-Za-z0-9]+", "_", p["title"])[:80], "url": url, "kind": "image",
+                    "duration": 999, "tall": h > w, "thumb": re.sub(r"/\d+px-", "/320px-", url),
+                    "credit": f"{p['title'].removeprefix('File:')} by {artist}, {lic}, via Wikimedia Commons"})
+    return out
+
+
+SPACE = re.compile(r"\b(rocket|space|moon|mars|astronaut|satellite|orbit|launch|nasa|planet|galaxy|starship|"
+                   r"spacex|iss|telescope|asteroid|comet|lunar)\b", re.I)
+
+
+def _nasa(query: str) -> list[dict]:
+    """NASA photos (generally not copyrighted). Never implies NASA endorsement; NASA logos aren't used."""
+    data = _cached_get("https://images-api.nasa.gov/search", {"q": query, "media_type": "image"}, {})
+    out = []
+    for it in data.get("collection", {}).get("items", [])[:15]:
+        d = (it.get("data") or [{}])[0]
+        links = it.get("links") or []
+        thumb = next((x["href"] for x in links if x.get("rel") == "preview"), "")
+        if not thumb or "logo" in (d.get("title", "") + " ".join(d.get("keywords", []))).lower():
+            continue
+        out.append({"id": f"nasa_{re.sub(r'[^A-Za-z0-9]+', '_', d.get('nasa_id', ''))[:60]}",
+                    "url": thumb.replace("~thumb.", "~large."), "kind": "image", "duration": 999, "tall": False,
+                    "thumb": thumb, "credit": "Image: NASA"})
+    return out
+
+
 class Stock:
     def __init__(self, vertical: bool, seed: str):
         self.vertical = vertical
         self.rng = random.Random(seed)
         self.used_now: set[str] = set()
         self.recent: list[str] = json.loads(USED.read_text()) if USED.exists() else []
+        self.credit_lines: dict[str, str] = {}
 
     def enabled(self) -> bool:
         return bool(secret("PEXELS_API_KEY") or secret("PIXABAY_API_KEY"))
 
     def _search(self, query: str) -> list[dict]:
-        results = []
-        for fn in (_pexels, _pixabay):
+        """Videos and photos, mixed: video first, then a photo, and so on."""
+        videos, photos = [], []
+        for fn, bucket in ((_pexels, videos), (_pixabay, videos), (_pixabay_photos, photos)):
             try:
-                results += fn(query, self.vertical)
+                bucket += fn(query, self.vertical)
             except requests.RequestException as e:
                 print(f"  [stock] {fn.__name__} '{query}' failed: {safe_err(e)}")
-        return results
+        mixed = []
+        for i in range(max(len(videos), len(photos))):
+            mixed += videos[i:i + 1] + photos[i:i + 1]
+        return mixed
+
+    def _real(self, scene: dict) -> list[dict]:
+        """Real photos of the actual thing: its Wikipedia article, and NASA for space topics."""
+        out = []
+        try:
+            out += _wiki(scene.get("wiki", ""))[:5]
+        except requests.RequestException as e:
+            print(f"  [stock] wikipedia '{scene.get('wiki')}' failed: {safe_err(e)}")
+        q = scene.get("visual", "")
+        if SPACE.search(q + " " + scene.get("text", "")):
+            try:
+                out += _nasa(q)[:4]
+            except requests.RequestException as e:
+                print(f"  [stock] nasa '{q}' failed: {safe_err(e)}")
+        return out
 
     def _download(self, item: dict) -> Path | None:
-        path = CLIPS / f"{item['id']}.mp4"
+        ext = ".mp4" if item.get("kind", "video") == "video" else (".png" if item["url"].lower().endswith(".png")
+                                                                   else ".jpg")
+        path = CLIPS / f"{item['id']}{ext}"
         if path.exists() and path.stat().st_size > 10_000:
             return path
         try:
-            with requests.get(item["url"], stream=True, timeout=120) as r:
+            with requests.get(item["url"], stream=True, timeout=120, headers=WIKI_UA) as r:
                 r.raise_for_status()
                 with open(path, "wb") as f:
                     for chunk in r.iter_content(1 << 20):
@@ -142,8 +239,13 @@ class Stock:
         clips' preview pictures and drops the ones that don't fit; if that check fails, search order is used."""
         if not self.enabled():
             return [[] for _ in scenes]
-        cands = [self._candidates(sc.get("visual", "technology"), sc.get("visual_alt", ""), max(6, n + 3))
-                 for sc, n in zip(scenes, needs)]
+        cands = []
+        for sc, n in zip(scenes, needs):
+            real = self._real(sc)
+            seen = {c["id"] for c in real}
+            more = [c for c in self._candidates(sc.get("visual", "technology"), sc.get("visual_alt", ""), max(8, n + 4))
+                    if c["id"] not in seen]
+            cands.append((real + more)[:12])
         approved = rank_clips(scenes, cands)
         result = []
         for si, (n, cs) in enumerate(zip(needs, cands)):
@@ -160,6 +262,8 @@ class Stock:
                 p = self._download(item)
                 if p:
                     self.used_now.add(item["id"])
+                    if item.get("credit"):
+                        self.credit_lines[item["id"]] = item["credit"]
                     paths.append(p)
             result.append(paths)
         # A scene with no approved clip borrows approved footage from the nearest scene (shown from another
@@ -173,6 +277,10 @@ class Stock:
                     paths.extend(near[0][:needs[si]])
                     break
         return result
+
+    def credits(self) -> list[str]:
+        """Credit lines for the description (Wikimedia photos need them; NASA asks for it)."""
+        return list(dict.fromkeys(self.credit_lines.values()))
 
     def save_used(self):
         USED.write_text(json.dumps((self.recent + sorted(self.used_now))[-800:]))

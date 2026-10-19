@@ -62,7 +62,7 @@ def _hex(c: str) -> str:
 def render(*, kind: str, scenes: list[dict], timings, total: float, words: list[dict], voice_wav: Path, stock,
            work: Path, out_path: Path, seed: str, theme: dict, hook: str = "", extra_cards: list[dict] | None = None,
            whoosh_scenes: set[int] | None = None) -> list[Path]:
-    """Renders the video; returns the stock clips it used (for the thumbnail)."""
+    """Renders the video; returns the clips/photos it used (for the thumbnail)."""
     spec = CFG[kind]
     fps, vertical = spec["fps"], kind == "short"
     rng = random.Random(seed)
@@ -84,9 +84,11 @@ def render(*, kind: str, scenes: list[dict], timings, total: float, words: list[
                     except OSError:
                         shutil.copy2(sh["clip"], link)
                 src = f"runs/{run_id}/{name}"
-                credit = "NASA" if name.startswith("nasa_") else ""
+                credit = ("NASA" if name.startswith("nasa_") else
+                          "Photo: Wikimedia Commons" if name.startswith("wiki_") else "")
             motion = sh["motion"] if sh["motion"] != "pan" else rng.choice(["pan_left", "pan_right"])
-            props_shots.append({"from": sh["from"], "duration": sh["frames"], "src": src, "kind": "video",
+            kind = "image" if sh["clip"] and sh["clip"].suffix.lower() in ff.IMAGE_EXT else "video"
+            props_shots.append({"from": sh["from"], "duration": sh["frames"], "src": src, "kind": kind,
                                 "width": sh["clip_size"][0], "height": sh["clip_size"][1],
                                 "trimBefore": round(sh["offset"] * fps), "motion": motion, "credit": credit})
         duration = round((total + ff.TAIL) * fps)

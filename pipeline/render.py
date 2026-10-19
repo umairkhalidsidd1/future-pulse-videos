@@ -23,8 +23,18 @@ def run(cmd: list[str]):
         raise RuntimeError(f"ffmpeg failed: {' '.join(cmd[:8])} ...\n{p.stderr[-1500:]}")
 
 
+IMAGE_EXT = (".jpg", ".jpeg", ".png", ".webp")
+
+
 def probe_info(path: Path) -> tuple[float, int, int]:
-    """(duration in seconds, width, height) of a video file."""
+    """(duration in seconds, width, height) of a video file. Photos count as endless."""
+    if path.suffix.lower() in IMAGE_EXT:
+        from PIL import Image
+        try:
+            with Image.open(path) as im:
+                return 999.0, im.width, im.height
+        except OSError:
+            return 0.0, 0, 0
     p = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
                         "stream=width,height:format=duration", "-of", "json", str(path)],
                        capture_output=True, text=True)
@@ -82,7 +92,10 @@ def _segment(job: dict):
             vf = (f"scale={bw}:{bh}:force_original_aspect_ratio=increase,crop={bw}:{bh},{hold},"
                   f"zoompan=z='{z}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s={w}x{h}:fps={fps},"
                   f"{GRADE},{end}")
-        inp = ["-ss", f"{job['offset']:.2f}", "-i", str(job["clip"])]
+        if job["clip"].suffix.lower() in IMAGE_EXT:     # a photo: loop it as a still video
+            inp = ["-loop", "1", "-framerate", str(fps), "-i", str(job["clip"])]
+        else:
+            inp = ["-ss", f"{job['offset']:.2f}", "-i", str(job["clip"])]
     else:
         c0, c1 = job["colors"]
         inp = ["-f", "lavfi", "-i", f"gradients=s={w}x{h}:c0={c0}:c1={c1}:speed=0.015:r={fps}:d={dur + 1:.2f}"]
@@ -176,7 +189,7 @@ def plan_shots(*, kind: str, scenes: list[dict], timings: list[tuple[float, floa
                 if clip_len >= need:
                     break
             offset = 0.0
-            if clip:
+            if clip and clip.suffix.lower() not in IMAGE_EXT:
                 room = clip_len - need
                 offset = rng.uniform(0, room) if room > 0 else 0.0
             shots.append({"scene": i, "from": a, "frames": b - a, "clip": clip, "offset": offset,

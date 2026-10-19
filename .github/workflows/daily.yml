@@ -119,7 +119,7 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m "Progress $(date -u '+%F %H:%M') UTC"
           for i in 1 2 3; do
-            git pull --rebase && git push && exit 0
+            git pull --rebase --autostash && git push && exit 0
             echo "Push failed, trying again in 10 s"; sleep 10
           done
           echo "::error::Could not save progress to the repo"; exit 1

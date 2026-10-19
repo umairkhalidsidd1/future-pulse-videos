@@ -60,7 +60,10 @@ VISUAL_RULES = """VISUAL RULES: every scene has "visual": a 1-3 word STOCK FOOTA
 filmable that MATCHES what is being said (e.g. "electric car highway", "robot arm factory", "rocket launch",
 "server room", "smartphone hand"). Put the main noun FIRST. Also "visual_alt": a broader 1-2 word backup query
 that surely exists on free stock sites (e.g. "rocket", "laboratory", "computer", "city night", "astronaut").
-Never a person's name, brand logo or specific product name (stock sites don't have those).
+Never a person's name, brand logo or specific product name in "visual" (stock sites don't have those).
+"wiki": the EXACT English Wikipedia article title of the real company, product, person, place or object this
+scene is about, so we can show a real photo of it (e.g. "Amazon (company)", "MacBook Pro", "SpaceX Starship",
+"Elon Musk", "Small modular reactor"). Use "" when the scene is about nothing specific.
 "keywords": 1-2 important words copied exactly from that scene's text, to highlight in captions."""
 
 
@@ -76,6 +79,7 @@ def _check_scenes(scenes, minimum: int):
             s["visual"] = "technology"
         if not str(s.get("visual_alt", "")).strip():
             s["visual_alt"] = ""
+        s["wiki"] = str(s.get("wiki") or "").strip()[:80]
         if not isinstance(s.get("keywords"), list):
             s["keywords"] = []
         s["card"] = clean_card(s.get("card"))
@@ -297,7 +301,7 @@ METADATA:
 Return JSON:
 {{"hook_candidates": [{{"mechanism": "...", "text": "...", "score": 0}}],
  "hook_text": "ALL CAPS FIRST FRAME TEXT",
- "scenes": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."], "card": null}}],
+ "scenes": [{{"text": "...", "visual": "...", "visual_alt": "...", "wiki": "...", "keywords": ["..."], "card": null}}],
  "question": "the comment question you used",
  "youtube_title": "...", "youtube_description": "...", "tags": ["..."],
  "instagram_caption": "...", "tiktok_caption": "..."}}"""
@@ -343,10 +347,10 @@ METADATA:
 
 Return JSON:
 {{"title": "...", "thumbnail_text": "...", "description": "...", "tags": ["..."], "pinned_comment": "...",
- "intro": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."], "card": null}}],
+ "intro": [{{"text": "...", "visual": "...", "visual_alt": "...", "wiki": "...", "keywords": ["..."], "card": null}}],
  "segments": [{{"story": <story number from the list above>, "chapter": "short chapter title",
-               "scenes": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."], "card": null}}]}}],
- "outro": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."], "card": null}}]}}"""
+               "scenes": [{{"text": "...", "visual": "...", "visual_alt": "...", "wiki": "...", "keywords": ["..."], "card": null}}]}}],
+ "outro": [{{"text": "...", "visual": "...", "visual_alt": "...", "wiki": "...", "keywords": ["..."], "card": null}}]}}"""
     return ask_json(SYSTEM, prompt, validate=_check_long)
 
 

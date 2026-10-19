@@ -119,9 +119,9 @@ def fill_cards(scenes: list[dict], story: dict | None, day: str) -> list[dict]:
 
 
 def draw(*, kind: str, scenes, timings, total, words, wav, work: Path, out: Path, seed: str, day: str,
-         hook: str, extra_cards: list | None = None, overlays: list | None = None, whoosh=None) -> list[Path]:
+         hook: str, extra_cards: list | None = None, overlays: list | None = None, whoosh=None) -> tuple[list, list]:
     """Make the picture + sound. Pro engine first; if it fails, the simple FFmpeg engine so the day isn't lost.
-    Returns clean footage files (no captions) for the thumbnail."""
+    Returns (clean footage files for the thumbnail, credit lines for the description)."""
     stock = Stock(vertical=kind == "short", seed=seed)
     theme = theme_for(day)
     try:
@@ -130,7 +130,7 @@ def draw(*, kind: str, scenes, timings, total, words, wav, work: Path, out: Path
                                            voice_wav=wav, stock=stock, work=work, out_path=out, seed=seed,
                                            theme=theme, hook=hook, extra_cards=extra_cards, whoosh_scenes=whoosh)
             stock.save_used()
-            return clips
+            return clips, stock.credits()
     except Exception as e:
         print(f"  [render] pro engine failed, using the simple engine: {safe_err(e)}")
     s = CFG[kind]
@@ -141,7 +141,7 @@ def draw(*, kind: str, scenes, timings, total, words, wav, work: Path, out: Path
     segments = render.render(kind=kind, scenes=scenes, timings=timings, total=total, voice_wav=wav,
                              ass_path=ass, stock=stock, work=work, out_path=out, seed=seed, whoosh_scenes=whoosh)
     stock.save_used()
-    return segments
+    return segments, stock.credits()
 
 
 def build_short(plan: dict, index: int, work: Path) -> dict:
@@ -160,13 +160,14 @@ def build_short(plan: dict, index: int, work: Path) -> dict:
     print(f"[short {index}] video")
     out = work / f"short_{index}.mp4"
     hook = sc.get("hook_text", "")
-    draw(kind="short", scenes=scenes, timings=timings, total=total, words=words, wav=wav, work=work, out=out,
+    _, credits = draw(kind="short", scenes=scenes, timings=timings, total=total, words=words, wav=wav, work=work, out=out,
          seed=seed, day=plan["date"], hook=hook,
          overlays=[{"text": hook, "start": 0, "end": 2.6, "style": "Hook"}])
     sources = "\n".join(f"- {x['source']}: {x['url']}" for x in story["sources"][:4] if x.get("url"))
     return {"video": out, "duration": total,
             "youtube": {"title": sc["youtube_title"],
-                        "description": f"{sc['youtube_description']}\n\n{sources}\n\n{CREDIT}",
+                        "description": f"{sc['youtube_description']}\n\n{sources}\n\n{CREDIT}" +
+                                       "".join(f"\n{c}" for c in credits),
                         "tags": sc.get("tags", []), "comment": sc.get("question")},
             "instagram": sc.get("instagram_caption", sc["youtube_title"]),
             "tiktok": sc.get("tiktok_caption", sc["youtube_title"])}
@@ -215,11 +216,12 @@ def build_long(plan: dict, work: Path) -> dict:
                       "data": {"number": num, "title": title}} for i, num, title in overlays_at]
     print("[long] video")
     out = work / "long.mp4"
-    clips = draw(kind="long", scenes=scenes, timings=timings, total=total, words=words, wav=wav, work=work, out=out,
+    clips, credits = draw(kind="long", scenes=scenes, timings=timings, total=total, words=words, wav=wav, work=work, out=out,
                  seed=seed, day=plan["date"], hook=lg["thumbnail_text"], extra_cards=chapter_cards,
                  overlays=overlays, whoosh=whoosh)
     source = clips[min(len(clips) - 1, round(len(clips) * 0.8))] if clips else out   # story #1 is near the end
-    thumb = thumbnail.make(source, lg["thumbnail_text"], work / "thumbnail.jpg", at=1.0)
+    at = 0.0 if source.suffix.lower() in render.IMAGE_EXT else 1.0
+    thumb = thumbnail.make(source, lg["thumbnail_text"], work / "thumbnail.jpg", at=at)
     chapter_text = render.chapter_times(timings, chapters)
     sources = "\n".join(f"- {x['source']}: {x['url']}" for st in plan["stories"] for x in st["sources"][:2]
                         if x.get("url"))
@@ -227,7 +229,8 @@ def build_long(plan: dict, work: Path) -> dict:
     if "Chapters:" not in desc:
         desc += "\n\nChapters:\n" + chapter_text
     return {"video": out, "thumbnail": thumb, "duration": total,
-            "youtube": {"title": lg["title"], "description": f"{desc}\n\n{sources}\n\n{CREDIT}",
+            "youtube": {"title": lg["title"], "description": f"{desc}\n\n{sources}\n\n{CREDIT}" +
+                                                         "".join(f"\n{c}" for c in credits),
                         "tags": lg.get("tags", []), "comment": lg.get("pinned_comment")}}
 
 

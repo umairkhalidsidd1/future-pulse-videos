@@ -21,120 +21,150 @@
    "short": {
     "hook_candidates": [
      {
-      "mechanism": "transformation",
-      "text": "Amazon is turning an abandoned coal plant into twelve nuclear reactors.",
+      "mechanism": "curiosity gap",
+      "text": "Why is Amazon funding twelve nuclear reactors in Indiana?",
       "score": 9
-     },
-     {
-      "mechanism": "contrarian",
-      "text": "Decades of climate policy stalled nuclear. Artificial intelligence is bringing it back.",
-      "score": 8
      },
      {
       "mechanism": "specific number",
-      "text": "Twelve nuclear reactors are heading to a demolished coal site in Indiana.",
-      "score": 8
+      "text": "Amazon is funding twelve small nuclear reactors at a former coal plant.",
+      "score": 10
      },
      {
       "mechanism": "stakes",
-      "text": "AI needs so much power that Amazon is funding its own nuclear reactors.",
+      "text": "Big tech's AI appetite is reviving nuclear power plants.",
+      "score": 8
+     },
+     {
+      "mechanism": "contrarian",
+      "text": "Decades of climate policy couldn't revive nuclear, but AI compute just did.",
       "score": 9
      },
      {
-      "mechanism": "curiosity gap",
-      "text": "Why is Amazon building twelve small nuclear reactors at an old coal plant?",
+      "mechanism": "timeliness",
+      "text": "Amazon just signed a massive agreement to build twelve nuclear reactors.",
       "score": 8
      }
     ],
-    "hook_text": "COAL PLANT BECOMES NUCLEAR",
+    "hook_text": "AMAZON FUNDS 12 NUCLEAR REACTORS",
     "scenes": [
      {
-      "text": "Amazon is funding twelve small nuclear reactors at the site of a defunct Indiana coal plant.",
-      "visual": "nuclear plant cooling",
-      "visual_alt": "nuclear plant",
+      "text": "Amazon is funding twelve small nuclear reactors at a former Indiana coal plant.",
+      "visual": "nuclear power plant",
+      "visual_alt": "power plant",
+      "wiki": "Amazon (company)",
       "keywords": [
-       "coal plant",
-       "nuclear reactors"
+       "nuclear reactors",
+       "Indiana"
       ],
       "card": null
      },
      {
-      "text": "Through a deal with X-energy and AEP, they're funding a massive new energy hub.",
-      "visual": "power lines grid",
-      "visual_alt": "power grid",
+      "text": "Here are three things you need to know about this massive energy deal.",
+      "visual": "data center servers",
+      "visual_alt": "servers",
+      "wiki": "Small modular reactor",
       "keywords": [
-       "X-energy",
-       "energy hub"
-      ],
-      "card": {
-       "template": "headline"
-      }
-     },
-     {
-      "text": "Here are three key facts. First, it aims to deliver up to 960 megawatts to the grid and data centers.",
-      "visual": "server room glow",
-      "visual_alt": "server room",
-      "keywords": [
-       "960 megawatts",
-       "data centers"
-      ],
-      "card": null
-     },
-     {
-      "text": "Second, it uses small modular reactors. Third, Amazon targets five gigawatts of nuclear power by 2039.",
-      "visual": "industrial reactor facility",
-      "visual_alt": "factory",
-      "keywords": [
-       "modular reactors",
-       "five gigawatts"
+       "energy deal"
       ],
       "card": {
        "template": "list",
        "title": "3 things to know",
        "items": [
-        "960 megawatts",
-        "12 modular reactors",
-        "5 gigawatts by 2039"
+        "The news in Indiana",
+        "The reactor design",
+        "Why it matters now"
        ]
       }
      },
      {
-      "text": "Here's why it matters. Tech giants are turning to nuclear to power AI data centers, betting small reactors can pull the nuclear industry out of its slump.",
-      "visual": "artificial intelligence chip",
-      "visual_alt": "microchip",
+      "text": "First, the proposed facility replaces a defunct coal station in Sullivan County.",
+      "visual": "abandoned power plant",
+      "visual_alt": "factory",
+      "wiki": "Breed Generating Station",
       "keywords": [
-       "Artificial intelligence",
-       "nuclear power"
+       "coal station",
+       "Sullivan County"
       ],
       "card": null
      },
      {
-      "text": "Would you want small modular reactors in your state? Tell me in the comments.",
-      "visual": "suburban electric grid",
-      "visual_alt": "suburb",
+      "text": "Second, it aims to provide nine hundred sixty megawatts of carbon-free energy.",
+      "visual": "power transmission lines",
+      "visual_alt": "electricity grid",
+      "wiki": "Electric power grid",
+      "keywords": [
+       "megawatts",
+       "energy"
+      ],
+      "card": {
+       "template": "stat",
+       "value": 960.0,
+       "label": "carbon-free energy capacity",
+       "prefix": "",
+       "suffix": "MW",
+       "decimals": 0
+      }
+     },
+     {
+      "text": "Third, the project targets twelve Xe-one-hundred small modular reactors from X-energy.",
+      "visual": "nuclear reactor",
+      "visual_alt": "laboratory",
+      "wiki": "X-energy",
       "keywords": [
        "modular reactors",
+       "X-energy"
+      ],
+      "card": null
+     },
+     {
+      "text": "But here is why this matters for the future of artificial intelligence.",
+      "visual": "artificial intelligence",
+      "visual_alt": "technology",
+      "wiki": "Artificial intelligence",
+      "keywords": [
+       "artificial intelligence"
+      ],
+      "card": null
+     },
+     {
+      "text": "Tech companies are rushing to secure power as data center demand surges.",
+      "visual": "server racks",
+      "visual_alt": "computer room",
+      "wiki": "Data center",
+      "keywords": [
+       "data center",
+       "demand"
+      ],
+      "card": null
+     },
+     {
+      "text": "Will small modular reactors solve the massive energy needs of AI? Tell me in the comments.",
+      "visual": "computer screen",
+      "visual_alt": "coding",
+      "wiki": "",
+      "keywords": [
        "comments"
       ],
       "card": null
      }
     ],
-    "question": "Would you want small modular reactors in your state?",
-    "youtube_title": "Amazon Nuclear Reactors at Old Coal Plant #Shorts",
-    "youtube_description": "Amazon is funding 12 small modular nuclear reactors at a former Indiana coal plant to power its AI data centers and the electric grid.\n\nSources: The Verge, TechCrunch",
+    "question": "Will small modular reactors solve the massive energy needs of AI?",
+    "youtube_title": "Amazon Funds 12 Nuclear Reactors for AI Data Centers #Shorts",
+    "youtube_description": "Amazon is funding twelve small nuclear reactors at a former Indiana coal plant to power its data centers and the regional grid.\n\nSources:\nThe Verge, TechCrunch",
     "tags": [
      "Amazon",
-     "nuclear energy",
-     "artificial intelligence",
-     "tech news",
+     "Nuclear Power",
+     "Small Modular Reactors",
+     "AI",
+     "Data Centers",
+     "Indiana",
      "X-energy",
-     "clean energy",
-     "data centers",
-     "SMR",
-     "energy grid"
+     "Tech News"
     ],
-    "instagram_caption": "Amazon is funding 12 small nuclear reactors at a former Indiana coal plant to fuel its growing AI data centers.\n\nWould you want small modular reactors in your state?\n\n#technews #nuclear #amazon #ai #cleantech #energy",
-    "tiktok_caption": "Amazon is replacing an Indiana coal plant with 12 nuclear reactors for AI power. #technews #nuclear #amazon #ai"
+    "instagram_caption": "Amazon is funding twelve small nuclear reactors at a former Indiana coal plant to power AI data centers. Will small modular reactors solve the massive energy needs of AI? Tell me in the comments.\n\n#Amazon #NuclearPower #ArtificialIntelligence #TechNews #DataCenter",
+    "tiktok_caption": "Amazon is funding 12 small nuclear reactors at a former Indiana coal plant for AI data centers. Will SMRs solve AI's energy crisis? #Amazon #Nuclear #AI",
+    "youtube_title_alt": "Amazon's Nuclear Bet on Indiana Coal Plant #Shorts"
    }
   },
   {
