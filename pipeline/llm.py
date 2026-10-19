@@ -98,7 +98,10 @@ def ask_vision_json(system: str, parts: list[dict], validate=None):
     if not key:
         raise LLMError("GEMINI_API_KEY not set")
     errors = []
-    for model in CFG["llm"].get("vision_models", CFG["llm"]["gemini_models"]):
+    attempts = [m for m in CFG["llm"].get("vision_models", CFG["llm"]["gemini_models"]) for _ in range(2)]
+    for n, model in enumerate(attempts):
+        if n % 2:
+            time.sleep(8)                 # second try of the same model after a short wait (busy / rate limit)
         body = {"systemInstruction": {"parts": [{"text": system}]}, "contents": [{"role": "user", "parts": parts}],
                 "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2}}
         try:
@@ -114,5 +117,5 @@ def ask_vision_json(system: str, parts: list[dict], validate=None):
             return result
         except (LLMError, json.JSONDecodeError, requests.RequestException, KeyError, IndexError, TypeError,
                 ValueError) as e:
-            errors.append(f"{model}: {str(e)[:150]}")
+            errors.append(f"{model}: {' '.join(str(e).split())[:150]}")
     raise LLMError("Picture check failed: " + " | ".join(errors[-3:]))
