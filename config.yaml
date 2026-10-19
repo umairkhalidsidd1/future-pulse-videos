@@ -61,7 +61,9 @@ long:
 
 captions:
   whisper_model: "base.en"
-  font: "Anton"
+  font: "Montserrat Black"        # caption font (assets/fonts). Big-channel "Hormozi" look
+  hook_font: "Anton"              # first-frame hook text, chapter tags
+  progress_bar: true              # bar across the top of Shorts that fills up
   # Color themes rotate by day. Colors are in RGB hex.
   themes:
     - {text: "FFFFFF", highlight: "FFE600", keyword: "39FF14"}

@@ -99,7 +99,7 @@ def theme_for(day: str) -> dict:
 def build_short(plan: dict, index: int, work: Path) -> dict:
     story = plan["stories"][index]
     sc = story["short"]
-    scenes = sc["scenes"]
+    scenes = writer.finish_ending(sc["scenes"], sc.get("question", ""))
     seed = f"{plan['date']}-short-{index}"
     work.mkdir(parents=True, exist_ok=True)
     print(f"[short {index}] voice")
@@ -111,7 +111,8 @@ def build_short(plan: dict, index: int, work: Path) -> dict:
     s = CFG["short"]
     captions.build_ass(words, ass, width=s["width"], height=s["height"], vertical=True, theme=theme_for(plan["date"]),
                        total=total + 0.5, overlays=[{"text": sc.get("hook_text", ""), "start": 0, "end": 2.6,
-                                                     "style": "Hook"}])
+                                                     "style": "Hook"}],
+                       progress_bar=CFG["captions"].get("progress_bar", False))
     print(f"[short {index}] video")
     out = work / f"short_{index}.mp4"
     stock = Stock(vertical=True, seed=seed)
@@ -141,7 +142,7 @@ def build_long(plan: dict, work: Path) -> dict:
         scenes += seg["scenes"]
     chapters.append(("What do you think?", len(scenes)))
     whoosh.add(len(scenes))
-    scenes += lg["outro"]
+    scenes += writer.finish_ending(lg["outro"])
 
     seed = f"{plan['date']}-long"
     work.mkdir(parents=True, exist_ok=True)

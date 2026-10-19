@@ -4,6 +4,7 @@ Hook and Shorts rules are adapted from the MIT-licensed social-media-skills/skil
 pack (hook-writer, youtube-shorts).
 """
 import json
+import re
 
 from .config import CFG
 from .llm import ask_json
@@ -56,6 +57,31 @@ def _check_scenes(scenes, minimum: int):
             s["keywords"] = []
 
 
+DANGLING = {"because", "and", "but", "so", "or", "that", "which", "while", "since", "if", "when", "the", "a"}
+
+
+def is_unfinished(text: str) -> bool:
+    text = text.strip()
+    last_word = re.sub(r"[^a-z]", "", text.split()[-1].lower()) if text.split() else ""
+    return text.endswith(("...", "…")) or not text.endswith((".", "!", "?", '"')) or last_word in DANGLING
+
+
+def finish_ending(scenes: list[dict], question: str = "") -> list[dict]:
+    """Safety net: cut an unfinished last line back to its last full sentence, so a video never ends mid-word."""
+    if not scenes or not is_unfinished(scenes[-1]["text"]):
+        return scenes
+    text = re.sub(r"(\.\.\.|…)\s*$", "", scenes[-1]["text"].strip())
+    ends = [m.end() for m in re.finditer(r"[.!?](?=\s|$)", text)]
+    if ends:
+        text = text[:ends[-1]]
+    elif question.strip().endswith("?"):
+        text = question.strip()
+    else:
+        text = text.rstrip(",;: ") + "?"
+    scenes[-1]["text"] = text + " Tell me in the comments."
+    return scenes
+
+
 def _check_picks(r):
     if not isinstance(r.get("picks"), list) or not r["picks"]:
         raise ValueError("no picks")
@@ -63,6 +89,8 @@ def _check_picks(r):
 
 def _check_short(r):
     _check_scenes(r.get("scenes"), 4)
+    if is_unfinished(r["scenes"][-1]["text"]):
+        raise ValueError("the last line is unfinished")
     if not str(r.get("youtube_title", "")).strip():
         raise ValueError("missing youtube_title")
     title = r["youtube_title"]
@@ -80,6 +108,8 @@ def _check_long(r):
             raise ValueError(f"missing {key}")
     _check_scenes(r.get("intro"), 1)
     _check_scenes(r.get("outro"), 1)
+    if is_unfinished(r["outro"][-1]["text"]):
+        raise ValueError("the outro ends unfinished")
     segs = r.get("segments")
     if not isinstance(segs, list) or len(segs) < 2:
         raise ValueError("needs at least 2 segments")
@@ -154,8 +184,9 @@ STRUCTURE:
 - Scene 1 = the chosen hook (spoken).
 - 5-9 scenes in total. Each scene 1-2 short sentences, max 22 words. Relentless pace, no wind-up.
 - Around the middle, a rehook line that raises the stakes ("But here's the part that matters...", vary it).
-- Last scene: a short question that makes people comment, then a final line that flows naturally back into
-  the first words of the hook, so the video loops seamlessly when it replays.
+- Last scene: a short question that makes people comment, then ONE short, complete closing sentence
+  (for example "Tell me in the comments."). EVERY sentence must be complete. Never end with "...",
+  "Because", "and", "but", "so", "that" or any unfinished sentence.
 
 {VISUAL_RULES}
 

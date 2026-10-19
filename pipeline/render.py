@@ -37,13 +37,22 @@ def _segment(job: dict):
     w, h, fps, frames = job["w"], job["h"], job["fps"], job["frames"]
     dur = frames / fps
     if job["clip"]:
-        zw, zh = int(w * 1.12) // 2 * 2, int(h * 1.12) // 2 * 2
-        dx, dy = job["pan"]
-        x = f"(iw-{w})/2+{dx}*(iw-{w})/2*(t/{dur:.3f}*2-1)"
-        y = f"(ih-{h})/2+{dy}*(ih-{h})/2*(t/{dur:.3f}*2-1)"
-        # tpad repeats the last frame if a clip is shorter than the cut, so picture and voice stay in sync.
-        vf = (f"scale={zw}:{zh}:force_original_aspect_ratio=increase,crop={w}:{h}:'{x}':'{y}',"
-              f"tpad=stop_mode=clone:stop_duration={dur + 1:.2f},fps={fps},setsar=1,format=yuv420p")
+        grade = "eq=contrast=1.07:saturation=1.25:brightness=0.01"  # punchier colours, like big channels
+        if job["motion"] == "pan":
+            zw, zh = int(w * 1.12) // 2 * 2, int(h * 1.12) // 2 * 2
+            dx, dy = job["pan"]
+            x = f"(iw-{w})/2+{dx}*(iw-{w})/2*(t/{dur:.3f}*2-1)"
+            y = f"(ih-{h})/2+{dy}*(ih-{h})/2*(t/{dur:.3f}*2-1)"
+            vf = (f"scale={zw}:{zh}:force_original_aspect_ratio=increase,crop={w}:{h}:'{x}':'{y}',"
+                  f"tpad=stop_mode=clone:stop_duration={dur + 1:.2f},fps={fps},{grade},setsar=1,format=yuv420p")
+        else:  # slow zoom in or out; working at 1.5x size keeps the zoom smooth (no jitter)
+            bw, bh = int(w * 1.5) // 2 * 2, int(h * 1.5) // 2 * 2
+            z0, z1 = (1.0, 1.14) if job["motion"] == "zoom_in" else (1.14, 1.0)
+            z = f"{z0}+({z1 - z0:.2f})*on/{max(1, frames - 1)}"
+            vf = (f"scale={bw}:{bh}:force_original_aspect_ratio=increase,crop={bw}:{bh},"
+                  f"tpad=stop_mode=clone:stop_duration={dur + 1:.2f},fps={fps},"
+                  f"zoompan=z='{z}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s={w}x{h}:fps={fps},"
+                  f"{grade},setsar=1,format=yuv420p")
         inp = ["-ss", f"{job['offset']:.2f}", "-i", str(job["clip"])]
     else:
         c0, c1 = job["colors"]
@@ -125,8 +134,9 @@ def render(*, kind: str, scenes: list[dict], timings: list[tuple[float, float]],
                 room = clip_len - need
                 offset = rng.uniform(0, room) if room > 0 else 0.0
             pan = rng.choice([(1, 0), (-1, 0), (0, 1), (0, -1), (0.6, 0.6), (-0.6, 0.6)])
+            motion = rng.choices(["zoom_in", "pan", "zoom_out"], weights=[4, 3, 2])[0]
             jobs.append({"w": w, "h": h, "fps": fps, "frames": b - a, "clip": clip, "offset": offset,
-                         "pan": pan, "colors": colors, "out": seg_dir / f"{len(jobs):04d}.mp4"})
+                         "pan": pan, "motion": motion, "colors": colors, "out": seg_dir / f"{len(jobs):04d}.mp4"})
 
     workers = max(1, (os.cpu_count() or 2) // 2)
     print(f"  [render] {len(jobs)} cuts, {workers} at a time")
