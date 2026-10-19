@@ -57,7 +57,7 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: "22"
+          node-version: "24"
           cache: npm
           cache-dependency-path: remotion/package-lock.json
 
@@ -69,7 +69,7 @@ jobs:
 
       - name: Install Remotion (the video engine)
         working-directory: remotion
-        run: npm ci && npx remotion browser ensure
+        run: npm install --no-audit --no-fund && npx remotion browser ensure
 
       - name: Cache background music (downloaded once from incompetech.com, CC BY 4.0)
         uses: actions/cache@v4
