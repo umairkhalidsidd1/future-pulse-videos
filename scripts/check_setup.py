@@ -25,7 +25,7 @@ def gemini():
 
 def pexels():
     if not secret("PEXELS_API_KEY"):
-        raise RuntimeError("PEXELS_API_KEY missing")
+        return "not set (optional, new keys are paused)"
     r = requests.get("https://api.pexels.com/videos/search", params={"query": "robot", "per_page": 1},
                      headers={"Authorization": secret("PEXELS_API_KEY")}, timeout=20)
     r.raise_for_status()
