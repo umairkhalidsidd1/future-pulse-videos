@@ -38,7 +38,9 @@ HOOK_RULES = """HOOK RULES (the first 1-3 seconds decide everything):
   same gap as the spoken hook but not the same words."""
 
 VISUAL_RULES = """VISUAL RULES: every scene has "visual": a 1-3 word STOCK FOOTAGE search query for something concrete and
-filmable (e.g. "electric car highway", "robot arm factory", "rocket launch night", "server room", "smartphone hand").
+filmable that MATCHES what is being said (e.g. "electric car highway", "robot arm factory", "rocket launch",
+"server room", "smartphone hand"). Put the main noun FIRST. Also "visual_alt": a broader 1-2 word backup query
+that surely exists on free stock sites (e.g. "rocket", "laboratory", "computer", "city night", "astronaut").
 Never a person's name, brand logo or specific product name (stock sites don't have those).
 "keywords": 1-2 important words copied exactly from that scene's text, to highlight in captions."""
 
@@ -53,6 +55,8 @@ def _check_scenes(scenes, minimum: int):
             raise ValueError("a scene has no text")
         if not str(s.get("visual", "")).strip():
             s["visual"] = "technology"
+        if not str(s.get("visual_alt", "")).strip():
+            s["visual_alt"] = ""
         if not isinstance(s.get("keywords"), list):
             s["keywords"] = []
 
@@ -200,7 +204,7 @@ METADATA:
 Return JSON:
 {{"hook_candidates": [{{"mechanism": "...", "text": "...", "score": 0}}],
  "hook_text": "ALL CAPS FIRST FRAME TEXT",
- "scenes": [{{"text": "...", "visual": "...", "keywords": ["..."]}}],
+ "scenes": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."]}}],
  "question": "the comment question you used",
  "youtube_title": "...", "youtube_description": "...", "tags": ["..."],
  "instagram_caption": "...", "tiktok_caption": "..."}}"""
@@ -241,10 +245,10 @@ METADATA:
 
 Return JSON:
 {{"title": "...", "thumbnail_text": "...", "description": "...", "tags": ["..."], "pinned_comment": "...",
- "intro": [{{"text": "...", "visual": "...", "keywords": ["..."]}}],
+ "intro": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."]}}],
  "segments": [{{"story": <story number from the list above>, "chapter": "short chapter title",
-               "scenes": [{{"text": "...", "visual": "...", "keywords": ["..."]}}]}}],
- "outro": [{{"text": "...", "visual": "...", "keywords": ["..."]}}]}}"""
+               "scenes": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."]}}]}}],
+ "outro": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."]}}]}}"""
     return ask_json(SYSTEM, prompt, validate=_check_long)
 
 

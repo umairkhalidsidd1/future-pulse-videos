@@ -30,14 +30,21 @@ llm:
   # Tried in order. If a model name stops existing, the next one is used.
   gemini_models: ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite"]
   groq_models: ["openai/gpt-oss-120b", "llama-3.3-70b-versatile"]
+  vision_models: ["gemini-3.8-flash-lite", "gemini-3.8-flash", "gemini-2.5-flash"]  # checks clip previews
   temperature: 0.9
   fact_check: true                # second AI pass that checks the script against the sources
 
 voice:
-  model: kokoro
-  voice: "af_heart"               # best-rated Kokoro voice. Male options: am_michael, am_fenrir, am_puck
-  speed: 1.12                     # a little faster than normal = better retention
-  scene_gap: 0.06                 # seconds of silence between scenes (keep tiny: no dead air)
+  # 1st choice: Gemini TTS (very natural). Tried in order; each model has its own small daily limit.
+  gemini_models: ["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts", "gemini-2.5-flash-preview-tts"]
+  gemini_voice: "Puck"            # upbeat. Others: Charon (informative), Fenrir (excitable), Kore (firm), Zephyr (bright)
+  style: >-
+    Read the following as an energetic, confident tech news narrator for a short social video.
+    Sound natural and human, with real emotion and punchy emphasis on key words. Fast but clear, no long pauses.
+    Read ONLY the text below, nothing else:
+  # Backup when Gemini's limit is used up
+  kokoro_voice: "af_heart"
+  target_wpm: {short: 160, long: 150}   # pro pace from research: Shorts 150-165, long videos ~150
 
 short:
   width: 1080

@@ -1,18 +1,82 @@
-"""Free, commercial-use AI voice: Kokoro (Apache-2.0), run on the CPU with ONNX."""
+"""Voice-over. First choice: Google Gemini TTS (top-5 most natural voice in public listening tests, free tier,
+outputs may be used commercially). Backup: Kokoro (Apache-2.0, runs on the CPU) when Gemini's small daily
+limit is used up. A video always uses ONE engine from start to end, never a mix."""
+import base64
+import io
+import re
+import subprocess
+import tempfile
 from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
+import requests
 import soundfile as sf
 
-from .config import CFG, MODELS
+from .config import CFG, MODELS, safe_err, secret
 
+RATE = 24000
 MODEL_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/"
 FILES = ("kokoro-v1.0.onnx", "voices-v1.0.bin")
 
 
+class VoiceError(RuntimeError):
+    pass
+
+
+# ---------- Gemini TTS ----------
+
+def _gemini(model: str, text: str) -> np.ndarray:
+    v = CFG["voice"]
+    key = secret("GEMINI_API_KEY")
+    if not key:
+        raise VoiceError("GEMINI_API_KEY not set")
+    body = {"contents": [{"parts": [{"text": f"{v['style']}\n\n{text}"}]}],
+            "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {
+                "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": v["gemini_voice"]}}}}}
+    r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                      json=body, headers={"x-goog-api-key": key}, timeout=600)
+    if r.status_code != 200:
+        raise VoiceError(f"{model}: HTTP {r.status_code} {r.text[:200]}")
+    try:
+        part = r.json()["candidates"][0]["content"]["parts"][0]["inlineData"]
+    except (KeyError, IndexError) as e:
+        raise VoiceError(f"{model}: no audio in answer") from e
+    raw = base64.b64decode(part["data"])
+    if raw[:4] == b"RIFF":                    # a full WAV file
+        audio, rate = sf.read(io.BytesIO(raw), dtype="float32")
+        if audio.ndim > 1:
+            audio = audio.mean(axis=1)
+        if rate != RATE:
+            audio = np.interp(np.linspace(0, len(audio) - 1, int(len(audio) * RATE / rate)),
+                              np.arange(len(audio)), audio).astype(np.float32)
+        return audio
+    m = re.search(r"rate=(\d+)", part.get("mimeType", ""))   # raw 16-bit PCM
+    audio = np.frombuffer(raw, dtype=np.int16).astype(np.float32) / 32768
+    rate = int(m.group(1)) if m else RATE
+    if rate != RATE:
+        audio = np.interp(np.linspace(0, len(audio) - 1, int(len(audio) * RATE / rate)),
+                          np.arange(len(audio)), audio).astype(np.float32)
+    return audio
+
+
+def _check_start(audio: np.ndarray, script: str):
+    """Reject audio where the AI read out its own instructions instead of starting with the script."""
+    from faster_whisper import WhisperModel
+    from .align import _norm
+    clip = audio[: RATE * 6]
+    clip16 = np.interp(np.linspace(0, len(clip) - 1, len(clip) * 2 // 3), np.arange(len(clip)), clip)
+    model = WhisperModel("base.en", device="cpu", compute_type="int8", download_root=str(MODELS / "whisper"))
+    segs, _ = model.transcribe(clip16.astype(np.float32), language="en")
+    heard = {_norm(w) for s in segs for w in s.text.split()}
+    first = [_norm(w) for w in script.split()[:6] if len(_norm(w)) > 2]
+    if first and not any(w in heard for w in first):
+        raise VoiceError("voice does not start with the script")
+
+
+# ---------- Kokoro (backup) ----------
+
 def ensure_models():
-    import requests
     for name in FILES:
         path = MODELS / name
         if path.exists() and path.stat().st_size > 1_000_000:
@@ -32,31 +96,98 @@ def _kokoro():
     return Kokoro(str(MODELS / FILES[0]), str(MODELS / FILES[1]))
 
 
-def clean(text: str) -> str:
-    # Small fixes that make the voice read tech words better.
-    for a, b in (("AI's", "A.I.'s"), (" AI ", " A.I. "), ("&", " and "), ("%", " percent"), ("—", ", ")):
-        text = text.replace(a, b)
-    return text.strip()
-
-
-def synth(scenes: list[dict], out_wav: Path) -> tuple[list[tuple[float, float]], float]:
-    """Speak every scene. Returns (start, end) seconds for each scene and the total length."""
+def _kokoro_say(text: str) -> np.ndarray:
     v = CFG["voice"]
-    kokoro = _kokoro()
-    rate = None
-    pieces, timings, t = [], [], 0.0
-    for scene in scenes:
-        text = clean(" " + scene["text"] + " ")
-        audio, rate = kokoro.create(text, voice=v["voice"], speed=v["speed"], lang="en-us",
-                                    sentence_pause=0.12, clause_pause=0.05)
-        audio = np.asarray(audio, dtype=np.float32)
-        gap = np.zeros(int(rate * v["scene_gap"]), dtype=np.float32)
-        start = t
-        t += len(audio) / rate
-        timings.append((start, t))
-        t += len(gap) / rate
-        pieces += [audio, gap]
-    full = np.concatenate(pieces)
-    peak = float(np.max(np.abs(full))) or 1.0
-    sf.write(out_wav, full / peak * 0.95, rate)
-    return timings, len(full) / rate
+    for a, b in (("AI's", "A.I.'s"), (" AI ", " A.I. "), ("&", " and "), ("%", " percent"), ("—", ", ")):
+        text = f" {text} ".replace(a, b).strip()
+    audio, rate = _kokoro().create(text, voice=v["kokoro_voice"], speed=1.0, lang="en-us",
+                                   sentence_pause=0.12, clause_pause=0.05)
+    return np.asarray(audio, dtype=np.float32)
+
+
+# ---------- shared ----------
+
+def _trim(audio: np.ndarray, pad: float = 0.08) -> np.ndarray:
+    level = np.abs(audio)
+    loud = np.where(level > 0.02 * (level.max() or 1))[0]
+    if not len(loud):
+        return audio
+    a, b = max(0, loud[0] - int(pad * RATE)), min(len(audio), loud[-1] + int(pad * RATE))
+    return audio[a:b]
+
+
+def _chunks(scenes: list[dict], max_words: int = 600) -> list[str]:
+    """Whole scenes joined into pieces of at most ~600 words (one Gemini request each)."""
+    out, cur, n = [], [], 0
+    for sc in scenes:
+        k = len(sc["text"].split())
+        if cur and n + k > max_words:
+            out.append(" ".join(cur))
+            cur, n = [], 0
+        cur.append(sc["text"])
+        n += k
+    if cur:
+        out.append(" ".join(cur))
+    return out
+
+
+def _tempo(audio: np.ndarray, factor: float) -> np.ndarray:
+    """Speed up without changing the pitch (FFmpeg atempo)."""
+    if abs(factor - 1) < 0.02:
+        return audio
+    with tempfile.TemporaryDirectory() as d:
+        src, dst = Path(d) / "in.wav", Path(d) / "out.wav"
+        sf.write(src, audio, RATE)
+        subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", str(src), "-af", f"atempo={factor:.3f}",
+                        str(dst)], check=True)
+        out, _ = sf.read(dst, dtype="float32")
+    return out
+
+
+def synth(scenes: list[dict], out_wav: Path, kind: str = "short") -> tuple[None, float]:
+    """Speaks the whole script into out_wav. Returns (None, length in seconds); exact word and scene
+    times come from align.align_script afterwards."""
+    v = CFG["voice"]
+    pieces = _chunks(scenes)
+    script = " ".join(sc["text"] for sc in scenes)
+    words = len(script.split())
+    import hashlib
+    import json
+    stamp = hashlib.sha1(json.dumps([script, v, kind], sort_keys=True).encode()).hexdigest()
+    stamp_file = out_wav.with_suffix(".stamp")
+    if out_wav.exists() and stamp_file.exists() and stamp_file.read_text() == stamp:
+        total = sf.info(str(out_wav)).duration
+        print(f"  [tts] same script as before: reusing the voice-over ({total:.1f} s)")
+        return None, total
+    audio, engine = None, None
+    for model in v.get("gemini_models", []):
+        try:
+            parts = []
+            for i, text in enumerate(pieces):
+                part = _trim(_gemini(model, text))
+                expected = len(text.split()) / 150 * 60
+                if not 0.5 * expected < len(part) / RATE < 1.8 * expected:
+                    raise VoiceError(f"odd length {len(part) / RATE:.0f}s for ~{expected:.0f}s of text")
+                if i == 0:
+                    _check_start(part, text)
+                parts.append(part)
+            gap = np.zeros(int(0.25 * RATE), dtype=np.float32)
+            audio = np.concatenate([x for p in parts for x in (p, gap)][:-1])
+            engine = model
+            break
+        except (VoiceError, requests.RequestException) as e:
+            print(f"  [tts] {safe_err(e)}; trying the next voice engine")
+    if audio is None:
+        audio = _trim(np.concatenate([_kokoro_say(t) for t in pieces]))
+        engine = f"kokoro ({v['kokoro_voice']})"
+
+    target = v["target_wpm"][kind]
+    wpm = words / (len(audio) / RATE / 60)
+    factor = min(1.25, max(0.85, target / wpm))
+    audio = _tempo(audio, factor)
+    peak = float(np.max(np.abs(audio))) or 1.0
+    sf.write(out_wav, audio / peak * 0.95, RATE)
+    stamp_file.write_text(stamp)
+    total = len(audio) / RATE
+    print(f"  [tts] {engine}: {total:.1f} s, {words / total * 60:.0f} words/min (sped up x{factor:.2f})")
+    return None, total

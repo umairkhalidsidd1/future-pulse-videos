@@ -90,3 +90,29 @@ def ask_json(system: str, prompt: str, temperature: float | None = None, validat
                     break  # this model/provider can't work; try the next one
                 time.sleep(5 if retry == 0 else 0)
     raise LLMError("All AI models failed:\n  " + "\n  ".join(errors[-8:]))
+
+
+def ask_vision_json(system: str, parts: list[dict], validate=None):
+    """Gemini with pictures: parts = [{"text": ...} | {"inline_data": {"mime_type", "data"}}]. Returns JSON."""
+    key = secret("GEMINI_API_KEY")
+    if not key:
+        raise LLMError("GEMINI_API_KEY not set")
+    errors = []
+    for model in CFG["llm"].get("vision_models", CFG["llm"]["gemini_models"]):
+        body = {"systemInstruction": {"parts": [{"text": system}]}, "contents": [{"role": "user", "parts": parts}],
+                "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2}}
+        try:
+            r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                              json=body, headers={"x-goog-api-key": key}, timeout=300)
+            if r.status_code != 200:
+                raise LLMError(f"HTTP {r.status_code} {r.text[:200]}")
+            out = r.json()["candidates"][0]["content"]["parts"]
+            result = _parse("".join(p.get("text", "") for p in out if not p.get("thought")))
+            if validate:
+                validate(result)
+            print(f"  [llm] clips checked by {model}")
+            return result
+        except (LLMError, json.JSONDecodeError, requests.RequestException, KeyError, IndexError, TypeError,
+                ValueError) as e:
+            errors.append(f"{model}: {str(e)[:150]}")
+    raise LLMError("Picture check failed: " + " | ".join(errors[-3:]))

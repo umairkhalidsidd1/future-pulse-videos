@@ -11,7 +11,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from . import captions, render, thumbnail, trends, tts, writer
+from . import align, captions, render, thumbnail, trends, tts, writer
 from .config import CFG, DATA, OUT, safe_err, today
 from .stock import Stock
 from .upload import instagram, tiktok, youtube
@@ -104,9 +104,9 @@ def build_short(plan: dict, index: int, work: Path) -> dict:
     work.mkdir(parents=True, exist_ok=True)
     print(f"[short {index}] voice")
     wav = work / "voice.wav"
-    timings, total = tts.synth(scenes, wav)
-    print(f"[short {index}] {total:.1f} s, captions")
-    words = captions.word_timings(wav, scenes, timings)
+    spans, total = tts.synth(scenes, wav, "short")
+    print(f"[short {index}] {total:.1f} s, exact caption timing")
+    words, timings = align.align_script(wav, scenes, spans)
     ass = work / "captions.ass"
     s = CFG["short"]
     captions.build_ass(words, ass, width=s["width"], height=s["height"], vertical=True, theme=theme_for(plan["date"]),
@@ -148,9 +148,9 @@ def build_long(plan: dict, work: Path) -> dict:
     work.mkdir(parents=True, exist_ok=True)
     print(f"[long] voice for {len(scenes)} scenes")
     wav = work / "voice.wav"
-    timings, total = tts.synth(scenes, wav)
-    print(f"[long] {total / 60:.1f} min, captions")
-    words = captions.word_timings(wav, scenes, timings)
+    spans, total = tts.synth(scenes, wav, "long")
+    print(f"[long] {total / 60:.1f} min, exact caption timing")
+    words, timings = align.align_script(wav, scenes, spans)
     overlays = [{"text": lg["thumbnail_text"], "start": 0, "end": 2.8, "style": "Hook"}]
     overlays += [{"text": text, "start": timings[i][0], "end": timings[i][0] + 3.5, "style": "Tag"}
                  for i, text in overlays_at]
@@ -240,6 +240,7 @@ def auto():
 def test():
     """Renders 1 short + 1 short long video from sample scripts. No keys needed, nothing is uploaded."""
     sample = json.loads((Path(__file__).parent / "sample_plan.json").read_text())
+    CFG["voice"]["gemini_models"] = []   # the test uses the backup voice: Gemini's daily voice limit is small
     sample["date"] = "test"
     for job_id in ("short:0", "long"):
         built = run_job(sample, {"id": job_id, "attempts": 0, "status": {}, "links": {}}, upload=False)

@@ -11,3 +11,7 @@ pillow>=11,<14
 google-api-python-client>=2.150,<3
 google-auth>=2.35,<3
 google-auth-oauthlib>=1.2,<2
+# exact caption timing (wav2vec2 forced alignment). On GitHub, torch is installed CPU-only first (see workflow).
+torch>=2.5,<3
+transformers>=4.45,<6
+num2words>=0.5.13,<0.6

@@ -55,10 +55,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: models
-          key: models-v1
+          key: models-v2
 
       - name: Install Python packages
-        run: pip install -r requirements.txt
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
 
       - name: Make and post video
         env:
