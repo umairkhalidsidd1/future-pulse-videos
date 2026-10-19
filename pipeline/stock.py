@@ -59,19 +59,23 @@ def _pixabay(query: str, vertical: bool) -> list[dict]:
     if not key:
         return []
     data = _cached_get("https://pixabay.com/api/videos/",
-                       {"key": key, "q": query[:100], "per_page": 20, "safesearch": "true"}, {})
+                       {"key": key, "q": query[:100], "per_page": 30, "safesearch": "true",
+                        "video_type": "film"}, {})  # "film" = real footage, no cartoons/green screens
     out = []
     for v in data.get("hits", []):
         sizes = [s for s in v.get("videos", {}).values() if s.get("url") and s.get("width")]
         if not sizes:
             continue
         w, h = sizes[0]["width"], sizes[0]["height"]
-        if vertical != (h > w) or v.get("duration", 0) < 3:
+        if v.get("duration", 0) < 3 or (not vertical and h > w):
             continue
-        side = (lambda s: s["width"]) if vertical else (lambda s: s["height"])
-        good = sorted([s for s in sizes if side(s) >= 1080], key=side)
-        pick = good[0] if good else max(sizes, key=side)
-        out.append({"id": f"pixabay_{v['id']}", "url": pick["url"], "duration": v["duration"]})
+        # Shorts prefer tall clips but also take wide ones (cropped to the centre): Pixabay has few tall clips.
+        good = sorted([s for s in sizes if min(s["width"], s["height"]) >= 1080], key=lambda s: s["height"])
+        pick = good[0] if good else max(sizes, key=lambda s: s["height"])
+        out.append({"id": f"pixabay_{v['id']}", "url": pick["url"], "duration": v["duration"],
+                    "tall": h > w})
+    if vertical:
+        out.sort(key=lambda i: not i["tall"])  # stable: keeps Pixabay's best-match order within each group
     return out
 
 
@@ -114,13 +118,15 @@ class Stock:
         """Up to n different clips for this query (falls back to simpler and generic queries)."""
         if not self.enabled():
             return []
-        tries = [query, " ".join(query.split()[-2:]), query.split()[-1], self.rng.choice(GENERIC)]
+        # Backups keep the FIRST words: "rocket launch night" -> "rocket launch" -> "rocket" (the subject).
+        parts = query.split()
+        tries = [query, " ".join(parts[:2]), parts[0] if parts else "", self.rng.choice(GENERIC)]
         found: list[dict] = []
-        for q in dict.fromkeys(tries):
-            items = [i for i in self._search(q) if i["id"] not in self.used_now]
-            fresh = [i for i in items if i["id"] not in self.recent]
+        for q in dict.fromkeys(t for t in tries if t):
+            items = [i for i in self._search(q) if i["id"] not in self.used_now
+                     and i["id"] not in {f["id"] for f in found}]
+            fresh = [i for i in items if i["id"] not in self.recent]  # best matches first, unused first
             stale = [i for i in items if i["id"] in self.recent]
-            self.rng.shuffle(fresh)
             found += fresh + stale
             if len(found) >= n:
                 break

@@ -1,0 +1,1049 @@
+{
+ "date": "2026-10-19",
+ "stories": [
+  {
+   "title": "Live coverage: SpaceX to launch Starfall reentry capsule, 31 customer payloads on Bandwagon-5 rideshare mission",
+   "angle": "SpaceX is launching a new reentry capsule called Starfall packed with 31 rideshare payloads.",
+   "viral_score": 9.2,
+   "sources": [
+    {
+     "title": "spacex launch jellyfish: NASA Science, Cargo Launch on 35th SpaceX Resupply Mission to Station",
+     "url": "https://www.nasa.gov/news-release/nasa-science-cargo-launch-on-35th-spacex-resupply-mission-to-station/",
+     "source": "Google Trends"
+    },
+    {
+     "title": "Live coverage: SpaceX to launch Starfall reentry capsule, 31 customer payloads on Bandwagon-5 rideshare mission",
+     "url": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxNZzRlVTZBQTdtOENYM1BhV3V0VHZ6Q1JmR0tlaG9FenFmRmtDQWtGOW11U3pRMTY1TXRpS1NEQzVUdzduNHBlcEVwS1hIV2NsOElaTDRuSWNIRk9xU05iSENyY2s2Vk9USTFjM3RJNUpyVjJCcU1xdmdabDlna0tvVV9pR2YxWGhtdlJ6blJPX0VsMzZxMlNTd2YzTXM3X291cTNBY3BHRXlUSmNPT2dUMDQ2RXloMEhXdzNSWXRTMk5GWWpVa1JFVUJDb0JYMHR2SUs4VTh0UkY0VHlkS0RrWVJ3?oc=5",
+     "source": "Spaceflight Now"
+    }
+   ],
+   "short": {
+    "hook_candidates": [
+     {
+      "mechanism": "contrarian",
+      "text": "The myth is space cargo is boring. The reality fixes human vision.",
+      "score": 9
+     },
+     {
+      "mechanism": "specific number",
+      "text": "SpaceX just blasted 6,300 pounds of cargo to cure human blindness.",
+      "score": 8
+     },
+     {
+      "mechanism": "mistake",
+      "text": "You think SpaceX Dragon only delivers astronaut food. You are completely wrong.",
+      "score": 7
+     },
+     {
+      "mechanism": "stakes",
+      "text": "The latest SpaceX launch is carrying artificial human organs into orbit.",
+      "score": 8
+     },
+     {
+      "mechanism": "curiosity gap",
+      "text": "SpaceX just launched medical hardware to print artificial human retinas in space.",
+      "score": 8
+     }
+    ],
+    "hook_text": "SPACE CARGO REALITY",
+    "scenes": [
+     {
+      "text": "The myth is space cargo is boring. The reality could help restore human vision.",
+      "visual": "medical lab microscope",
+      "keywords": [
+       "myth",
+       "vision"
+      ]
+     },
+     {
+      "text": "NASA and SpaceX just launched over 6,300 pounds of supplies and hardware on a Falcon 9 rocket.",
+      "visual": "rocket launch night",
+      "keywords": [
+       "6,300 pounds",
+       "supplies"
+      ]
+     },
+     {
+      "text": "People assume it is just food, but inside Dragon is hardware to manufacture artificial human retinas.",
+      "visual": "eye surgery macro",
+      "keywords": [
+       "artificial",
+       "retinas"
+      ]
+     },
+     {
+      "text": "Microgravity allows scientists to produce implants that could restore vision for patients on Earth.",
+      "visual": "space station earth",
+      "keywords": [
+       "microgravity",
+       "restore"
+      ]
+     },
+     {
+      "text": "Here is the part that matters even more.",
+      "visual": "human brain animation",
+      "keywords": [
+       "matters"
+      ]
+     },
+     {
+      "text": "Dragon also carried brain organoids to help find treatments for Alzheimer's and Parkinson's disease.",
+      "visual": "petri dish cells",
+      "keywords": [
+       "organoids",
+       "treatments"
+      ]
+     },
+     {
+      "text": "Would you trust space medicine to cure human disease? Because...",
+      "visual": "astronaut helmet reflection",
+      "keywords": [
+       "space medicine"
+      ]
+     }
+    ],
+    "question": "Would you trust space medicine to cure human disease?",
+    "youtube_title": "SpaceX Just Launched Artificial Retinas into Orbit #Shorts",
+    "youtube_description": "NASA and SpaceX launched over 6,300 pounds of research to the ISS, including hardware to manufacture artificial retinas and study brain organoids.\n\nCould zero gravity revolutionize medical breakthroughs on Earth?\n\nSources: NASA",
+    "tags": [
+     "spacex",
+     "nasa",
+     "falcon 9",
+     "space station",
+     "iss",
+     "dragon spacecraft",
+     "science breakthrough",
+     "biotechnology",
+     "space medicine",
+     "space launch"
+    ],
+    "instagram_caption": "Space missions aren't just sending supplies—they're manufacturing artificial retinas and studying treatments for Alzheimer's in microgravity.\n\nWould you trust space medicine to cure human disease?\n\n#spacex #nasa #falcon9 #biotech #science #spaceexploration #futuretech",
+    "tiktok_caption": "SpaceX just launched artificial retinas into orbit. Would you trust space medicine? #spacex #nasa #science #space #futuretech"
+   }
+  },
+  {
+   "title": "DeepSeek V4.1 Flash 1017 (Max)",
+   "angle": "DeepSeek drops V4.1 Flash, pushing the boundaries of ultra-fast generative AI.",
+   "viral_score": 8.9,
+   "sources": [
+    {
+     "title": "DeepSeek V4.1 Flash 1017 (Max)",
+     "url": "https://artificialanalysis.ai/models/deepseek-v4-1-flash-1017",
+     "source": "Hacker News"
+    }
+   ],
+   "short": {
+    "hook_candidates": [
+     {
+      "mechanism": "contrarian",
+      "text": "DeepSeek built an ultra-fast AI, but it won't stop talking.",
+      "score": 9.5
+     },
+     {
+      "mechanism": "specific number",
+      "text": "DeepSeek's new Flash model clocks 230 tokens every single second.",
+      "score": 8.5
+     },
+     {
+      "mechanism": "curiosity gap",
+      "text": "Nobody noticed the bizarre side effect inside DeepSeek's fastest model.",
+      "score": 8.0
+     },
+     {
+      "mechanism": "stakes",
+      "text": "DeepSeek's blazing speed comes with a hidden token explosion.",
+      "score": 8.5
+     },
+     {
+      "mechanism": "self-relevance",
+      "text": "This new AI generates answers three times faster than average.",
+      "score": 7.5
+     }
+    ],
+    "hook_text": "ULTRA FAST BUT CHATTY",
+    "scenes": [
+     {
+      "text": "DeepSeek built an ultra-fast AI, but it won't stop talking.",
+      "visual": "glowing data stream",
+      "keywords": [
+       "ultra-fast",
+       "talking"
+      ]
+     },
+     {
+      "text": "Their new V4.1 Flash hits a blistering two hundred thirty tokens per second.",
+      "visual": "fast digital code",
+      "keywords": [
+       "tokens",
+       "second"
+      ]
+     },
+     {
+      "text": "That is nearly triple the benchmark median of seventy-eight, packing a massive one-million token context window.",
+      "visual": "server racks flashing",
+      "keywords": [
+       "benchmark",
+       "context"
+      ]
+     },
+     {
+      "text": "Here is the surprising detail testers discovered in the data.",
+      "visual": "computer screen graphs",
+      "keywords": [
+       "surprising",
+       "detail"
+      ]
+     },
+     {
+      "text": "Artificial Analysis found it is extremely verbose, spitting out two hundred ten million tokens during evaluation.",
+      "visual": "endless scrolling text",
+      "keywords": [
+       "verbose",
+       "evaluation"
+      ]
+     },
+     {
+      "text": "The typical model only needed one hundred forty million tokens to finish the exact same intelligence test.",
+      "visual": "stopwatch counting seconds",
+      "keywords": [
+       "typical",
+       "intelligence"
+      ]
+     },
+     {
+      "text": "Would you trade conciseness for pure velocity, or is it frustrating that...",
+      "visual": "money counter digital",
+      "keywords": [
+       "conciseness",
+       "velocity"
+      ]
+     }
+    ],
+    "question": "Would you trade conciseness for pure velocity, or is it frustrating?",
+    "youtube_title": "DeepSeek V4.1 Flash Is Fast But Has a Catch #Shorts",
+    "youtube_description": "DeepSeek V4.1 Flash hits 230 tokens per second, but benchmarks show an unexpected quirk: extreme verbosity. Here is what the numbers actually reveal.\n\nSources: Artificial Analysis",
+    "tags": [
+     "DeepSeek",
+     "DeepSeek V4.1",
+     "AI speed",
+     "LLM",
+     "Artificial Analysis",
+     "AI benchmark",
+     "Tech news",
+     "Generative AI"
+    ],
+    "instagram_caption": "DeepSeek's new V4.1 Flash outputs 230 tokens per second, but it uses 50% more words than typical models. Would you trade brevity for pure speed? #deepseek #artificialintelligence #techtrends #machinelearning #technews",
+    "tiktok_caption": "DeepSeek V4.1 Flash hits 230 tokens per second, but there is a chatty catch. #deepseek #ai #technews #speed"
+   }
+  },
+  {
+   "title": "An Xbox Series X Can Now Run PlayStation 5 Games, But There's A Catch",
+   "angle": "An Xbox Series X can now boot PlayStation 5 titles, but the technical trade-offs are massive.",
+   "viral_score": 8.7,
+   "sources": [
+    {
+     "title": "An Xbox Series X Can Now Run PlayStation 5 Games, But There's A Catch",
+     "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQMVJjYzlXZHM4VWNtdnhGd0djQ1lPaGN6RHpxM2xNVGFiUU5ucTdhTDVNTDktZ0lSUF9GZ1VUTmVMWkhEY1R1RFp1ZjJJMGJIRGhqSmNfYU5QXzI3MHhnRC1NY2FnbEgtMkExSGtSZTJxZEltZk52V1BQY2RoU2xiaDVZd2NVbFJ6b2lubmtRMWF4RWFrdUpvSVRKOXM5RVJ4Tlp1dTRR?oc=5",
+     "source": "Engadget"
+    },
+    {
+     "title": "An Xbox Series X can now run PlayStation 5 games, but there's a catch",
+     "url": "https://www.engadget.com/2286776/xbox-series-x-users-can-play-playstation-5-games-ps5x-emulator-issues/",
+     "source": "Engadget - Technology News & Expert Reviews"
+    }
+   ],
+   "short": {
+    "hook_candidates": [
+     {
+      "mechanism": "curiosity gap",
+      "text": "An Xbox Series X is now playing PlayStation 5 games.",
+      "score": 9.0
+     },
+     {
+      "mechanism": "stakes",
+      "text": "The console war just broke: an Xbox is running PS5 games.",
+      "score": 8.5
+     },
+     {
+      "mechanism": "specific number",
+      "text": "Four PlayStation 5 games were just booted on an Xbox Series X.",
+      "score": 9.0
+     },
+     {
+      "mechanism": "contrarian",
+      "text": "An Xbox Series X can now boot PlayStation 5 titles.",
+      "score": 9.5
+     },
+     {
+      "mechanism": "mistake",
+      "text": "Think consoles are locked down? An Xbox is running PS5 software.",
+      "score": 8.0
+     }
+    ],
+    "hook_text": "XBOX RUNS PS5 GAMES",
+    "scenes": [
+     {
+      "text": "An Xbox Series X can now boot PlayStation 5 titles.",
+      "visual": "gaming console room",
+      "keywords": [
+       "PlayStation 5",
+       "Xbox"
+      ]
+     },
+     {
+      "text": "Developer Devran Cosmo Uenal created PS5X, an emulator port running games like Quake Two with an Xbox controller.",
+      "visual": "game controller hands",
+      "keywords": [
+       "PS5X",
+       "emulator"
+      ]
+     },
+     {
+      "text": "Both consoles share AMD Zen 2 processors and RDNA 2 graphics, so game code can run almost directly.",
+      "visual": "computer microchip glowing",
+      "keywords": [
+       "processors",
+       "graphics"
+      ]
+     },
+     {
+      "text": "Here is the massive catch: it only works in Developer Mode, which caps memory at just five gigabytes.",
+      "visual": "computer memory ram",
+      "keywords": [
+       "Developer Mode",
+       "five gigabytes"
+      ]
+     },
+     {
+      "text": "That blocks most modern games, and graphics must be translated from Vulkan directly into DirectX.",
+      "visual": "digital code screen",
+      "keywords": [
+       "translated",
+       "DirectX"
+      ]
+     },
+     {
+      "text": "Would you unlock developer mode to test rival games? Because against all odds...",
+      "visual": "gamer playing screen",
+      "keywords": [
+       "developer mode",
+       "games"
+      ]
+     }
+    ],
+    "question": "Would you unlock developer mode to test rival games?",
+    "youtube_title": "PS5 Games Booted on Xbox Series X #Shorts",
+    "youtube_description": "A developer successfully booted PlayStation 5 games on an Xbox Series X using the PS5X emulator, but Developer Mode limits create huge trade-offs.\n\nSources:\nEngadget",
+    "tags": [
+     "xbox series x",
+     "playstation 5",
+     "ps5",
+     "ps5x",
+     "kytyps5",
+     "console emulation",
+     "gaming news",
+     "tech news"
+    ],
+    "instagram_caption": "PlayStation 5 games were just booted on an Xbox Series X, but strict memory limits keep most modern titles locked out. Would you unlock developer mode to test rival games? #gamingnews #ps5 #xbox #emulation #techtrends #xboxseriesx",
+    "tiktok_caption": "PS5 games are booting on an Xbox Series X! Would you unlock developer mode to test this? #gaming #ps5 #xbox #techtok #emulator"
+   }
+  },
+  {
+   "title": "Returning the first samples from a Martian moon: Inside the science of Japan's bold MMX mission to Mars",
+   "angle": "Japan's MMX mission is preparing to touch down on Mars' moon Phobos and return physical soil samples to Earth.",
+   "viral_score": 8.4,
+   "sources": [
+    {
+     "title": "Returning the first samples from a Martian moon: Inside the science of Japan's bold MMX mission to Mars",
+     "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQeVFqZlA0dXp5TGw4WFJMdGQ2T1BqbkYxTGtVX2c5MDU1NVJ2N21YYzgyc281MEhzMkE1MVkyQmNTdkdmSm1WZHMzVmw4dXg5UFVxM2xEWTRrWWJIS0loZTNGVi1tMVNNSWZyS0x1bllnUDVjaXQ0UnNEdGxld1p4Y3ZHdnI2SXN0cmZxREpDSl8wN1A0LWI2cmFaY3ZfVk11dTNVbHFEbUV3d0U1SFQyRk82MVdsN3hPSlMtOXVCNXBQVjdUQ3JUUg?oc=5",
+     "source": "Space"
+    },
+    {
+     "title": "Returning the first samples from a Martian moon: Inside the science of Japan's bold MMX mission to Mars",
+     "url": "https://www.space.com/space-exploration/missions/returning-samples-from-a-mars-moon-inside-the-science-of-japans-bold-mmx-mission",
+     "source": "Latest from Space.com"
+    }
+   ],
+   "short": {
+    "hook_candidates": [
+     {
+      "mechanism": "curiosity gap",
+      "text": "The first samples returning from Mars aren't coming from Mars itself.",
+      "score": 9
+     },
+     {
+      "mechanism": "stakes",
+      "text": "Japan is attempting humanity's first sample return from the Mars system.",
+      "score": 8
+     },
+     {
+      "mechanism": "specific number",
+      "text": "In 2031, a capsule will bring pieces of Phobos to Earth.",
+      "score": 8
+     },
+     {
+      "mechanism": "contrarian",
+      "text": "The first Mars orbit return mission won't be run by NASA.",
+      "score": 7
+     },
+     {
+      "mechanism": "timeliness",
+      "text": "Japan is preparing to touch down directly on Mars' moon Phobos.",
+      "score": 7
+     }
+    ],
+    "hook_text": "RETURNING FROM MARS",
+    "scenes": [
+     {
+      "text": "The first samples returning from the Mars system likely won't come from Mars itself.",
+      "visual": "mars planet orbit",
+      "keywords": [
+       "Mars",
+       "samples"
+      ]
+     },
+     {
+      "text": "Here are three things you need to know about Japan's MMX mission.",
+      "visual": "rocket launch night",
+      "keywords": [
+       "Japan's",
+       "MMX"
+      ]
+     },
+     {
+      "text": "One: it's landing on Phobos, deploying a tiny rover named IDEFIX to analyze its surface.",
+      "visual": "rover surface terrain",
+      "keywords": [
+       "Phobos",
+       "IDEFIX"
+      ]
+     },
+     {
+      "text": "But here is the crazy part. Two: it will actually collect physical dirt and fly back home.",
+      "visual": "spacecraft deep space",
+      "keywords": [
+       "dirt",
+       "fly back"
+      ]
+     },
+     {
+      "text": "Three: after flying past Deimos, the return capsule is scheduled to land in Australia in 2031.",
+      "visual": "australian desert landscape",
+      "keywords": [
+       "Deimos",
+       "2031"
+      ]
+     },
+     {
+      "text": "Would you trust robotic sample returns over human missions? Because right now...",
+      "visual": "astronaut helmet space",
+      "keywords": [
+       "robotic",
+       "missions"
+      ]
+     }
+    ],
+    "question": "Would you trust robotic sample returns over human missions?",
+    "youtube_title": "Japan Is Bringing Pieces of Mars' Moon to Earth #Shorts",
+    "youtube_description": "Japan's MMX mission aims to collect physical soil samples from Mars' moon Phobos and return them to Earth by 2031.\n\nSources: Space.com",
+    "tags": [
+     "MMX mission",
+     "Phobos",
+     "Mars sample return",
+     "Japan space",
+     "IDEFIX rover",
+     "Mars moons",
+     "space exploration",
+     "astronomy",
+     "science news"
+    ],
+    "instagram_caption": "Japan's MMX spacecraft is scheduled to bring the first-ever soil samples from Mars' moon Phobos back to Earth in 2031. Would you trust robotic sample returns over human missions? #space #mars #phobos #japan #astronomy #science",
+    "tiktok_caption": "Japan is landing on Mars' moon Phobos to bring soil back to Earth by 2031. #space #mars #science #japan #astronomy"
+   }
+  },
+  {
+   "title": "TikTok reportedly banned ads for Musk documentary before its wider US release",
+   "angle": "TikTok reportedly blocked advertising for an upcoming Elon Musk documentary right ahead of its US rollout.",
+   "viral_score": 8.2,
+   "sources": [
+    {
+     "title": "TikTok says it’s restored ‘Musk’ documentary advertising account",
+     "url": "https://techcrunch.com/2026/10/17/tiktok-permanently-bans-musk-documentary-advertising-account/",
+     "source": "TechCrunch"
+    },
+    {
+     "title": "TikTok reportedly banned ads for Musk documentary before its wider US release",
+     "url": "https://www.engadget.com/2289782/tiktok-reportedly-bans-ads-for-musk-documentary-before-its-wider-us-release/",
+     "source": "Engadget - Technology News & Expert Reviews"
+    }
+   ],
+   "short": {
+    "hook_candidates": [
+     {
+      "mechanism": "timeliness",
+      "text": "TikTok just permanently banned ads for the new Elon Musk documentary.",
+      "score": 9.5
+     },
+     {
+      "mechanism": "curiosity gap",
+      "text": "The ads for a new movie about Elon Musk keep disappearing.",
+      "score": 8.5
+     },
+     {
+      "mechanism": "self-relevance",
+      "text": "What your social feed lets you see about Elon Musk is restricted.",
+      "score": 8.0
+     },
+     {
+      "mechanism": "specific number",
+      "text": "A four-hour Elon Musk film just got blocked by TikTok ads.",
+      "score": 8.5
+     },
+     {
+      "mechanism": "contrarian",
+      "text": "Social networks do not want you seeing this Elon Musk trailer.",
+      "score": 8.0
+     }
+    ],
+    "hook_text": "BANNED FROM YOUR FEED",
+    "scenes": [
+     {
+      "text": "TikTok reportedly slapped a permanent suspension on ads for the new Elon Musk documentary.",
+      "visual": "smartphone scrolling feed",
+      "keywords": [
+       "banned ads"
+      ]
+     },
+     {
+      "text": "Distributor Bleecker Street was told the ad account violated rules against political content.",
+      "visual": "movie theater screen",
+      "keywords": [
+       "political content"
+      ]
+     },
+     {
+      "text": "Meta and YouTube initially rejected trailer ads too, while Musk's platform X outright refused to run them.",
+      "visual": "server room flashing",
+      "keywords": [
+       "refused"
+      ]
+     },
+     {
+      "text": "Here is what matters for you: mega platforms quietly determine what movies and topics reach your screen.",
+      "visual": "person looking phone",
+      "keywords": [
+       "what matters"
+      ]
+     },
+     {
+      "text": "TikTok later restored the account, calling the ban an error, just like Meta did.",
+      "visual": "digital code screen",
+      "keywords": [
+       "an error"
+      ]
+     },
+     {
+      "text": "Do you believe these ad bans were honest mistakes, or something else? Let us know, because...",
+      "visual": "hands typing keyboard",
+      "keywords": [
+       "honest mistakes"
+      ]
+     }
+    ],
+    "question": "Do you believe these ad bans were honest mistakes, or something else?",
+    "youtube_title": "TikTok Banned Ads for New Elon Musk Film #Shorts",
+    "youtube_description": "TikTok temporarily banned ads for the upcoming Alex Gibney documentary 'Musk' citing political content rules, before restoring the account.\n\nSources: TechCrunch, Engadget",
+    "tags": [
+     "Elon Musk",
+     "TikTok",
+     "Musk documentary",
+     "Alex Gibney",
+     "social media",
+     "tech news",
+     "Bleecker Street",
+     "streaming"
+    ],
+    "instagram_caption": "TikTok and Meta both initially blocked ad campaigns for the new four-hour 'Musk' documentary before reversing course. Do you believe these ad bans were honest mistakes? #elonmusk #tiktok #technews #documentary #tech",
+    "tiktok_caption": "TikTok blocked ads for the new Elon Musk documentary, then called it an error. #elonmusk #tiktok #technews #doc"
+   }
+  }
+ ],
+ "long": {
+  "title": "SpaceX's Wild Medical Cargo & PS5 On Xbox | Future Pulse",
+  "thumbnail_text": "PLAYSTATION ON XBOX?",
+  "description": "Today's top tech stories break down SpaceX launching revolutionary medical research to orbit, a modder running PS5 games on an Xbox, and DeepSeek's ultra-fast AI release.\n\n{CHAPTERS}\n\nSources: NASA, TechCrunch, Engadget, Space.com, Artificial Analysis.",
+  "tags": [
+   "technology",
+   "SpaceX",
+   "NASA",
+   "DeepSeek",
+   "gaming",
+   "Xbox Series X",
+   "PlayStation 5",
+   "Mars mission",
+   "MMX",
+   "artificial intelligence",
+   "science news",
+   "space exploration"
+  ],
+  "pinned_comment": "Would you rather see microgravity medical cures or physical soil samples returned from a Martian moon first? Let us know below!",
+  "intro": [
+   {
+    "text": "SpaceX is currently carrying lab-grown human brain tissue and artificial retinas into orbit, and number one could completely change how we treat degenerative disease.",
+    "visual": "rocket launch night",
+    "keywords": [
+     "retinas",
+     "orbit"
+    ]
+   },
+   {
+    "text": "We also have an Xbox running PlayStation code, an ultra-fast open-weight AI model, and Japan's daring mission to bring back pieces of a Martian moon.",
+    "visual": "server room lights",
+    "keywords": [
+     "PlayStation",
+     "Martian"
+    ]
+   },
+   {
+    "text": "Here are the top five major tech and science breakthroughs you need to see today.",
+    "visual": "futuristic digital interface",
+    "keywords": [
+     "breakthroughs",
+     "tech"
+    ]
+   }
+  ],
+  "segments": [
+   {
+    "story": 5,
+    "chapter": "TikTok Bans Musk Film Ads",
+    "scenes": [
+     {
+      "text": "Starting off at number five, advertising for a massive documentary about Elon Musk was abruptly shut down on social media.",
+      "visual": "smartphone scrolling app",
+      "keywords": [
+       "documentary",
+       "advertising"
+      ]
+     },
+     {
+      "text": "The four-hour film, simply titled Musk, was directed by Oscar winner Alex Gibney and is currently rolling out into wider theatrical distribution.",
+      "visual": "movie theater screen",
+      "keywords": [
+       "theatrical",
+       "film"
+      ]
+     },
+     {
+      "text": "According to The Hollywood Reporter, distributor Bleecker Street was notified that TikTok issued a permanent suspension on their advertising account, citing policies against political content.",
+      "visual": "gavel on desk",
+      "keywords": [
+       "suspension",
+       "political"
+      ]
+     },
+     {
+      "text": "This was not the only roadblock the documentary faced across major tech platforms.",
+      "visual": "office desk laptop",
+      "keywords": [
+       "roadblock",
+       "platforms"
+      ]
+     },
+     {
+      "text": "Trailers were previously rejected by Meta and YouTube before both platforms reversed course, with Meta claiming the rejection was an error.",
+      "visual": "computer monitor screen",
+      "keywords": [
+       "rejected",
+       "error"
+      ]
+     },
+     {
+      "text": "Musk's own platform, X, outright refused to carry any promotional ads for the release.",
+      "visual": "typing on keyboard",
+      "keywords": [
+       "refused",
+       "promotional"
+      ]
+     },
+     {
+      "text": "TikTok has now confirmed their suspension was also made in error and has restored the ad account.",
+      "visual": "smartphone notification screen",
+      "keywords": [
+       "restored",
+       "confirmed"
+      ]
+     },
+     {
+      "text": "While social platforms battle over content rules, reports say console modders just cracked open an entirely different software wall.",
+      "visual": "gaming controller lights",
+      "keywords": [
+       "console",
+       "software"
+      ]
+     }
+    ]
+   },
+   {
+    "story": 3,
+    "chapter": "Xbox Boots PlayStation 5 Games",
+    "scenes": [
+     {
+      "text": "Coming in at number four, an Xbox Series X has officially run PlayStation 5 game code, but there is a major catch.",
+      "visual": "video game console",
+      "keywords": [
+       "PlayStation",
+       "Series"
+      ]
+     },
+     {
+      "text": "Developer Devran Cosmo Uenal managed to boot the PS5 edition of Quake Two directly on a Series X console using an Xbox controller.",
+      "visual": "gamer playing console",
+      "keywords": [
+       "controller",
+       "boot"
+      ]
+     },
+     {
+      "text": "He accomplished this using PS5X, an Xbox port of the open-source PC emulator compatibility layer called KytyPS5.",
+      "visual": "coding screen close-up",
+      "keywords": [
+       "compatibility",
+       "emulator"
+      ]
+     },
+     {
+      "text": "Both current-gen consoles share very similar AMD hardware, featuring eight Zen 2 cores, RDNA 2 graphics, and sixteen gigabytes of GDDR6 memory.",
+      "visual": "computer processor chip",
+      "keywords": [
+       "hardware",
+       "processor"
+      ]
+     },
+     {
+      "text": "Because they use identical x86-64 processor architecture, the software acts like a translator rather than emulating an entire system from scratch.",
+      "visual": "circuit board macro",
+      "keywords": [
+       "translator",
+       "architecture"
+      ]
+     },
+     {
+      "text": "However, the project relies on Xbox Developer Mode, where Microsoft's documentation caps games at just five gigabytes of memory.",
+      "visual": "hard drive memory",
+      "keywords": [
+       "Developer",
+       "memory"
+      ]
+     },
+     {
+      "text": "That strict limitation unfortunately rules out the majority of current-gen PS5 titles under the current setup.",
+      "visual": "console power button",
+      "keywords": [
+       "limitation",
+       "modern"
+      ]
+     },
+     {
+      "text": "The developer also noted AI was involved in translating graphics to DirectX, describing it as an experimental research project.",
+      "visual": "neural network graphic",
+      "keywords": [
+       "experimental",
+       "DirectX"
+      ]
+     },
+     {
+      "text": "Speaking of AI pushing technical boundaries, our next story reveals just how fast generative models are becoming.",
+      "visual": "datacenter glowing blue",
+      "keywords": [
+       "generative",
+       "models"
+      ]
+     }
+    ]
+   },
+   {
+    "story": 2,
+    "chapter": "DeepSeek Launches V4.1 Flash",
+    "scenes": [
+     {
+      "text": "At number three, DeepSeek has rolled out a new model called V4.1 Flash 1017 Max, and the raw speed numbers are turning heads.",
+      "visual": "server rack lights",
+      "keywords": [
+       "DeepSeek",
+       "speed"
+      ]
+     },
+     {
+      "text": "According to benchmarks from Artificial Analysis, this new model clocks in at an astonishing 230 tokens per second.",
+      "visual": "fast digital stream",
+      "keywords": [
+       "tokens",
+       "benchmarks"
+      ]
+     },
+     {
+      "text": "To put that in perspective, the median speed for comparable open-weight models in its class sits at just 78 tokens per second.",
+      "visual": "speedometer glowing dashboard",
+      "keywords": [
+       "median",
+       "open-weight"
+      ]
+     },
+     {
+      "text": "The model features a massive one-million-token context window and handles both text and image inputs while generating text outputs.",
+      "visual": "abstract data flow",
+      "keywords": [
+       "context",
+       "inputs"
+      ]
+     },
+     {
+      "text": "On the Artificial Analysis Intelligence Index, it scored a 45, easily beating the category median score of 19.",
+      "visual": "analytics chart display",
+      "keywords": [
+       "Intelligence",
+       "scored"
+      ]
+     },
+     {
+      "text": "It is also reasonably priced at thirty cents per million input tokens and one dollar and twenty cents per million output tokens.",
+      "visual": "digital currency graph",
+      "keywords": [
+       "priced",
+       "tokens"
+      ]
+     },
+     {
+      "text": "The main tradeoff noted by evaluators is extreme verbosity, generating 210 million tokens during testing compared to the median of 140 million.",
+      "visual": "text scrolling screen",
+      "keywords": [
+       "verbosity",
+       "evaluators"
+      ]
+     },
+     {
+      "text": "While machine intelligence is accelerating here on Earth, our next story involves sending robotic explorers all the way to Mars.",
+      "visual": "planet mars space",
+      "keywords": [
+       "robotic",
+       "Mars"
+      ]
+     }
+    ]
+   },
+   {
+    "story": 4,
+    "chapter": "Japan's Bold Mars Moon Mission",
+    "scenes": [
+     {
+      "text": "Taking the second spot today, Japan is preparing to launch one of the most daring planetary exploration attempts in history.",
+      "visual": "satellite orbiting planet",
+      "keywords": [
+       "planetary",
+       "exploration"
+      ]
+     },
+     {
+      "text": "The Martian Moons eXploration mission, or MMX, is scheduled to launch aboard an H3 rocket from Tanegashima Space Center.",
+      "visual": "rocket on launchpad",
+      "keywords": [
+       "rocket",
+       "Tanegashima"
+      ]
+     },
+     {
+      "text": "If successful, MMX aims to become the first spacecraft to return to Earth from Mars orbit with physical samples.",
+      "visual": "deep space capsule",
+      "keywords": [
+       "samples",
+       "orbit"
+      ]
+     },
+     {
+      "text": "After a ten-month cruise to the Red Planet, the spacecraft will spend roughly three years conducting science around Mars' moon Phobos.",
+      "visual": "asteroid floating space",
+      "keywords": [
+       "Phobos",
+       "cruise"
+      ]
+     },
+     {
+      "text": "It carries a microwave-sized rover named IDEFIX, developed jointly by the French space agency CNES and Germany's DLR.",
+      "visual": "miniature robotic rover",
+      "keywords": [
+       "rover",
+       "IDEFIX"
+      ]
+     },
+     {
+      "text": "The craft will touch down directly on Phobos to scoop up surface material before making flybys of Deimos.",
+      "visual": "surface landing gear",
+      "keywords": [
+       "Deimos",
+       "surface"
+      ]
+     },
+     {
+      "text": "The sample return capsule is scheduled to leave Mars in late 2030, targeting a touchdown in Australia in 2031.",
+      "visual": "capsule entering atmosphere",
+      "keywords": [
+       "capsule",
+       "Australia"
+      ]
+     },
+     {
+      "text": "These samples could unlock secrets and shed light on events during the formation of the solar system billions of years ago.",
+      "visual": "solar system formation space",
+      "keywords": [
+       "formation",
+       "solar system"
+      ]
+     }
+    ]
+   },
+   {
+    "story": 1,
+    "chapter": "SpaceX Launches Groundbreaking Biotech",
+    "scenes": [
+     {
+      "text": "Our top story today is SpaceX's 35th commercial resupply mission, which just blasted off from Cape Canaveral on a Falcon 9 rocket.",
+      "visual": "rocket lifting off",
+      "keywords": [
+       "commercial",
+       "Falcon"
+      ]
+     },
+     {
+      "text": "The Dragon spacecraft is hauling over 6,300 pounds of vital hardware and science cargo to the International Space Station.",
+      "visual": "space capsule approaching",
+      "keywords": [
+       "cargo",
+       "Dragon"
+      ]
+     },
+     {
+      "text": "Among the most critical items aboard is the final pair of Roll-Out Solar Arrays, designed to augment the station's total electrical power.",
+      "visual": "solar panels space",
+      "keywords": [
+       "Solar",
+       "electrical"
+      ]
+     },
+     {
+      "text": "NASA notes that extra electricity is necessary not just for running research, but also for eventually executing a safe, controlled deorbit of the station.",
+      "visual": "space station orbit",
+      "keywords": [
+       "deorbit",
+       "station"
+      ]
+     },
+     {
+      "text": "Even more exciting are the cutting-edge biotechnology payloads packed inside the pressurized capsule.",
+      "visual": "microscope laboratory science",
+      "keywords": [
+       "biotechnology",
+       "capsule"
+      ]
+     },
+     {
+      "text": "Researchers are sending hardware to manufacture artificial retinas in microgravity, which could help restore vision for patients on Earth.",
+      "visual": "eye retina scan",
+      "keywords": [
+       "retinas",
+       "microgravity"
+      ]
+     },
+     {
+      "text": "Dragon is also transporting three-dimensional heart tissue models to advance large-scale drug testing on future space missions.",
+      "visual": "glowing heart hologram",
+      "keywords": [
+       "tissue",
+       "pharmaceutical"
+      ]
+     },
+     {
+      "text": "Scientists have also included living brain organoids to analyze potential treatments for neurodegenerative illnesses like Alzheimer's and Parkinson's.",
+      "visual": "brain synapse glowing",
+      "keywords": [
+       "organoids",
+       "Parkinson"
+      ]
+     },
+     {
+      "text": "Dragon will stay docked through mid-November before splashing down off the coast of California with the completed experiments.",
+      "visual": "capsule ocean splashdown",
+      "keywords": [
+       "docked",
+       "splashing"
+      ]
+     }
+    ]
+   }
+  ],
+  "outro": [
+   {
+    "text": "From manufacturing artificial retinas in space to booting PlayStation games on Xbox hardware, tech is evolving at breakneck speed.",
+    "visual": "futuristic technology city",
+    "keywords": [
+     "evolving",
+     "retinas"
+    ]
+   },
+   {
+    "text": "Which of these five breakthroughs do you think will have the biggest impact on our everyday lives?",
+    "visual": "thinking person silhouette",
+    "keywords": [
+     "breakthroughs",
+     "impact"
+    ]
+   },
+   {
+    "text": "Drop your thoughts in the comments below, hit subscribe, and we will see you tomorrow on Future Pulse.",
+    "visual": "thumbs up button",
+    "keywords": [
+     "subscribe",
+     "comments"
+    ]
+   }
+  ]
+ },
+ "jobs": [
+  {
+   "id": "short:0",
+   "attempts": 0,
+   "status": {},
+   "links": {}
+  },
+  {
+   "id": "short:1",
+   "attempts": 0,
+   "status": {},
+   "links": {}
+  },
+  {
+   "id": "long",
+   "attempts": 0,
+   "status": {},
+   "links": {}
+  },
+  {
+   "id": "short:2",
+   "attempts": 0,
+   "status": {},
+   "links": {}
+  },
+  {
+   "id": "short:3",
+   "attempts": 0,
+   "status": {},
+   "links": {}
+  },
+  {
+   "id": "short:4",
+   "attempts": 0,
+   "status": {},
+   "links": {}
+  }
+ ]
+}

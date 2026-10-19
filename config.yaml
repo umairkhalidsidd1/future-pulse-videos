@@ -2,7 +2,7 @@
 # Change things here, not in the code.
 
 channel:
-  name: "Future Pulse"            # shown in the outro and descriptions
+  name: "Reality Shockwaves"      # your YouTube channel name, used in scripts
   niche: "technology and the future: AI, Elon Musk and his companies, gadgets, space, EVs, robots, science breakthroughs"
   language: "en"
   timezone: "America/New_York"    # the "day" of the plan is counted in this timezone

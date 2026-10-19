@@ -25,7 +25,9 @@ def similar(a: set[str], b: set[str]) -> bool:
     if not a or not b:
         return False
     common = len(a & b)
-    return common >= 3 or common / len(a | b) >= 0.34
+    jaccard = common / len(a | b)
+    # Needs real overlap: "SpaceX launch" alone must not merge two different SpaceX stories.
+    return jaccard >= 0.34 or (common >= 4 and jaccard >= 0.2)
 
 
 def _get(url: str, **kw):
