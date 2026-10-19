@@ -2,1009 +2,1107 @@
  "date": "2026-10-19",
  "stories": [
   {
-   "title": "Live coverage: SpaceX to launch Starfall reentry capsule, 31 customer payloads on Bandwagon-5 rideshare mission",
-   "angle": "SpaceX is launching a new reentry capsule called Starfall packed with 31 rideshare payloads.",
-   "viral_score": 9.2,
+   "title": "Amazon to fund 12 small nuclear reactors at former Indiana coal plant",
+   "angle": "How AI's voracious energy appetite is transforming decommissioned coal plants into small nuclear hubs.",
+   "thesis": "Big tech's race for artificial intelligence compute is reviving nuclear power faster than decades of climate policy ever did.",
+   "viral_score": 8.75,
    "sources": [
     {
-     "title": "spacex launch jellyfish: NASA Science, Cargo Launch on 35th SpaceX Resupply Mission to Station",
-     "url": "https://www.nasa.gov/news-release/nasa-science-cargo-launch-on-35th-spacex-resupply-mission-to-station/",
-     "source": "Google Trends"
+     "title": "Amazon is funding a new nuclear plant in Indiana",
+     "url": "https://www.theverge.com/tech/1013735/amazon-x-energy-aep-nuclear-indiana",
+     "source": "The Verge"
     },
     {
-     "title": "Live coverage: SpaceX to launch Starfall reentry capsule, 31 customer payloads on Bandwagon-5 rideshare mission",
-     "url": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxNZzRlVTZBQTdtOENYM1BhV3V0VHZ6Q1JmR0tlaG9FenFmRmtDQWtGOW11U3pRMTY1TXRpS1NEQzVUdzduNHBlcEVwS1hIV2NsOElaTDRuSWNIRk9xU05iSENyY2s2Vk9USTFjM3RJNUpyVjJCcU1xdmdabDlna0tvVV9pR2YxWGhtdlJ6blJPX0VsMzZxMlNTd2YzTXM3X291cTNBY3BHRXlUSmNPT2dUMDQ2RXloMEhXdzNSWXRTMk5GWWpVa1JFVUJDb0JYMHR2SUs4VTh0UkY0VHlkS0RrWVJ3?oc=5",
-     "source": "Spaceflight Now"
+     "title": "Amazon to fund 12 small nuclear reactors at former Indiana coal plant",
+     "url": "https://techcrunch.com/2026/10/19/amazon-to-fund-12-small-nuclear-reactors-at-former-indiana-coal-plant/",
+     "source": "TechCrunch"
     }
    ],
    "short": {
     "hook_candidates": [
      {
-      "mechanism": "contrarian",
-      "text": "The myth is space cargo is boring. The reality fixes human vision.",
+      "mechanism": "transformation",
+      "text": "Amazon is turning an abandoned coal plant into twelve nuclear reactors.",
       "score": 9
      },
      {
-      "mechanism": "specific number",
-      "text": "SpaceX just blasted 6,300 pounds of cargo to cure human blindness.",
+      "mechanism": "contrarian",
+      "text": "Decades of climate policy stalled nuclear. Artificial intelligence is bringing it back.",
       "score": 8
      },
      {
-      "mechanism": "mistake",
-      "text": "You think SpaceX Dragon only delivers astronaut food. You are completely wrong.",
-      "score": 7
+      "mechanism": "specific number",
+      "text": "Twelve nuclear reactors are heading to a demolished coal site in Indiana.",
+      "score": 8
      },
      {
       "mechanism": "stakes",
-      "text": "The latest SpaceX launch is carrying artificial human organs into orbit.",
-      "score": 8
+      "text": "AI needs so much power that Amazon is funding its own nuclear reactors.",
+      "score": 9
      },
      {
       "mechanism": "curiosity gap",
-      "text": "SpaceX just launched medical hardware to print artificial human retinas in space.",
+      "text": "Why is Amazon building twelve small nuclear reactors at an old coal plant?",
       "score": 8
      }
     ],
-    "hook_text": "SPACE CARGO REALITY",
+    "hook_text": "COAL PLANT BECOMES NUCLEAR",
     "scenes": [
      {
-      "text": "The myth is space cargo is boring. The reality could help restore human vision.",
-      "visual": "medical lab microscope",
+      "text": "Amazon is funding twelve small nuclear reactors at the site of a defunct Indiana coal plant.",
+      "visual": "nuclear plant cooling",
+      "visual_alt": "nuclear plant",
       "keywords": [
-       "myth",
-       "vision"
-      ]
+       "coal plant",
+       "nuclear reactors"
+      ],
+      "card": null
      },
      {
-      "text": "NASA and SpaceX just launched over 6,300 pounds of supplies and hardware on a Falcon 9 rocket.",
-      "visual": "rocket launch night",
+      "text": "Through a deal with X-energy and AEP, they're funding a massive new energy hub.",
+      "visual": "power lines grid",
+      "visual_alt": "power grid",
       "keywords": [
-       "6,300 pounds",
-       "supplies"
-      ]
+       "X-energy",
+       "energy hub"
+      ],
+      "card": {
+       "template": "headline"
+      }
      },
      {
-      "text": "People assume it is just food, but inside Dragon is hardware to manufacture artificial human retinas.",
-      "visual": "eye surgery macro",
+      "text": "Here are three key facts. First, it aims to deliver up to 960 megawatts to the grid and data centers.",
+      "visual": "server room glow",
+      "visual_alt": "server room",
       "keywords": [
-       "artificial",
-       "retinas"
-      ]
+       "960 megawatts",
+       "data centers"
+      ],
+      "card": null
      },
      {
-      "text": "Microgravity allows scientists to produce implants that could restore vision for patients on Earth.",
-      "visual": "space station earth",
+      "text": "Second, it uses small modular reactors. Third, Amazon targets five gigawatts of nuclear power by 2039.",
+      "visual": "industrial reactor facility",
+      "visual_alt": "factory",
       "keywords": [
-       "microgravity",
-       "restore"
-      ]
+       "modular reactors",
+       "five gigawatts"
+      ],
+      "card": {
+       "template": "list",
+       "title": "3 things to know",
+       "items": [
+        "960 megawatts",
+        "12 modular reactors",
+        "5 gigawatts by 2039"
+       ]
+      }
      },
      {
-      "text": "Here is the part that matters even more.",
-      "visual": "human brain animation",
+      "text": "Here's why it matters. Tech giants are turning to nuclear to power AI data centers, betting small reactors can pull the nuclear industry out of its slump.",
+      "visual": "artificial intelligence chip",
+      "visual_alt": "microchip",
       "keywords": [
-       "matters"
-      ]
+       "Artificial intelligence",
+       "nuclear power"
+      ],
+      "card": null
      },
      {
-      "text": "Dragon also carried brain organoids to help find treatments for Alzheimer's and Parkinson's disease.",
-      "visual": "petri dish cells",
+      "text": "Would you want small modular reactors in your state? Tell me in the comments.",
+      "visual": "suburban electric grid",
+      "visual_alt": "suburb",
       "keywords": [
-       "organoids",
-       "treatments"
-      ]
-     },
-     {
-      "text": "Would you trust space medicine to cure human disease? Tell me in the comments.",
-      "visual": "astronaut helmet reflection",
-      "keywords": [
-       "space medicine"
-      ]
+       "modular reactors",
+       "comments"
+      ],
+      "card": null
      }
     ],
-    "question": "Would you trust space medicine to cure human disease?",
-    "youtube_title": "SpaceX Just Launched Artificial Retinas into Orbit #Shorts",
-    "youtube_description": "NASA and SpaceX launched over 6,300 pounds of research to the ISS, including hardware to manufacture artificial retinas and study brain organoids.\n\nCould zero gravity revolutionize medical breakthroughs on Earth?\n\nSources: NASA",
+    "question": "Would you want small modular reactors in your state?",
+    "youtube_title": "Amazon Nuclear Reactors at Old Coal Plant #Shorts",
+    "youtube_description": "Amazon is funding 12 small modular nuclear reactors at a former Indiana coal plant to power its AI data centers and the electric grid.\n\nSources: The Verge, TechCrunch",
     "tags": [
-     "spacex",
-     "nasa",
-     "falcon 9",
-     "space station",
-     "iss",
-     "dragon spacecraft",
-     "science breakthrough",
-     "biotechnology",
-     "space medicine",
-     "space launch"
+     "Amazon",
+     "nuclear energy",
+     "artificial intelligence",
+     "tech news",
+     "X-energy",
+     "clean energy",
+     "data centers",
+     "SMR",
+     "energy grid"
     ],
-    "instagram_caption": "Space missions aren't just sending supplies—they're manufacturing artificial retinas and studying treatments for Alzheimer's in microgravity.\n\nWould you trust space medicine to cure human disease?\n\n#spacex #nasa #falcon9 #biotech #science #spaceexploration #futuretech",
-    "tiktok_caption": "SpaceX just launched artificial retinas into orbit. Would you trust space medicine? #spacex #nasa #science #space #futuretech"
+    "instagram_caption": "Amazon is funding 12 small nuclear reactors at a former Indiana coal plant to fuel its growing AI data centers.\n\nWould you want small modular reactors in your state?\n\n#technews #nuclear #amazon #ai #cleantech #energy",
+    "tiktok_caption": "Amazon is replacing an Indiana coal plant with 12 nuclear reactors for AI power. #technews #nuclear #amazon #ai"
    }
   },
   {
-   "title": "DeepSeek V4.1 Flash 1017 (Max)",
-   "angle": "DeepSeek drops V4.1 Flash, pushing the boundaries of ultra-fast generative AI.",
-   "viral_score": 8.9,
+   "title": "Elon Musk promises to give one SpaceX share to every child in the US",
+   "angle": "What a massive public equity promise means for SpaceX's long-term corporate structure and public scrutiny.",
+   "thesis": "Elon Musk's proposal to distribute SpaceX equity to American children highlights both the private space giant's shifting valuation model and regulatory hurdles.",
+   "viral_score": 8.5,
    "sources": [
     {
-     "title": "DeepSeek V4.1 Flash 1017 (Max)",
-     "url": "https://artificialanalysis.ai/models/deepseek-v4-1-flash-1017",
+     "title": "Elon Musk promises to give one SpaceX share to every child in the US",
+     "url": "https://www.theverge.com/tech/1013667/elon-musk-space-x-shares-us-children",
+     "source": "The Verge"
+    },
+    {
+     "title": "Musk pledges to give ‘every kid in America’ one of his SpaceX shares",
+     "url": "https://techcrunch.com/2026/10/19/musk-pledges-to-give-every-kid-in-america-one-of-his-spacex-shares/",
+     "source": "TechCrunch"
+    }
+   ],
+   "short": {
+    "hook_candidates": [
+     {
+      "mechanism": "curiosity gap",
+      "text": "Elon Musk promised every American child a free SpaceX share.",
+      "score": 8
+     },
+     {
+      "mechanism": "specific number",
+      "text": "Musk plans to give kids ten billion dollars in stock.",
+      "score": 8
+     },
+     {
+      "mechanism": "contrarian",
+      "text": "Musk giving kids SpaceX stock is not just pure charity.",
+      "score": 8
+     },
+     {
+      "mechanism": "self-relevance",
+      "text": "Your child could soon own an actual share of SpaceX.",
+      "score": 9
+     },
+     {
+      "mechanism": "stakes",
+      "text": "Seventy million children might become owners of America's rocket company.",
+      "score": 8
+     }
+    ],
+    "hook_text": "FREE SPACEX STOCK FOR KIDS",
+    "scenes": [
+     {
+      "text": "Elon Musk says your child could soon own an actual share of SpaceX.",
+      "visual": "child holding piggybank",
+      "visual_alt": "child",
+      "keywords": [
+       "SpaceX",
+       "share"
+      ],
+      "card": null
+     },
+     {
+      "text": "Musk pledged to give one share to every American kid, totaling over ten billion dollars.",
+      "visual": "rocket launch pad",
+      "visual_alt": "rocket",
+      "keywords": [
+       "pledged",
+       "ten billion"
+      ],
+      "card": {
+       "template": "headline"
+      }
+     },
+     {
+      "text": "With over seventy million children in the US, the gifts appear set to distribute through government Trump Accounts.",
+      "visual": "treasury building exterior",
+      "visual_alt": "bank",
+      "keywords": [
+       "seventy million",
+       "Trump Accounts"
+      ],
+      "card": null
+     },
+     {
+      "text": "But here is the detail everyone missed.",
+      "visual": "financial charts screen",
+      "visual_alt": "computer",
+      "keywords": [
+       "detail",
+       "missed"
+      ],
+      "card": null
+     },
+     {
+      "text": "Musk holds over five billion supervoting shares, alongside around 849 million Class A common shares.",
+      "visual": "boardroom empty chairs",
+      "visual_alt": "office",
+      "keywords": [
+       "supervoting",
+       "control"
+      ],
+      "card": {
+       "template": "stat",
+       "value": 5.5,
+       "label": "Musk supervoting shares",
+       "prefix": ">",
+       "suffix": "billion",
+       "decimals": 1
+      }
+     },
+     {
+      "text": "However, reports note it remains unclear how Musk actually plans to distribute shares directly to the public.",
+      "visual": "stock market ticker",
+      "visual_alt": "trading",
+      "keywords": [
+       "scrutiny",
+       "retail"
+      ],
+      "card": null
+     },
+     {
+      "text": "Would you hold or sell that share? Let me know in the comments.",
+      "visual": "smartphone hand typing",
+      "visual_alt": "smartphone",
+      "keywords": [
+       "hold",
+       "sell"
+      ],
+      "card": null
+     }
+    ],
+    "question": "Would you hold or sell that share?",
+    "youtube_title": "Musk Pledges SpaceX Stock to Every US Child #Shorts",
+    "youtube_description": "Elon Musk says he will donate one SpaceX share to every child in the United States through Trump Accounts.\nHere is what distributing equity to 70 million kids means for SpaceX's governance.\n\nSources: The Verge, TechCrunch",
+    "tags": [
+     "spacex",
+     "elon musk",
+     "trump accounts",
+     "investing",
+     "spacex stock",
+     "space tech",
+     "business news",
+     "finance"
+    ],
+    "instagram_caption": "Elon Musk pledged to give one SpaceX share to every American child, worth over $10 billion.\n\nWould you hold or sell that share?\n\n#spacex #elonmusk #finance #tech #investing #stocks",
+    "tiktok_caption": "Musk pledged a SpaceX share to every US child. Here is what that really means. #spacex #elonmusk #tech #finance"
+   }
+  },
+  {
+   "title": "Apple Announces Oct. 28 Event for Touch-Screen MacBook Pro",
+   "angle": "Why the convergence of iPadOS and macOS finally forced Apple to reverse its long-held stance on laptop touchscreens.",
+   "thesis": "Apple's planned touchscreen MacBook Pro marks the formal surrender of a design philosophy Steve Jobs championed for over a decade.",
+   "viral_score": 8.25,
+   "sources": [
+    {
+     "title": "Apple Announces Oct. 28 Event for Touch-Screen MacBook Pro",
+     "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxOMVhlX0pGeThXaDUwaTlQWFZ2blJZYU9SUTVQRXo1Rm9JRjAxaE1hbFF3N1lmcHVjeHFLUTZZLVJUNnVvZ3d6WTBpd2s3bXpMN3ZpZmlJV05uT0tFdFdqSW1qUzFrTXdGcU04NUZfOEhacmhhdUZnVUg5X3hUZXE3T3pIMUZTZlRjMWx5OGZIT2JGZXlWa2pvQmlDaFE5VFVPd2xRX3BvdGNtVjRG?oc=5",
+     "source": "Bloomberg"
+    },
+    {
+     "title": "Apple teases MacBook Pro event next week",
+     "url": "https://www.theverge.com/tech/1013028/apple-second-october-product-launch-announcement",
+     "source": "The Verge"
+    }
+   ],
+   "short": {
+    "hook_candidates": [
+     {
+      "mechanism": "timeliness",
+      "text": "Apple just scheduled an October 28th event for touchscreen MacBooks.",
+      "score": 9.5
+     },
+     {
+      "mechanism": "contrarian",
+      "text": "Apple is abandoning a decade-old design rule on October 28th.",
+      "score": 8.5
+     },
+     {
+      "mechanism": "stakes",
+      "text": "Your next MacBook Pro will finally feature an OLED touchscreen.",
+      "score": 9.0
+     },
+     {
+      "mechanism": "specific number",
+      "text": "Apple's October 28th launch introduces lighter MacBooks with touchscreens.",
+      "score": 8.0
+     },
+     {
+      "mechanism": "self-relevance",
+      "text": "Your next laptop workflow is changing with touchscreen MacBooks.",
+      "score": 7.5
+     }
+    ],
+    "hook_text": "TOUCHSCREEN MACBOOKS COMING",
+    "scenes": [
+     {
+      "text": "Apple just scheduled an October 28th event for new Macs and a refreshed iPad Mini.",
+      "visual": "laptop typing",
+      "visual_alt": "computer",
+      "keywords": [
+       "October 28th",
+       "Macs"
+      ],
+      "card": null
+     },
+     {
+      "text": "According to Bloomberg, Apple will reveal a lighter MacBook Pro with an OLED touchscreen.",
+      "visual": "laptop screen",
+      "visual_alt": "laptop",
+      "keywords": [
+       "Bloomberg",
+       "OLED"
+      ],
+      "card": {
+       "template": "headline"
+      }
+     },
+     {
+      "text": "The new MacBook Pro is also expected to feature an iPhone-like Dynamic Island.",
+      "visual": "office desk",
+      "visual_alt": "office",
+      "keywords": [
+       "MacBook Pro",
+       "Dynamic Island"
+      ],
+      "card": null
+     },
+     {
+      "text": "Apple SVP Marketing Greg Joswiak stated on X, \"Can’t wait to pro and tell next week.\"",
+      "visual": "person working",
+      "visual_alt": "work",
+      "keywords": [
+       "Greg Joswiak",
+       "X"
+      ],
+      "card": {
+       "template": "quote",
+       "text": "Can’t wait to pro and tell next week",
+       "who": "Greg Joswiak",
+       "where": "X"
+      }
+     },
+     {
+      "text": "This follows Apple's earlier smart home-focused event on October 13th.",
+      "visual": "tablet finger",
+      "visual_alt": "tablet",
+      "keywords": [
+       "smart home",
+       "October 13th"
+      ],
+      "card": null
+     },
+     {
+      "text": "According to Bloomberg, Apple is also introducing a new iMac with the M6 chip and an updated OLED iPad Mini.",
+      "visual": "desktop computer",
+      "visual_alt": "computer",
+      "keywords": [
+       "iMac",
+       "iPad Mini"
+      ],
+      "card": {
+       "template": "list",
+       "title": "Expected reveals",
+       "items": [
+        "Touch MacBook Pro",
+        "M6 powered iMac",
+        "OLED iPad Mini"
+       ]
+      }
+     },
+     {
+      "text": "Would you use a touch screen on a laptop? Tell me in the comments.",
+      "visual": "person laptop",
+      "visual_alt": "laptop",
+      "keywords": [
+       "touch screen",
+       "laptop"
+      ],
+      "card": null
+     }
+    ],
+    "question": "Would you use a touch screen on a laptop?",
+    "youtube_title": "Touchscreen MacBook Pro Revealed at Apple Event #Shorts",
+    "youtube_description": "Apple has scheduled an October 28th event to launch touchscreen MacBooks and new M6 hardware.\n\nSources:\nThe Verge",
+    "tags": [
+     "Apple",
+     "MacBook Pro",
+     "Touchscreen MacBook",
+     "M6 Mac",
+     "iPad Mini",
+     "Apple Event",
+     "Tech News",
+     "macOS"
+    ],
+    "instagram_caption": "Apple is officially bringing touchscreens to the MacBook Pro at its October 28 event. Would you use a touch screen on a laptop?",
+    "tiktok_caption": "Touchscreen MacBook Pros are officially coming October 28. Would you use one? #apple #macbook #tech #technology"
+   }
+  },
+  {
+   "title": "The US orders every civilian agency to rip out DeepSeek, even tools built on it",
+   "angle": "How governments are beginning to treat foreign AI model architectures like critical telecommunications hardware.",
+   "thesis": "The federal directive banning DeepSeek reveals that national security boundaries in AI software are now extending down to downstream dependencies and open-weight models.",
+   "viral_score": 8.0,
+   "sources": [
+    {
+     "title": "The US orders every civilian agency to rip out DeepSeek, even tools built on it",
+     "url": "https://madrobot.blog/2026/10/19/us-bans-deepseek-federal-agencies-dhs-order-remove-third-party/",
      "source": "Hacker News"
     }
    ],
    "short": {
     "hook_candidates": [
      {
-      "mechanism": "contrarian",
-      "text": "DeepSeek built an ultra-fast AI, but it won't stop talking.",
-      "score": 9.5
-     },
-     {
-      "mechanism": "specific number",
-      "text": "DeepSeek's new Flash model clocks 230 tokens every single second.",
-      "score": 8.5
-     },
-     {
-      "mechanism": "curiosity gap",
-      "text": "Nobody noticed the bizarre side effect inside DeepSeek's fastest model.",
-      "score": 8.0
-     },
-     {
-      "mechanism": "stakes",
-      "text": "DeepSeek's blazing speed comes with a hidden token explosion.",
-      "score": 8.5
-     },
-     {
-      "mechanism": "self-relevance",
-      "text": "This new AI generates answers three times faster than average.",
-      "score": 7.5
-     }
-    ],
-    "hook_text": "ULTRA FAST BUT CHATTY",
-    "scenes": [
-     {
-      "text": "DeepSeek built an ultra-fast AI, but it won't stop talking.",
-      "visual": "glowing data stream",
-      "keywords": [
-       "ultra-fast",
-       "talking"
-      ]
-     },
-     {
-      "text": "Their new V4.1 Flash hits a blistering two hundred thirty tokens per second.",
-      "visual": "fast digital code",
-      "keywords": [
-       "tokens",
-       "second"
-      ]
-     },
-     {
-      "text": "That is nearly triple the benchmark median of seventy-eight, packing a massive one-million token context window.",
-      "visual": "server racks flashing",
-      "keywords": [
-       "benchmark",
-       "context"
-      ]
-     },
-     {
-      "text": "Here is the surprising detail testers discovered in the data.",
-      "visual": "computer screen graphs",
-      "keywords": [
-       "surprising",
-       "detail"
-      ]
-     },
-     {
-      "text": "Artificial Analysis found it is extremely verbose, spitting out two hundred ten million tokens during evaluation.",
-      "visual": "endless scrolling text",
-      "keywords": [
-       "verbose",
-       "evaluation"
-      ]
-     },
-     {
-      "text": "The typical model only needed one hundred forty million tokens to finish the exact same intelligence test.",
-      "visual": "stopwatch counting seconds",
-      "keywords": [
-       "typical",
-       "intelligence"
-      ]
-     },
-     {
-      "text": "Would you trade conciseness for pure velocity, or is it frustrating? Tell me in the comments.",
-      "visual": "money counter digital",
-      "keywords": [
-       "conciseness",
-       "velocity"
-      ]
-     }
-    ],
-    "question": "Would you trade conciseness for pure velocity, or is it frustrating?",
-    "youtube_title": "DeepSeek V4.1 Flash Is Fast But Has a Catch #Shorts",
-    "youtube_description": "DeepSeek V4.1 Flash hits 230 tokens per second, but benchmarks show an unexpected quirk: extreme verbosity. Here is what the numbers actually reveal.\n\nSources: Artificial Analysis",
-    "tags": [
-     "DeepSeek",
-     "DeepSeek V4.1",
-     "AI speed",
-     "LLM",
-     "Artificial Analysis",
-     "AI benchmark",
-     "Tech news",
-     "Generative AI"
-    ],
-    "instagram_caption": "DeepSeek's new V4.1 Flash outputs 230 tokens per second, but it uses 50% more words than typical models. Would you trade brevity for pure speed? #deepseek #artificialintelligence #techtrends #machinelearning #technews",
-    "tiktok_caption": "DeepSeek V4.1 Flash hits 230 tokens per second, but there is a chatty catch. #deepseek #ai #technews #speed"
-   }
-  },
-  {
-   "title": "An Xbox Series X Can Now Run PlayStation 5 Games, But There's A Catch",
-   "angle": "An Xbox Series X can now boot PlayStation 5 titles, but the technical trade-offs are massive.",
-   "viral_score": 8.7,
-   "sources": [
-    {
-     "title": "An Xbox Series X Can Now Run PlayStation 5 Games, But There's A Catch",
-     "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQMVJjYzlXZHM4VWNtdnhGd0djQ1lPaGN6RHpxM2xNVGFiUU5ucTdhTDVNTDktZ0lSUF9GZ1VUTmVMWkhEY1R1RFp1ZjJJMGJIRGhqSmNfYU5QXzI3MHhnRC1NY2FnbEgtMkExSGtSZTJxZEltZk52V1BQY2RoU2xiaDVZd2NVbFJ6b2lubmtRMWF4RWFrdUpvSVRKOXM5RVJ4Tlp1dTRR?oc=5",
-     "source": "Engadget"
-    },
-    {
-     "title": "An Xbox Series X can now run PlayStation 5 games, but there's a catch",
-     "url": "https://www.engadget.com/2286776/xbox-series-x-users-can-play-playstation-5-games-ps5x-emulator-issues/",
-     "source": "Engadget - Technology News & Expert Reviews"
-    }
-   ],
-   "short": {
-    "hook_candidates": [
-     {
-      "mechanism": "curiosity gap",
-      "text": "An Xbox Series X is now playing PlayStation 5 games.",
-      "score": 9.0
-     },
-     {
-      "mechanism": "stakes",
-      "text": "The console war just broke: an Xbox is running PS5 games.",
-      "score": 8.5
-     },
-     {
-      "mechanism": "specific number",
-      "text": "Four PlayStation 5 games were just booted on an Xbox Series X.",
-      "score": 9.0
-     },
-     {
-      "mechanism": "contrarian",
-      "text": "An Xbox Series X can now boot PlayStation 5 titles.",
-      "score": 9.5
-     },
-     {
-      "mechanism": "mistake",
-      "text": "Think consoles are locked down? An Xbox is running PS5 software.",
-      "score": 8.0
-     }
-    ],
-    "hook_text": "XBOX RUNS PS5 GAMES",
-    "scenes": [
-     {
-      "text": "An Xbox Series X can now boot PlayStation 5 titles.",
-      "visual": "gaming console room",
-      "keywords": [
-       "PlayStation 5",
-       "Xbox"
-      ]
-     },
-     {
-      "text": "Developer Devran Cosmo Uenal created PS5X, an emulator port running games like Quake Two with an Xbox controller.",
-      "visual": "game controller hands",
-      "keywords": [
-       "PS5X",
-       "emulator"
-      ]
-     },
-     {
-      "text": "Both consoles share AMD Zen 2 processors and RDNA 2 graphics, so game code can run almost directly.",
-      "visual": "computer microchip glowing",
-      "keywords": [
-       "processors",
-       "graphics"
-      ]
-     },
-     {
-      "text": "Here is the massive catch: it only works in Developer Mode, which caps memory at just five gigabytes.",
-      "visual": "computer memory ram",
-      "keywords": [
-       "Developer Mode",
-       "five gigabytes"
-      ]
-     },
-     {
-      "text": "That blocks most modern games, and graphics must be translated from Vulkan directly into DirectX.",
-      "visual": "digital code screen",
-      "keywords": [
-       "translated",
-       "DirectX"
-      ]
-     },
-     {
-      "text": "Would you unlock developer mode to test rival games? Tell me in the comments.",
-      "visual": "gamer playing screen",
-      "keywords": [
-       "developer mode",
-       "games"
-      ]
-     }
-    ],
-    "question": "Would you unlock developer mode to test rival games?",
-    "youtube_title": "PS5 Games Booted on Xbox Series X #Shorts",
-    "youtube_description": "A developer successfully booted PlayStation 5 games on an Xbox Series X using the PS5X emulator, but Developer Mode limits create huge trade-offs.\n\nSources:\nEngadget",
-    "tags": [
-     "xbox series x",
-     "playstation 5",
-     "ps5",
-     "ps5x",
-     "kytyps5",
-     "console emulation",
-     "gaming news",
-     "tech news"
-    ],
-    "instagram_caption": "PlayStation 5 games were just booted on an Xbox Series X, but strict memory limits keep most modern titles locked out. Would you unlock developer mode to test rival games? #gamingnews #ps5 #xbox #emulation #techtrends #xboxseriesx",
-    "tiktok_caption": "PS5 games are booting on an Xbox Series X! Would you unlock developer mode to test this? #gaming #ps5 #xbox #techtok #emulator"
-   }
-  },
-  {
-   "title": "Returning the first samples from a Martian moon: Inside the science of Japan's bold MMX mission to Mars",
-   "angle": "Japan's MMX mission is preparing to touch down on Mars' moon Phobos and return physical soil samples to Earth.",
-   "viral_score": 8.4,
-   "sources": [
-    {
-     "title": "Returning the first samples from a Martian moon: Inside the science of Japan's bold MMX mission to Mars",
-     "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQeVFqZlA0dXp5TGw4WFJMdGQ2T1BqbkYxTGtVX2c5MDU1NVJ2N21YYzgyc281MEhzMkE1MVkyQmNTdkdmSm1WZHMzVmw4dXg5UFVxM2xEWTRrWWJIS0loZTNGVi1tMVNNSWZyS0x1bllnUDVjaXQ0UnNEdGxld1p4Y3ZHdnI2SXN0cmZxREpDSl8wN1A0LWI2cmFaY3ZfVk11dTNVbHFEbUV3d0U1SFQyRk82MVdsN3hPSlMtOXVCNXBQVjdUQ3JUUg?oc=5",
-     "source": "Space"
-    },
-    {
-     "title": "Returning the first samples from a Martian moon: Inside the science of Japan's bold MMX mission to Mars",
-     "url": "https://www.space.com/space-exploration/missions/returning-samples-from-a-mars-moon-inside-the-science-of-japans-bold-mmx-mission",
-     "source": "Latest from Space.com"
-    }
-   ],
-   "short": {
-    "hook_candidates": [
-     {
-      "mechanism": "curiosity gap",
-      "text": "The first samples returning from Mars aren't coming from Mars itself.",
+      "mechanism": "timeliness",
+      "text": "The US just ordered civilian agencies to rip out DeepSeek.",
       "score": 9
      },
      {
       "mechanism": "stakes",
-      "text": "Japan is attempting humanity's first sample return from the Mars system.",
+      "text": "Federal agencies must ban any tool built on DeepSeek AI.",
+      "score": 9
+     },
+     {
+      "mechanism": "contrarian",
+      "text": "It is not just apps being banned, but entire AI architectures.",
+      "score": 8
+     },
+     {
+      "mechanism": "curiosity gap",
+      "text": "Why did Homeland Security just target a Chinese AI model?",
       "score": 8
      },
      {
       "mechanism": "specific number",
-      "text": "In 2031, a capsule will bring pieces of Phobos to Earth.",
-      "score": 8
-     },
-     {
-      "mechanism": "contrarian",
-      "text": "The first Mars orbit return mission won't be run by NASA.",
-      "score": 7
-     },
-     {
-      "mechanism": "timeliness",
-      "text": "Japan is preparing to touch down directly on Mars' moon Phobos.",
+      "text": "Order 2026-01 requires federal agencies to strip DeepSeek immediately.",
       "score": 7
      }
     ],
-    "hook_text": "RETURNING FROM MARS",
+    "hook_text": "US BANS DEEPSEEK",
     "scenes": [
      {
-      "text": "The first samples returning from the Mars system likely won't come from Mars itself.",
-      "visual": "mars planet orbit",
+      "text": "The US just ordered civilian agencies to rip out DeepSeek.",
+      "visual": "server room",
+      "visual_alt": "computer",
       "keywords": [
-       "Mars",
-       "samples"
-      ]
+       "civilian agencies",
+       "DeepSeek"
+      ],
+      "card": null
      },
      {
-      "text": "Here are three things you need to know about Japan's MMX mission.",
-      "visual": "rocket launch night",
+      "text": "The order covers any third party product built on its models.",
+      "visual": "code screen",
+      "visual_alt": "software",
       "keywords": [
-       "Japan's",
-       "MMX"
-      ]
+       "third party",
+       "product"
+      ],
+      "card": {
+       "template": "headline"
+      }
      },
      {
-      "text": "One: it's landing on Phobos, deploying a tiny rover named IDEFIX to analyze its surface.",
-      "visual": "rover surface terrain",
+      "text": "Homeland Security signed the directive under a 2018 supply chain law.",
+      "visual": "government building",
+      "visual_alt": "building",
       "keywords": [
-       "Phobos",
-       "IDEFIX"
-      ]
+       "Homeland Security",
+       "supply chain"
+      ],
+      "card": null
      },
      {
-      "text": "But here is the crazy part. Two: it will actually collect physical dirt and fly back home.",
-      "visual": "spacecraft deep space",
+      "text": "Officials cite risks like data tracking and server infrastructure located in China.",
+      "visual": "digital data",
+      "visual_alt": "network",
       "keywords": [
-       "dirt",
-       "fly back"
-      ]
+       "data tracking",
+       "infrastructure"
+      ],
+      "card": null
      },
      {
-      "text": "Three: after flying past Deimos, the return capsule is scheduled to land in Australia in 2031.",
-      "visual": "australian desert landscape",
+      "text": "But here is the part that matters for the future of software.",
+      "visual": "engineer working",
+      "visual_alt": "developer",
       "keywords": [
-       "Deimos",
-       "2031"
-      ]
+       "software",
+       "future"
+      ],
+      "card": null
      },
      {
-      "text": "Would you trust robotic sample returns over human missions? Tell me in the comments.",
-      "visual": "astronaut helmet space",
+      "text": "Governments are now treating open weight models like critical telecommunications hardware.",
+      "visual": "telecom tower",
+      "visual_alt": "antenna",
       "keywords": [
-       "robotic",
-       "missions"
-      ]
+       "open weight",
+       "hardware"
+      ],
+      "card": null
+     },
+     {
+      "text": "Do you think open source AI models can ever be safely regulated?",
+      "visual": "futuristic city",
+      "visual_alt": "city",
+      "keywords": [
+       "open source",
+       "regulated"
+      ],
+      "card": null
+     },
+     {
+      "text": "Tell me in the comments.",
+      "visual": "laptop keyboard",
+      "visual_alt": "keyboard",
+      "keywords": [
+       "comments"
+      ],
+      "card": null
      }
     ],
-    "question": "Would you trust robotic sample returns over human missions?",
-    "youtube_title": "Japan Is Bringing Pieces of Mars' Moon to Earth #Shorts",
-    "youtube_description": "Japan's MMX mission aims to collect physical soil samples from Mars' moon Phobos and return them to Earth by 2031.\n\nSources: Space.com",
+    "question": "Do you think open source AI models can ever be safely regulated?",
+    "youtube_title": "Why the US Government Just Banned DeepSeek #Shorts",
+    "youtube_description": "The US government ordered federal civilian agencies to remove DeepSeek and any tools built on it. We explore what this means for open-weight AI.\n\nSources:\nMad Robot, Federal Register",
     "tags": [
-     "MMX mission",
-     "Phobos",
-     "Mars sample return",
-     "Japan space",
-     "IDEFIX rover",
-     "Mars moons",
-     "space exploration",
-     "astronomy",
-     "science news"
+     "DeepSeek",
+     "Artificial Intelligence",
+     "US Government",
+     "Homeland Security",
+     "AI Regulation",
+     "Tech News",
+     "Cybersecurity",
+     "Open Source AI"
     ],
-    "instagram_caption": "Japan's MMX spacecraft is scheduled to bring the first-ever soil samples from Mars' moon Phobos back to Earth in 2031. Would you trust robotic sample returns over human missions? #space #mars #phobos #japan #astronomy #science",
-    "tiktok_caption": "Japan is landing on Mars' moon Phobos to bring soil back to Earth by 2031. #space #mars #science #japan #astronomy"
+    "instagram_caption": "The US federal government is now treating foreign AI model architectures like critical telecommunications hardware. \n\nDo you think open source AI models can ever be safely regulated? \n\n#DeepSeek #AI #TechNews #Cybersecurity #Government #ArtificialIntelligence",
+    "tiktok_caption": "Why the US government just ordered civilian agencies to rip out DeepSeek and any tools built on it. Do you think open-weight AI can be regulated? #DeepSeek #AI #TechNews #Cybersecurity"
    }
   },
   {
-   "title": "TikTok reportedly banned ads for Musk documentary before its wider US release",
-   "angle": "TikTok reportedly blocked advertising for an upcoming Elon Musk documentary right ahead of its US rollout.",
-   "viral_score": 8.2,
+   "title": "AI Proved the Quasi-Riemann Hypothesis. What Happens Now?",
+   "angle": "The shift in AI from generating human-like text to solving foundational theoretical problems that stumped mathematicians for decades.",
+   "thesis": "Using artificial intelligence to advance the Quasi-Riemann Hypothesis marks a turning point from pattern-matching bots to automated mathematical reasoning.",
+   "viral_score": 7.5,
    "sources": [
     {
-     "title": "TikTok says it’s restored ‘Musk’ documentary advertising account",
-     "url": "https://techcrunch.com/2026/10/17/tiktok-permanently-bans-musk-documentary-advertising-account/",
-     "source": "TechCrunch"
-    },
-    {
-     "title": "TikTok reportedly banned ads for Musk documentary before its wider US release",
-     "url": "https://www.engadget.com/2289782/tiktok-reportedly-bans-ads-for-musk-documentary-before-its-wider-us-release/",
-     "source": "Engadget - Technology News & Expert Reviews"
+     "title": "AI Proved the Quasi-Riemann Hypothesis. What Happens Now?",
+     "url": "https://www.quantamagazine.org/ai-proved-the-quasi-riemann-hypothesis-what-happens-now-20261019/",
+     "source": "Hacker News"
     }
    ],
    "short": {
     "hook_candidates": [
      {
-      "mechanism": "timeliness",
-      "text": "TikTok just permanently banned ads for the new Elon Musk documentary.",
-      "score": 9.5
-     },
-     {
       "mechanism": "curiosity gap",
-      "text": "The ads for a new movie about Elon Musk keep disappearing.",
-      "score": 8.5
-     },
-     {
-      "mechanism": "self-relevance",
-      "text": "What your social feed lets you see about Elon Musk is restricted.",
-      "score": 8.0
+      "text": "Mathematicians couldn't solve this for 160 years. Then AI stepped in.",
+      "score": 9
      },
      {
       "mechanism": "specific number",
-      "text": "A four-hour Elon Musk film just got blocked by TikTok ads.",
-      "score": 8.5
+      "text": "OpenAI announced 377 results, but one settled a 160-year-old math mystery.",
+      "score": 8
+     },
+     {
+      "mechanism": "transformation",
+      "text": "AI just shifted from writing text to solving deep mathematical proofs.",
+      "score": 8
      },
      {
       "mechanism": "contrarian",
-      "text": "Social networks do not want you seeing this Elon Musk trailer.",
-      "score": 8.0
+      "text": "AI didn't invent new math to solve this. It connected old ideas.",
+      "score": 7
+     },
+     {
+      "mechanism": "stakes",
+      "text": "A 160-year-old math question just fell to an artificial intelligence proof.",
+      "score": 8
      }
     ],
-    "hook_text": "BANNED FROM YOUR FEED",
+    "hook_text": "160-YEAR MATH MYSTERY SOLVED",
     "scenes": [
      {
-      "text": "TikTok reportedly slapped a permanent suspension on ads for the new Elon Musk documentary.",
-      "visual": "smartphone scrolling feed",
+      "text": "The Riemann hypothesis has been open for over 160 years. Then AI stepped in.",
+      "visual": "blackboard equations",
+      "visual_alt": "mathematics",
       "keywords": [
-       "banned ads"
-      ]
+       "solve",
+       "AI"
+      ],
+      "card": null
      },
      {
-      "text": "Distributor Bleecker Street was told the ad account violated rules against political content.",
-      "visual": "movie theater screen",
+      "text": "OpenAI announced a result claiming to settle the quasi-Riemann hypothesis, a question tied to prime numbers.",
+      "visual": "server room",
+      "visual_alt": "computer",
       "keywords": [
-       "political content"
-      ]
+       "OpenAI",
+       "hypothesis"
+      ],
+      "card": null
      },
      {
-      "text": "Meta and YouTube initially rejected trailer ads too, while Musk's platform X outright refused to run them.",
-      "visual": "server room flashing",
+      "text": "Jared Duker Lichtman of Stanford University noted it is the most significant AI-for-math achievement so far, by quite a margin.",
+      "visual": "university campus",
+      "visual_alt": "library",
       "keywords": [
-       "refused"
-      ]
+       "significant",
+       "achievement"
+      ],
+      "card": null
      },
      {
-      "text": "Here is what matters for you: mega platforms quietly determine what movies and topics reach your screen.",
-      "visual": "person looking phone",
+      "text": "Here's what matters: the AI didn't invent new math, but synthesized well-known ideas humans missed.",
+      "visual": "digital network",
+      "visual_alt": "technology",
       "keywords": [
-       "what matters"
-      ]
+       "synthesized",
+       "ideas"
+      ],
+      "card": {
+       "template": "quote",
+       "text": "The proof is a surprising synthesis of well-known ideas",
+       "who": "Alexander Dunn",
+       "where": "Georgia Institute of Technology"
+      }
      },
      {
-      "text": "TikTok later restored the account, calling the ban an error, just like Meta did.",
-      "visual": "digital code screen",
+      "text": "AI is advancing beyond simple text generation toward automated theoretical discovery across science.",
+      "visual": "scientist laboratory",
+      "visual_alt": "laboratory",
       "keywords": [
-       "an error"
-      ]
+       "automated",
+       "discovery"
+      ],
+      "card": null
      },
      {
-      "text": "Do you believe these ad bans were honest mistakes, or something else? Tell me in the comments.",
-      "visual": "hands typing keyboard",
+      "text": "Will AI soon solve the remaining Millennium Prize Problems? Tell me in the comments.",
+      "visual": "abstract mathematics",
+      "visual_alt": "abstract",
       "keywords": [
-       "honest mistakes"
-      ]
+       "solve",
+       "comments"
+      ],
+      "card": null
      }
     ],
-    "question": "Do you believe these ad bans were honest mistakes, or something else?",
-    "youtube_title": "TikTok Banned Ads for New Elon Musk Film #Shorts",
-    "youtube_description": "TikTok temporarily banned ads for the upcoming Alex Gibney documentary 'Musk' citing political content rules, before restoring the account.\n\nSources: TechCrunch, Engadget",
+    "question": "Will AI soon solve the remaining Millennium Prize Problems?",
+    "youtube_title": "AI Proves the Quasi-Riemann Hypothesis #Shorts",
+    "youtube_description": "OpenAI has presented a proof settling the quasi-Riemann hypothesis, marking a massive leap from text generation to automated mathematical discovery.\n\nSources: Quanta Magazine",
     "tags": [
-     "Elon Musk",
-     "TikTok",
-     "Musk documentary",
-     "Alex Gibney",
-     "social media",
-     "tech news",
-     "Bleecker Street",
-     "streaming"
+     "AI",
+     "OpenAI",
+     "Riemann hypothesis",
+     "mathematics",
+     "science breakthrough",
+     "future tech",
+     "algorithms",
+     "math proofs"
     ],
-    "instagram_caption": "TikTok and Meta both initially blocked ad campaigns for the new four-hour 'Musk' documentary before reversing course. Do you believe these ad bans were honest mistakes? #elonmusk #tiktok #technews #documentary #tech",
-    "tiktok_caption": "TikTok blocked ads for the new Elon Musk documentary, then called it an error. #elonmusk #tiktok #technews #doc"
+    "instagram_caption": "AI just proved a major 160-year-old mathematical hypothesis by synthesizing known concepts. Will automated reasoning solve the rest of science's hardest problems?",
+    "tiktok_caption": "AI just proved the quasi-Riemann hypothesis. Is automated reasoning the future of science? #ai #tech #math #science"
    }
   }
  ],
  "long": {
-  "title": "SpaceX's Wild Medical Cargo & PS5 On Xbox | Reality Shockwaves",
-  "thumbnail_text": "PLAYSTATION ON XBOX?",
-  "description": "Today's top tech stories break down SpaceX launching revolutionary medical research to orbit, a modder running PS5 games on an Xbox, and DeepSeek's ultra-fast AI release.\n\n{CHAPTERS}\n\nSources: NASA, TechCrunch, Engadget, Space.com, Artificial Analysis.",
+  "title": "Amazon's Nuclear Bet and 4 More Tech Stories",
+  "thumbnail_text": "AMAZON NUCLEAR BET",
+  "description": "AI's power demands are reviving dead coal plants with nuclear energy, federal agencies are banning specific AI models, and OpenAI's AI just proved a major math hypothesis.\n\n{CHAPTERS}\n\nSources: The Verge, TechCrunch, Hacker News",
   "tags": [
-   "technology",
+   "Amazon",
+   "nuclear energy",
    "SpaceX",
-   "NASA",
+   "Apple",
    "DeepSeek",
-   "gaming",
-   "Xbox Series X",
-   "PlayStation 5",
-   "Mars mission",
-   "MMX",
-   "artificial intelligence",
-   "science news",
-   "space exploration"
+   "AI",
+   "math",
+   "technology news",
+   "data centers",
+   "Elon Musk",
+   "MacBook Pro"
   ],
-  "pinned_comment": "Would you rather see microgravity medical cures or physical soil samples returned from a Martian moon first? Let us know below!",
+  "pinned_comment": "Which of these five developments will have the biggest impact over the next five years?",
   "intro": [
    {
-    "text": "SpaceX is currently carrying lab-grown human brain tissue and artificial retinas into orbit, and number one could completely change how we treat degenerative disease.",
-    "visual": "rocket launch night",
+    "text": "Artificial intelligence is hungry for power, and tech companies are reviving dead coal plants with nuclear reactors.",
+    "visual": "server room",
+    "visual_alt": "datacenter",
     "keywords": [
-     "retinas",
-     "orbit"
-    ]
+     "artificial intelligence",
+     "nuclear reactors"
+    ],
+    "card": null
    },
    {
-    "text": "We also have an Xbox running PlayStation code, an ultra-fast open-weight AI model, and Japan's daring mission to bring back pieces of a Martian moon.",
-    "visual": "server room lights",
+    "text": "That is just one of five major stories shaping the technology landscape right now.",
+    "visual": "technology abstract",
+    "visual_alt": "technology",
     "keywords": [
-     "PlayStation",
-     "Martian"
-    ]
+     "five major stories"
+    ],
+    "card": null
    },
    {
-    "text": "Here are the top five major tech and science breakthroughs you need to see today.",
-    "visual": "futuristic digital interface",
+    "text": "From a massive equity promise by Elon Musk to a surprise ban on federal AI systems, let us count down the top stories you need to know.",
+    "visual": "digital globe",
+    "visual_alt": "earth",
     "keywords": [
-     "breakthroughs",
-     "tech"
-    ]
+     "Elon Musk",
+     "AI systems"
+    ],
+    "card": null
    }
   ],
   "segments": [
    {
     "story": 5,
-    "chapter": "TikTok Bans Musk Film Ads",
+    "chapter": "AI Proves Math Hypothesis",
     "scenes": [
      {
-      "text": "Starting off at number five, advertising for a massive documentary about Elon Musk was abruptly shut down on social media.",
-      "visual": "smartphone scrolling app",
+      "text": "Artificial intelligence has just crossed a massive threshold by tackling a 160-year-old math problem.",
+      "visual": "computer screen",
+      "visual_alt": "screen",
       "keywords": [
-       "documentary",
-       "advertising"
-      ]
+       "artificial intelligence",
+       "math problem"
+      ],
+      "card": null
      },
      {
-      "text": "The four-hour film, simply titled Musk, was directed by Oscar winner Alex Gibney and is currently rolling out into wider theatrical distribution.",
-      "visual": "movie theater screen",
+      "text": "OpenAI announced that its systems claimed to settle a weaker version of the famous Riemann hypothesis.",
+      "visual": "mathematics equations",
+      "visual_alt": "math",
       "keywords": [
-       "theatrical",
-       "film"
-      ]
+       "Riemann hypothesis"
+      ],
+      "card": null
      },
      {
-      "text": "According to The Hollywood Reporter, distributor Bleecker Street was notified that TikTok issued a permanent suspension on their advertising account, citing policies against political content.",
-      "visual": "gavel on desk",
+      "text": "Jared Duker Lichtman of Stanford University called it the most significant AI-for-math achievement so far by quite a margin.",
+      "visual": "scientific laboratory",
+      "visual_alt": "lab",
       "keywords": [
-       "suspension",
-       "political"
-      ]
+       "significant AI-for-math achievement"
+      ],
+      "card": null
      },
      {
-      "text": "This was not the only roadblock the documentary faced across major tech platforms.",
-      "visual": "office desk laptop",
+      "text": "Resolving the core hypothesis would help researchers better understand the nature of prime numbers.",
+      "visual": "data analytics",
+      "visual_alt": "data",
       "keywords": [
-       "roadblock",
-       "platforms"
-      ]
+       "prime numbers"
+      ],
+      "card": null
      },
      {
-      "text": "Trailers were previously rejected by Meta and YouTube before both platforms reversed course, with Meta claiming the rejection was an error.",
-      "visual": "computer monitor screen",
+      "text": "Surprisingly, the proof did not need new concepts, but instead unearthed hidden connections between old ones.",
+      "visual": "neural network",
+      "visual_alt": "network",
       "keywords": [
-       "rejected",
-       "error"
-      ]
+       "hidden connections"
+      ],
+      "card": null
      },
      {
-      "text": "Musk's own platform, X, outright refused to carry any promotional ads for the release.",
-      "visual": "typing on keyboard",
+      "text": "According to Maksym Radziwiłł of New York University, most consequences of the main hypothesis already follow from this result.",
+      "visual": "server racks",
+      "visual_alt": "servers",
       "keywords": [
-       "refused",
-       "promotional"
-      ]
+       "theoretical problems"
+      ],
+      "card": null
      },
      {
-      "text": "TikTok has now confirmed their suspension was also made in error and has restored the ad account.",
-      "visual": "smartphone notification screen",
+      "text": "Number theorists are now working to understand the proof and figure out what this milestone means for mathematics.",
+      "visual": "government building",
+      "visual_alt": "building",
       "keywords": [
-       "restored",
-       "confirmed"
-      ]
-     },
-     {
-      "text": "While social platforms battle over content rules, reports say console modders just cracked open an entirely different software wall.",
-      "visual": "gaming controller lights",
-      "keywords": [
-       "console",
-       "software"
-      ]
-     }
-    ]
-   },
-   {
-    "story": 3,
-    "chapter": "Xbox Boots PlayStation 5 Games",
-    "scenes": [
-     {
-      "text": "Coming in at number four, an Xbox Series X has officially run PlayStation 5 game code, but there is a major catch.",
-      "visual": "video game console",
-      "keywords": [
-       "PlayStation",
-       "Series"
-      ]
-     },
-     {
-      "text": "Developer Devran Cosmo Uenal managed to boot the PS5 edition of Quake Two directly on a Series X console using an Xbox controller.",
-      "visual": "gamer playing console",
-      "keywords": [
-       "controller",
-       "boot"
-      ]
-     },
-     {
-      "text": "He accomplished this using PS5X, an Xbox port of the open-source PC emulator compatibility layer called KytyPS5.",
-      "visual": "coding screen close-up",
-      "keywords": [
-       "compatibility",
-       "emulator"
-      ]
-     },
-     {
-      "text": "Both current-gen consoles share very similar AMD hardware, featuring eight Zen 2 cores, RDNA 2 graphics, and sixteen gigabytes of GDDR6 memory.",
-      "visual": "computer processor chip",
-      "keywords": [
-       "hardware",
-       "processor"
-      ]
-     },
-     {
-      "text": "Because they use identical x86-64 processor architecture, the software acts like a translator rather than emulating an entire system from scratch.",
-      "visual": "circuit board macro",
-      "keywords": [
-       "translator",
-       "architecture"
-      ]
-     },
-     {
-      "text": "However, the project relies on Xbox Developer Mode, where Microsoft's documentation caps games at just five gigabytes of memory.",
-      "visual": "hard drive memory",
-      "keywords": [
-       "Developer",
-       "memory"
-      ]
-     },
-     {
-      "text": "That strict limitation unfortunately rules out the majority of current-gen PS5 titles under the current setup.",
-      "visual": "console power button",
-      "keywords": [
-       "limitation",
-       "modern"
-      ]
-     },
-     {
-      "text": "The developer also noted AI was involved in translating graphics to DirectX, describing it as an experimental research project.",
-      "visual": "neural network graphic",
-      "keywords": [
-       "experimental",
-       "DirectX"
-      ]
-     },
-     {
-      "text": "Speaking of AI pushing technical boundaries, our next story reveals just how fast generative models are becoming.",
-      "visual": "datacenter glowing blue",
-      "keywords": [
-       "generative",
-       "models"
-      ]
-     }
-    ]
-   },
-   {
-    "story": 2,
-    "chapter": "DeepSeek Launches V4.1 Flash",
-    "scenes": [
-     {
-      "text": "At number three, DeepSeek has rolled out a new model called V4.1 Flash 1017 Max, and the raw speed numbers are turning heads.",
-      "visual": "server rack lights",
-      "keywords": [
-       "DeepSeek",
-       "speed"
-      ]
-     },
-     {
-      "text": "According to benchmarks from Artificial Analysis, this new model clocks in at an astonishing 230 tokens per second.",
-      "visual": "fast digital stream",
-      "keywords": [
-       "tokens",
-       "benchmarks"
-      ]
-     },
-     {
-      "text": "To put that in perspective, the median speed for comparable open-weight models in its class sits at just 78 tokens per second.",
-      "visual": "speedometer glowing dashboard",
-      "keywords": [
-       "median",
-       "open-weight"
-      ]
-     },
-     {
-      "text": "The model features a massive one-million-token context window and handles both text and image inputs while generating text outputs.",
-      "visual": "abstract data flow",
-      "keywords": [
-       "context",
-       "inputs"
-      ]
-     },
-     {
-      "text": "On the Artificial Analysis Intelligence Index, it scored a 45, easily beating the category median score of 19.",
-      "visual": "analytics chart display",
-      "keywords": [
-       "Intelligence",
-       "scored"
-      ]
-     },
-     {
-      "text": "It is also reasonably priced at thirty cents per million input tokens and one dollar and twenty cents per million output tokens.",
-      "visual": "digital currency graph",
-      "keywords": [
-       "priced",
-       "tokens"
-      ]
-     },
-     {
-      "text": "The main tradeoff noted by evaluators is extreme verbosity, generating 210 million tokens during testing compared to the median of 140 million.",
-      "visual": "text scrolling screen",
-      "keywords": [
-       "verbosity",
-       "evaluators"
-      ]
-     },
-     {
-      "text": "While machine intelligence is accelerating here on Earth, our next story involves sending robotic explorers all the way to Mars.",
-      "visual": "planet mars space",
-      "keywords": [
-       "robotic",
-       "Mars"
-      ]
+       "foreign AI architectures"
+      ],
+      "card": null
      }
     ]
    },
    {
     "story": 4,
-    "chapter": "Japan's Bold Mars Moon Mission",
+    "chapter": "US Bans DeepSeek",
     "scenes": [
      {
-      "text": "Taking the second spot today, Japan is preparing to launch one of the most daring planetary exploration attempts in history.",
-      "visual": "satellite orbiting planet",
+      "text": "The United States government has ordered civilian federal agencies to strip DeepSeek out of their computers.",
+      "visual": "washington capitol",
+      "visual_alt": "capital",
       "keywords": [
-       "planetary",
-       "exploration"
-      ]
+       "federal agencies",
+       "DeepSeek"
+      ],
+      "card": null
      },
      {
-      "text": "The Martian Moons eXploration mission, or MMX, is scheduled to launch aboard an H3 rocket from Tanegashima Space Center.",
-      "visual": "rocket on launchpad",
+      "text": "The order was signed by Homeland Security Secretary Markwayne Mullin under a 2018 supply chain law.",
+      "visual": "official document",
+      "visual_alt": "document",
       "keywords": [
-       "rocket",
-       "Tanegashima"
-      ]
+       "Homeland Security Secretary",
+       "Markwayne Mullin"
+      ],
+      "card": {
+       "template": "headline"
+      }
      },
      {
-      "text": "If successful, MMX aims to become the first spacecraft to return to Earth from Mars orbit with physical samples.",
-      "visual": "deep space capsule",
+      "text": "Agencies must immediately stop buying products from the Chinese lab and its affiliates.",
+      "visual": "computer code",
+      "visual_alt": "code",
       "keywords": [
-       "samples",
-       "orbit"
-      ]
+       "Chinese lab"
+      ],
+      "card": null
      },
      {
-      "text": "After a ten-month cruise to the Red Planet, the spacecraft will spend roughly three years conducting science around Mars' moon Phobos.",
-      "visual": "asteroid floating space",
+      "text": "Crucially, the ban also covers third-party products and services developed using DeepSeek implementations.",
+      "visual": "cyber security",
+      "visual_alt": "security",
       "keywords": [
-       "Phobos",
-       "cruise"
-      ]
+       "third-party products"
+      ],
+      "card": null
      },
      {
-      "text": "It carries a microwave-sized rover named IDEFIX, developed jointly by the French space agency CNES and Germany's DLR.",
-      "visual": "miniature robotic rover",
+      "text": "The Department of Homeland Security cites multiple threat vectors, including servers located in China.",
+      "visual": "digital firewall",
+      "visual_alt": "firewall",
       "keywords": [
-       "rover",
-       "IDEFIX"
-      ]
+       "threat vectors"
+      ],
+      "card": null
      },
      {
-      "text": "The craft will touch down directly on Phobos to scoop up surface material before making flybys of Deimos.",
-      "visual": "surface landing gear",
+      "text": "This rule applies across civilian executive branch agencies, excluding military and intelligence systems.",
+      "visual": "office desk",
+      "visual_alt": "desk",
       "keywords": [
-       "Deimos",
-       "surface"
-      ]
+       "civilian executive branch"
+      ],
+      "card": null
      },
      {
-      "text": "The sample return capsule is scheduled to leave Mars in late 2030, targeting a touchdown in Australia in 2031.",
-      "visual": "capsule entering atmosphere",
+      "text": "The order applies to federal civilian executive branch agencies except for their national security systems.",
+      "visual": "laptop computer",
+      "visual_alt": "laptop",
       "keywords": [
-       "capsule",
-       "Australia"
-      ]
+       "civilian executive branch"
+      ],
+      "card": null
+     }
+    ]
+   },
+   {
+    "story": 3,
+    "chapter": "Touch-Screen MacBook Pro",
+    "scenes": [
+     {
+      "text": "Apple has sent out invites for a product event on October 28th in Los Angeles.",
+      "visual": "apple headquarters",
+      "visual_alt": "apple",
+      "keywords": [
+       "product event",
+       "Los Angeles"
+      ],
+      "card": null
      },
      {
-      "text": "These samples could unlock secrets and shed light on events during the formation of the solar system billions of years ago.",
-      "visual": "solar system formation space",
+      "text": "Bloomberg reports that the headline announcement will be a new MacBook Pro featuring an OLED touchscreen.",
+      "visual": "tablet computer",
+      "visual_alt": "tablet",
       "keywords": [
-       "formation",
-       "solar system"
-      ]
+       "MacBook Pro",
+       "OLED touchscreen"
+      ],
+      "card": null
+     },
+     {
+      "text": "The new laptop is also expected to be lighter and include an iPhone-like Dynamic Island.",
+      "visual": "modern laptop",
+      "visual_alt": "computer",
+      "keywords": [
+       "Dynamic Island"
+      ],
+      "card": null
+     },
+     {
+      "text": "Apple is additionally planning to reveal a 14-inch MacBook Pro and an updated iPad Mini.",
+      "visual": "electronics store",
+      "visual_alt": "store",
+      "keywords": [
+       "iPad Mini"
+      ],
+      "card": null
+     }
+    ]
+   },
+   {
+    "story": 2,
+    "chapter": "SpaceX Shares for Kids",
+    "scenes": [
+     {
+      "text": "Elon Musk says he plans to give one of his SpaceX shares to every child in the US.",
+      "visual": "rocket launch",
+      "visual_alt": "rocket",
+      "keywords": [
+       "SpaceX shares",
+       "child"
+      ],
+      "card": null
+     },
+     {
+      "text": "With about 72 million children in the country, that gift would be worth roughly 10.5 billion dollars, according to CNBC.",
+      "visual": "financial chart",
+      "visual_alt": "chart",
+      "keywords": [
+       "72 million children",
+       "10.5 billion dollars"
+      ],
+      "card": {
+       "template": "headline"
+      }
+     },
+     {
+      "text": "Musk appears to be giving away the shares through Trump Accounts, which are tax-advantaged investment accounts.",
+      "visual": "bank vault",
+      "visual_alt": "bank",
+      "keywords": [
+       "Trump Accounts"
+      ],
+      "card": null
+     },
+     {
+      "text": "This follows major contributions to the accounts from other tech leaders, including six point two five billion dollars from Dell's founder.",
+      "visual": "business meeting",
+      "visual_alt": "meeting",
+      "keywords": [
+       "tech executives"
+      ],
+      "card": null
+     },
+     {
+      "text": "Musk stated on social media that this giveaway will be the first of many.",
+      "visual": "smartphone screen",
+      "visual_alt": "phone",
+      "keywords": [
+       "first of many"
+      ],
+      "card": null
+     },
+     {
+      "text": "The announcement came shortly after AI company Anthropic pledged five percent of its shares to a public benefit fund.",
+      "visual": "power plant",
+      "visual_alt": "factory",
+      "keywords": [
+       "AI",
+       "Anthropic"
+      ],
+      "card": null
      }
     ]
    },
    {
     "story": 1,
-    "chapter": "SpaceX Launches Groundbreaking Biotech",
+    "chapter": "Amazon's Nuclear Bet",
     "scenes": [
      {
-      "text": "Our top story today is SpaceX's 35th commercial resupply mission, which just blasted off from Cape Canaveral on a Falcon 9 rocket.",
-      "visual": "rocket lifting off",
+      "text": "Amazon has signed an agreement to fund a new nuclear energy facility at a former coal plant in Indiana.",
+      "visual": "nuclear power",
+      "visual_alt": "plant",
       "keywords": [
-       "commercial",
-       "Falcon"
-      ]
+       "Amazon",
+       "nuclear energy"
+      ],
+      "card": null
      },
      {
-      "text": "The Dragon spacecraft is hauling over 6,300 pounds of vital hardware and science cargo to the International Space Station.",
-      "visual": "space capsule approaching",
+      "text": "The facility will replace the defunct Breed Generating Station in Sullivan County.",
+      "visual": "industrial facility",
+      "visual_alt": "industrial",
       "keywords": [
-       "cargo",
-       "Dragon"
-      ]
+       "Breed Generating Station"
+      ],
+      "card": {
+       "template": "headline"
+      }
      },
      {
-      "text": "Among the most critical items aboard is the final pair of Roll-Out Solar Arrays, designed to augment the station's total electrical power.",
-      "visual": "solar panels space",
+      "text": "The proposed plant aims to provide up to 960 megawatts of carbon-free energy.",
+      "visual": "electric towers",
+      "visual_alt": "grid",
       "keywords": [
-       "Solar",
-       "electrical"
-      ]
+       "960 megawatts",
+       "carbon-free energy"
+      ],
+      "card": null
      },
      {
-      "text": "NASA notes that extra electricity is necessary not just for running research, but also for eventually executing a safe, controlled deorbit of the station.",
-      "visual": "space station orbit",
+      "text": "That power will feed both the regional power grid and Amazon's growing data centers.",
+      "visual": "server racks",
+      "visual_alt": "servers",
       "keywords": [
-       "deorbit",
-       "station"
-      ]
+       "power grid",
+       "data centers"
+      ],
+      "card": null
      },
      {
-      "text": "Even more exciting are the cutting-edge biotechnology payloads packed inside the pressurized capsule.",
-      "visual": "microscope laboratory science",
+      "text": "The project targets twelve advanced small modular reactors developed by X-energy.",
+      "visual": "futuristic architecture",
+      "visual_alt": "building",
       "keywords": [
-       "biotechnology",
-       "capsule"
-      ]
+       "small modular reactors"
+      ],
+      "card": null
      },
      {
-      "text": "Researchers are sending hardware to manufacture artificial retinas in microgravity, which could help restore vision for patients on Earth.",
-      "visual": "eye retina scan",
+      "text": "These reactors can use air or water cooling, allowing deployment in water-constrained regions.",
+      "visual": "cooling tower",
+      "visual_alt": "tower",
       "keywords": [
-       "retinas",
-       "microgravity"
-      ]
+       "water-constrained regions"
+      ],
+      "card": null
      },
      {
-      "text": "Dragon is also transporting three-dimensional heart tissue models to advance large-scale drug testing on future space missions.",
-      "visual": "glowing heart hologram",
+      "text": "This is Amazon's second nuclear collaboration, with a goal of deploying over 5 gigawatts by 2039.",
+      "visual": "energy grid",
+      "visual_alt": "grid",
       "keywords": [
-       "tissue",
-       "pharmaceutical"
-      ]
+       "5 gigawatts"
+      ],
+      "card": null
      },
      {
-      "text": "Scientists have also included living brain organoids to analyze potential treatments for neurodegenerative illnesses like Alzheimer's and Parkinson's.",
-      "visual": "brain synapse glowing",
+      "text": "Meta, Microsoft, and Google are also exploring nuclear projects to feed their AI infrastructure.",
+      "visual": "technology campus",
+      "visual_alt": "campus",
       "keywords": [
-       "organoids",
-       "Parkinson"
-      ]
-     },
-     {
-      "text": "Dragon will stay docked through mid-November before splashing down off the coast of California with the completed experiments.",
-      "visual": "capsule ocean splashdown",
-      "keywords": [
-       "docked",
-       "splashing"
-      ]
+       "AI infrastructure"
+      ],
+      "card": null
      }
     ]
    }
   ],
   "outro": [
    {
-    "text": "From manufacturing artificial retinas in space to booting PlayStation games on Xbox hardware, tech is evolving at breakneck speed.",
-    "visual": "futuristic technology city",
+    "text": "Which of these tech developments surprised you the most?",
+    "visual": "question mark",
+    "visual_alt": "sign",
     "keywords": [
-     "evolving",
-     "retinas"
-    ]
+     "tech developments"
+    ],
+    "card": null
    },
    {
-    "text": "Which of these five breakthroughs do you think will have the biggest impact on our everyday lives?",
-    "visual": "thinking person silhouette",
+    "text": "Leave your thoughts in the comments below, and subscribe for daily updates on the future of technology.",
+    "visual": "subscribe button",
+    "visual_alt": "button",
     "keywords": [
-     "breakthroughs",
-     "impact"
-    ]
-   },
-   {
-    "text": "Drop your thoughts in the comments below, hit subscribe, and we will see you tomorrow on Reality Shockwaves.",
-    "visual": "thumbs up button",
-    "keywords": [
-     "subscribe",
-     "comments"
-    ]
+     "comments",
+     "subscribe"
+    ],
+    "card": null
    }
   ]
  },

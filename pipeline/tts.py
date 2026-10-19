@@ -31,7 +31,7 @@ def _gemini(model: str, text: str) -> np.ndarray:
     key = secret("GEMINI_API_KEY")
     if not key:
         raise VoiceError("GEMINI_API_KEY not set")
-    body = {"contents": [{"parts": [{"text": f"{v['style']}\n\n{text}"}]}],
+    body = {"contents": [{"parts": [{"text": f"{v['style'].rstrip()}\n#### TRANSCRIPT\n{text}"}]}],
             "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {
                 "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": v["gemini_voice"]}}}}}
     r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",

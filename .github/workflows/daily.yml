@@ -48,8 +48,35 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           path: assets/music
 
-      - name: Install FFmpeg
-        run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+      - name: Install FFmpeg and the libraries Remotion's browser needs
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q ffmpeg libnss3 libdbus-1-3 libatk1.0-0 libatk-bridge2.0-0 libgbm-dev \
+            libasound2t64 libxrandr2 libxkbcommon-dev libxfixes3 libxcomposite1 libxdamage1 libpango-1.0-0 \
+            libcairo2 libcups2
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: remotion/package-lock.json
+
+      - name: Cache Remotion's browser
+        uses: actions/cache@v4
+        with:
+          path: remotion/node_modules/.remotion
+          key: remotion-browser-${{ hashFiles('remotion/package-lock.json') }}
+
+      - name: Install Remotion (the video engine)
+        working-directory: remotion
+        run: npm ci && npx remotion browser ensure
+
+      - name: Cache background music (downloaded once from incompetech.com, CC BY 4.0)
+        uses: actions/cache@v4
+        with:
+          path: assets/music
+          key: music-${{ hashFiles('config.yaml') }}
+          restore-keys: music-
 
       - name: Cache voice and caption models
         uses: actions/cache@v4

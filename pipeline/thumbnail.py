@@ -7,8 +7,8 @@ from PIL import Image, ImageDraw, ImageEnhance, ImageFont, ImageFilter
 from .config import ASSETS
 
 
-def _frame(video: Path, out: Path) -> Image.Image:
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", "0.5", "-i", str(video), "-frames:v", "1", str(out)],
+def _frame(video: Path, out: Path, at: float = 0.5) -> Image.Image:
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{at:.2f}", "-i", str(video), "-frames:v", "1", str(out)],
                    check=False)
     if out.exists():
         return Image.open(out).convert("RGB")
@@ -35,9 +35,9 @@ def _wrap(words: list[str], font, max_w: int, draw) -> list[str]:
     return lines
 
 
-def make(video: Path, text: str, out: Path, badge: str = "TOP 5 TODAY", accent=(255, 230, 0)):
+def make(video: Path, text: str, out: Path, badge: str = "TOP 5 TODAY", accent=(255, 230, 0), at: float = 0.5):
     W, H = 1280, 720
-    img = _cover(_frame(video, out.with_suffix(".frame.png")), W, H)
+    img = _cover(_frame(video, out.with_suffix(".frame.png"), at), W, H)
     img = ImageEnhance.Color(img).enhance(1.5)
     img = ImageEnhance.Contrast(img).enhance(1.2)
 

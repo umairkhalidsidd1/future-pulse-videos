@@ -15,8 +15,10 @@ CH = CFG["channel"]
 SYSTEM = f"""You are the head writer of "{CH['name']}", a faceless YouTube / TikTok / Instagram channel about
 {CH['niche']}. Language: {CH['language']}.
 
-Voice: an energetic, smart friend explaining the news. Short, punchy, spoken sentences. No fluff, no filler,
-no emojis in narration, no "In today's video", no "Hey guys".
+Voice: a smart, trustworthy explainer with calm confident energy, like a friend who works in tech. You always
+add an angle: why it matters and what it means for the viewer. Never just read the headline. No hype words
+("shocking", "insane", "crazy", "mind-blowing", "you won't believe"), no emojis in narration,
+no "In today's video", no "Hey guys".
 
 TRUTH RULES (most important):
 - Use ONLY facts found in the SOURCES you are given. Never invent numbers, dates, quotes, prices or claims.
@@ -36,6 +38,23 @@ HOOK_RULES = """HOOK RULES (the first 1-3 seconds decide everything):
 - Score each 1-10 on: real gap, specific, true to sources, would a stranger need the next line. Pick the best.
 - hook_text = the on-screen text on the FIRST FRAME: 2-6 words, ALL CAPS, must work with sound off,
   same gap as the spoken hook but not the same words."""
+
+SCRIPT_RULES = """WRITE FOR THE EAR (this is read aloud by a voice):
+- 8-14 words per sentence. Contractions (it's, they're). One number per sentence, rounded ("about 6,000").
+- Ask a question right before a reveal. Use concrete details, not adjectives.
+- Start with the most interesting true detail. No wind-up, no "so", no "today we".
+- Titles are concrete and calm: what happened + why it matters. No ALL-CAPS words, no "SHOCKING"."""
+
+CARD_RULES = """ON-SCREEN CARDS (they show proof, like on news channels). Each scene has "card": null or ONE card.
+Use cards on about 40% of scenes, never on the first scene, never on two scenes in a row:
+- {"template": "headline"} : once, in scene 2 or 3. Shows the real source headline (we fill in the text).
+- {"template": "stat", "value": 6300, "prefix": "", "suffix": "lbs", "label": "of cargo on board"} : ONLY a
+  number that appears in the SOURCES. Label max 6 words.
+- {"template": "compare", "title": "Cost to orbit", "leftLabel": "Then", "leftValue": "$54,500/kg",
+  "rightLabel": "Now", "rightValue": "$2,700/kg"} : then vs now or A vs B, values from the SOURCES, max 14 chars each.
+- {"template": "list", "title": "3 things to know", "items": ["max 5 words", "max 5 words", "max 5 words"]}
+- {"template": "quote", "text": "...", "who": "Name", "where": "where they said it"} : ONLY a quote that appears
+  WORD FOR WORD in the SOURCES. Max 20 words. Otherwise no quote card."""
 
 VISUAL_RULES = """VISUAL RULES: every scene has "visual": a 1-3 word STOCK FOOTAGE search query for something concrete and
 filmable that MATCHES what is being said (e.g. "electric car highway", "robot arm factory", "rocket launch",
@@ -59,6 +78,72 @@ def _check_scenes(scenes, minimum: int):
             s["visual_alt"] = ""
         if not isinstance(s.get("keywords"), list):
             s["keywords"] = []
+        s["card"] = clean_card(s.get("card"))
+    for i, s in enumerate(scenes):            # no card on the first scene, never two cards in a row
+        if s["card"] and (i == 0 or scenes[i - 1]["card"]):
+            s["card"] = None
+
+
+def _short(v, n: int) -> str:
+    return " ".join(str(v).split())[:n]
+
+
+def clean_card(c):
+    """A card the renderer can draw, or None. Anything malformed is dropped (the scene stays)."""
+    if not isinstance(c, dict):
+        return None
+    t = c.get("template")
+    try:
+        if t == "headline":
+            return {"template": "headline"}
+        if t == "stat":
+            value = float(str(c.get("value")).replace(",", "").replace("$", ""))
+            out = {"template": "stat", "value": value, "label": _short(c.get("label", ""), 48),
+                   "prefix": _short(c.get("prefix") or "", 4), "suffix": _short(c.get("suffix") or "", 8)}
+            out["decimals"] = int(c.get("decimals") or (0 if value.is_integer() else 1))
+            return out if out["label"] else None
+        if t == "compare":
+            keys = ("leftLabel", "leftValue", "rightLabel", "rightValue")
+            if not all(str(c.get(k, "")).strip() for k in keys):
+                return None
+            out = {"template": "compare", **{k: _short(c[k], 16) for k in keys}}
+            if c.get("title"):
+                out["title"] = _short(c["title"], 34)
+            return out
+        if t == "list":
+            items = [_short(x, 36) for x in c.get("items", []) if str(x).strip()][:4]
+            return {"template": "list", "title": _short(c.get("title", "Key points"), 34), "items": items} \
+                if len(items) >= 2 else None
+        if t == "quote":
+            text, who = _short(c.get("text", ""), 170), _short(c.get("who", ""), 40)
+            return {"template": "quote", "text": text.strip('"“”'), "who": who,
+                    "where": _short(c.get("where") or "", 40)} if text and who else None
+    except (TypeError, ValueError):
+        return None
+    return None
+
+
+def _squash(text: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", text.lower())
+
+
+def verify_cards(scenes: list[dict], facts: str) -> list[dict]:
+    """Quotes must appear word for word in the sources, and numbers must appear there too. Else: no card."""
+    plain = _squash(facts)
+    for s in scenes:
+        c = s.get("card")
+        if not c:
+            continue
+        if c["template"] == "quote" and _squash(c["text"]) not in plain:
+            print(f"  [cards] dropped a quote not found in the sources: {c['text'][:60]}")
+            s["card"] = None
+        elif c["template"] == "stat":
+            v = c["value"]
+            forms = {f"{v:,.0f}", f"{v:.0f}", f"{v:,.{c['decimals']}f}", f"{v:.{c['decimals']}f}"}
+            if not any(_squash(f) in plain for f in forms):
+                print(f"  [cards] dropped a number not found in the sources: {v}")
+                s["card"] = None
+    return scenes
 
 
 DANGLING = {"because", "and", "but", "so", "or", "that", "which", "while", "since", "if", "when", "the", "a"}
@@ -136,13 +221,16 @@ def pick_stories(candidates: list[dict], n: int) -> list[dict]:
 
 {listing}
 
-Pick the {n + 5} stories with the best chance of going viral as short videos for our niche
-({CH['niche']}). Prefer: rising right now, big curiosity, clear visual idea, broad appeal, a real "what this
-means for you" angle. Skip: off-niche, politics fights, crime, tragedy, celebrity gossip, paywalled-only,
-stories with too little information, duplicates of each other.
+Pick the {n + 5} best stories for our niche ({CH['niche']}). Score each 1-10 on:
+- MATTERS: will a normal viewer care? Does it change their life, money, job, or the future?
+- PROOF: can we show it (a real headline, real numbers, real footage of the thing)?
+- ANGLE: can we add a fresh point of view beyond the headline?
+- RISING: is it spreading right now?
+Skip: off-niche, politics fights, crime, tragedy, celebrity gossip, paywalled-only, minor software releases,
+developer-only news, stories with too little information, duplicates. Prefer variety across topics.
 
-Return: {{"picks": [{{"index": <number from list>, "angle": "<the one idea the video is about>",
-"why_viral": "<short reason>", "viral_score": <1-10>}}]}} ordered best first."""
+Return: {{"picks": [{{"index": <number from list>, "thesis": "<one sentence: our point of view>",
+"angle": "<the one idea the video is about>", "viral_score": <average of the 4 scores>}}]}} ordered best first."""
     picks = ask_json(SYSTEM, prompt, temperature=0.4, validate=_check_picks)["picks"]
     stories = []
     for p in picks:
@@ -152,8 +240,8 @@ Return: {{"picks": [{{"index": <number from list>, "angle": "<the one idea the v
         if not isinstance(idx, int) or not 0 <= idx < len(candidates):
             continue
         c = candidates[idx]
-        stories.append({"title": c["title"], "angle": p.get("angle", ""), "viral_score": p.get("viral_score", 5),
-                        "sources": c["sources"]})
+        stories.append({"title": c["title"], "angle": p.get("angle", ""), "thesis": p.get("thesis", ""),
+                        "viral_score": p.get("viral_score", 5), "sources": c["sources"]})
     return stories
 
 
@@ -175,7 +263,8 @@ def write_short(story: dict, fmt: str) -> dict:
 
 STORY: {story['title']}
 ANGLE: {story['angle']}
-FORMAT TO USE: {fmt}
+OUR POINT OF VIEW: {story.get('thesis', '')}
+SERIES FORMAT TO USE: {fmt}
 
 SOURCES:
 {story['facts']}
@@ -192,10 +281,14 @@ STRUCTURE:
   (for example "Tell me in the comments."). EVERY sentence must be complete. Never end with "...",
   "Because", "and", "but", "so", "that" or any unfinished sentence.
 
+{SCRIPT_RULES}
+
+{CARD_RULES}
+
 {VISUAL_RULES}
 
 METADATA:
-- youtube_title: max 70 characters, the key search words first, accurate, ends with " #Shorts"
+- youtube_title: max 70 characters, the key search words first, concrete and accurate, ends with " #Shorts"
 - youtube_description: 2-3 short lines, then "Sources:" and the source names
 - tags: 8-12 search tags
 - instagram_caption: 1-2 punchy lines + the question + 5-8 relevant hashtags
@@ -204,7 +297,7 @@ METADATA:
 Return JSON:
 {{"hook_candidates": [{{"mechanism": "...", "text": "...", "score": 0}}],
  "hook_text": "ALL CAPS FIRST FRAME TEXT",
- "scenes": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."]}}],
+ "scenes": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."], "card": null}}],
  "question": "the comment question you used",
  "youtube_title": "...", "youtube_description": "...", "tags": ["..."],
  "instagram_caption": "...", "tiktok_caption": "..."}}"""
@@ -233,11 +326,16 @@ STRUCTURE (built for retention):
 
 Each scene: 1-3 spoken sentences. Intro 2-4 scenes, each segment 6-12 scenes, outro 2-3 scenes.
 
+{SCRIPT_RULES}
+
+{CARD_RULES}
+(In the long video, use a "headline" card once per segment, in its 2nd or 3rd scene.)
+
 {VISUAL_RULES}
 
 METADATA:
 - title: max 70 characters, curious but accurate, the biggest story's key words first
-- thumbnail_text: 2-4 words, ALL CAPS, huge emotion/curiosity, must be true
+- thumbnail_text: 2-4 words, ALL CAPS, curiosity but concrete and true (no "SHOCKING")
 - description: 3-4 lines summary. Write the token {{CHAPTERS}} on its own line where chapters go.
   Then "Sources:" with the source names.
 - tags: 10-15
@@ -245,10 +343,10 @@ METADATA:
 
 Return JSON:
 {{"title": "...", "thumbnail_text": "...", "description": "...", "tags": ["..."], "pinned_comment": "...",
- "intro": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."]}}],
+ "intro": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."], "card": null}}],
  "segments": [{{"story": <story number from the list above>, "chapter": "short chapter title",
-               "scenes": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."]}}]}}],
- "outro": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."]}}]}}"""
+               "scenes": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."], "card": null}}]}}],
+ "outro": [{{"text": "...", "visual": "...", "visual_alt": "...", "keywords": ["..."], "card": null}}]}}"""
     return ask_json(SYSTEM, prompt, validate=_check_long)
 
 
@@ -258,7 +356,9 @@ def fact_check(scenes: list[dict], facts: str) -> list[dict]:
         return scenes
     prompt = f"""Check this video script against the SOURCES. Fix every claim, number, name or date that is not
 supported by the sources (remove it, or attribute it: "according to ..."). Keep the style, length,
-structure, visual and keywords fields. Change as little as possible.
+structure, visual, visual_alt, keywords and card fields. Also check every card: its numbers must be in the
+sources, and a quote card must match the sources word for word; otherwise set that card to null.
+Change as little as possible.
 
 SOURCES:
 {facts[:9000]}

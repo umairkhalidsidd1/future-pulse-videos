@@ -28,20 +28,24 @@ trends:
 
 llm:
   # Tried in order. If a model name stops existing, the next one is used.
-  gemini_models: ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite"]
+  gemini_models: ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite"]
   groq_models: ["openai/gpt-oss-120b", "llama-3.3-70b-versatile"]
-  vision_models: ["gemini-3.8-flash", "gemini-2.5-flash"]  # checks clip previews
+  vision_models: ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash"]  # checks clip previews
   temperature: 0.9
   fact_check: true                # second AI pass that checks the script against the sources
 
 voice:
   # 1st choice: Gemini TTS (very natural). Tried in order; each model has its own small daily limit.
   gemini_models: ["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts", "gemini-2.5-flash-preview-tts"]
-  gemini_voice: "Puck"            # upbeat. Others: Charon (informative), Fenrir (excitable), Kore (firm), Zephyr (bright)
-  style: >-
-    Read the following as an energetic, confident tech news narrator for a short social video.
-    Sound natural and human, with real emotion and punchy emphasis on key words. Fast but clear, no long pauses.
-    Read ONLY the text below, nothing else:
+  gemini_voice: "Charon"          # calm, trustworthy ("informative"). Others: Puck (upbeat), Gacrux (mature)
+  # Google's recommended layout: director's notes, then the TRANSCRIPT. Without it the model sometimes reads
+  # the instructions out loud.
+  style: |-
+    # AUDIO PROFILE: a trusted tech news explainer on a popular YouTube channel.
+    ### DIRECTOR'S NOTES
+    Style: confident, warm and engaged, like explaining big news to a smart friend. Natural human rhythm,
+    clear emphasis on key words and numbers, a little energy, never shouting or salesy.
+    Pace: brisk but clear. Short natural pauses between sentences, no long pauses.
   # Backup when Gemini's limit is used up
   kokoro_voice: "af_heart"
   target_wpm: {short: 160, long: 150}   # pro pace from research: Shorts 150-165, long videos ~150
@@ -52,12 +56,12 @@ short:
   fps: 30
   target_seconds: [25, 45]
   cut_seconds: 2.4                # a new clip every ~2.4 s
-  formats:                        # rotated so videos don't all look the same
-    - "breaking news breakdown: what happened, why it matters, what's next"
-    - "3 things you need to know"
-    - "what this means for YOU"
-    - "myth vs reality"
-    - "the surprising detail nobody is talking about"
+  formats:                        # named series, rotated so videos don't all look the same
+    - "WHAT IT MEANS FOR YOU: what happened in one line, then exactly how it changes the viewer's life, money or job"
+    - "IS THIS REAL?: the claim or hype people are sharing, then what the facts actually say, then the verdict"
+    - "FUTURE CHECK: what happened today, then what it could change in 5 years (clearly framed as a possibility)"
+    - "3 THINGS TO KNOW: the news, then 3 short numbered points (use a list card), then why it matters"
+    - "THE DETAIL EVERYONE MISSED: the headline everyone saw, then the overlooked detail that really matters"
 
 long:
   width: 1920
@@ -65,6 +69,9 @@ long:
   fps: 30
   target_minutes: [6, 10]
   cut_seconds: 3.6
+
+render:
+  engine: "remotion"              # remotion = pro look (cards, animated captions). ffmpeg = simple backup
 
 captions:
   whisper_model: "base.en"
@@ -78,7 +85,12 @@ captions:
     - {text: "FFFFFF", highlight: "FF9F1C", keyword: "00E5FF"}
 
 audio:
-  music_dir: "assets/music"       # put YouTube Audio Library tracks here (.mp3)
+  music_dir: "assets/music"       # filled automatically from the list below (not stored in the repo)
+  # Kevin MacLeod, incompetech.com, CC BY 4.0: free incl. commercial use, credit in every description.
+  music_url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/"
+  music_tracks: ["Voxel Revolution", "Digital Lemonade", "Inspired", "EDM Detection Mode", "Hyperfun",
+                 "Ouroboros", "Pamgaea", "Funk Game Loop", "Raving Energy"]
+  music_credit: "Music: Kevin MacLeod (incompetech.com), licensed under CC BY 4.0 (creativecommons.org/licenses/by/4.0/)"
   music_volume: 0.12
   whoosh: true
   loudness_lufs: -14

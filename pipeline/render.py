@@ -40,6 +40,7 @@ def probe_duration(path: Path) -> float:
     return probe_info(path)[0]
 
 
+TAIL = 0.5  # seconds of picture after the last word
 GRADE = "eq=contrast=1.07:saturation=1.25:brightness=0.01"  # punchier colours, like big channels
 
 
@@ -118,26 +119,40 @@ def _sfx_track(times: list[float], total: float, path: Path, rate: int = 48000):
     sf.write(path, track, rate)
 
 
+def ensure_music():
+    """Downloads the licensed tracks listed in config.yaml once (GitHub caches the folder)."""
+    import urllib.parse
+    import requests
+    a = CFG["audio"]
+    folder = ROOT / a["music_dir"]
+    folder.mkdir(parents=True, exist_ok=True)
+    for name in a.get("music_tracks", []):
+        path = folder / f"{name}.mp3"
+        if path.exists() and path.stat().st_size > 100_000:
+            continue
+        try:
+            r = requests.get(a["music_url"] + urllib.parse.quote(name) + ".mp3", timeout=120)
+            r.raise_for_status()
+            path.write_bytes(r.content)
+            print(f"  [music] downloaded {name}")
+        except requests.RequestException as e:
+            print(f"  [music] could not download {name}: {e.__class__.__name__}")
+
+
 def _music(seed: str) -> Path | None:
+    ensure_music()
     folder = ROOT / CFG["audio"]["music_dir"]
     tracks = sorted(p for p in folder.glob("*") if p.suffix.lower() in (".mp3", ".m4a", ".wav", ".ogg"))
     return random.Random(seed).choice(tracks) if tracks else None
 
 
-def render(*, kind: str, scenes: list[dict], timings: list[tuple[float, float]], total: float,
-           voice_wav: Path, ass_path: Path, stock, work: Path, out_path: Path, seed: str,
-           whoosh_scenes: set[int] | None = None) -> list[Path]:
-    """Returns the list of rendered segment files (the first one is handy for thumbnails)."""
+def plan_shots(*, kind: str, scenes: list[dict], timings: list[tuple[float, float]], total: float, stock,
+               seed: str) -> list[dict]:
+    """Cut list for the whole video: which clip plays when, from which moment, with which motion."""
     spec = CFG[kind]
-    w, h, fps, cut = spec["width"], spec["height"], spec["fps"], spec["cut_seconds"]
+    fps, cut = spec["fps"], spec["cut_seconds"]
     rng = random.Random(seed)
-    tail = 0.5
-    end_all = total + tail
-    seg_dir = work / "segments"
-    shutil.rmtree(seg_dir, ignore_errors=True)
-    seg_dir.mkdir(parents=True)
-
-    jobs, lengths = [], {}
+    end_all = total + TAIL
     plan = []
     for i, (scene, (s0, _)) in enumerate(zip(scenes, timings)):
         s_end = timings[i + 1][0] if i + 1 < len(timings) else end_all
@@ -145,8 +160,8 @@ def render(*, kind: str, scenes: list[dict], timings: list[tuple[float, float]],
         dur = s_end - start
         plan.append((start, dur, max(1, round(dur / (cut * rng.uniform(0.85, 1.15))))))
     all_clips = stock.clips_for_scenes(scenes, [n for _, _, n in plan])
+    shots, lengths = [], {}
     for i, ((start, dur, n), clips) in enumerate(zip(plan, all_clips)):
-        colors = PLACEHOLDER_COLORS[i % len(PLACEHOLDER_COLORS)]
         for k in range(n):
             a = round((start + dur * k / n) * fps)
             b = round((start + dur * (k + 1) / n) * fps)
@@ -164,34 +179,33 @@ def render(*, kind: str, scenes: list[dict], timings: list[tuple[float, float]],
             if clip:
                 room = clip_len - need
                 offset = rng.uniform(0, room) if room > 0 else 0.0
-            pan = rng.choice([(1, 0), (-1, 0), (0, 1), (0, -1), (0.6, 0.6), (-0.6, 0.6)])
-            motion = rng.choices(["zoom_in", "pan", "zoom_out"], weights=[4, 3, 2])[0]
-            jobs.append({"w": w, "h": h, "fps": fps, "frames": b - a, "clip": clip, "offset": offset,
-                         "pan": pan, "motion": motion, "clip_size": lengths[clip][1:] if clip else (0, 0),
-                         "colors": colors, "out": seg_dir / f"{len(jobs):04d}.mp4"})
+            shots.append({"scene": i, "from": a, "frames": b - a, "clip": clip, "offset": offset,
+                          "clip_size": lengths[clip][1:] if clip else (0, 0),
+                          "pan": rng.choice([(1, 0), (-1, 0), (0, 1), (0, -1), (0.6, 0.6), (-0.6, 0.6)]),
+                          "motion": rng.choices(["zoom_in", "pan", "zoom_out"], weights=[4, 3, 2])[0],
+                          "colors": PLACEHOLDER_COLORS[i % len(PLACEHOLDER_COLORS)]})
+    return shots
 
-    workers = max(1, (os.cpu_count() or 2) // 2)
-    print(f"  [render] {len(jobs)} cuts, {workers} at a time")
-    with ThreadPoolExecutor(workers) as pool:
-        list(pool.map(_segment, jobs))
 
-    concat = work / "concat.txt"
-    concat.write_text("".join(f"file '{j['out'].resolve()}'\n" for j in jobs))
-    video_only = work / "video_only.mp4"
-    run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", str(concat), "-c", "copy",
-         str(video_only)])
-
+def mix(*, video_only: Path, voice_wav: Path, timings, total: float, work: Path, out_path: Path, seed: str,
+        fps: int, whoosh_scenes: set[int] | None = None, ass_path: Path | None = None):
+    """Final file: picture + voice + whooshes + ducked music, loudness-normalised for social platforms."""
+    end_all = total + TAIL
     whoosh_at = [timings[i][0] for i in range(1, len(timings)) if whoosh_scenes is None or i in whoosh_scenes]
     sfx = work / "sfx.wav"
     _sfx_track(whoosh_at, end_all, sfx)
-
     music = _music(seed)
     a = CFG["audio"]
     inputs = ["-i", str(video_only), "-i", str(voice_wav), "-i", str(sfx)]
-    ass_rel = os.path.relpath(ass_path, ROOT).replace("\\", "/").replace(":", "\\:")
-    fonts_rel = os.path.relpath(ASSETS / "fonts", ROOT)
-    graph = [f"[0:v]ass='{ass_rel}':fontsdir='{fonts_rel}'[v]",
-             f"[2:a]aresample=48000,volume=0.55,atrim=0:{end_all:.3f}[sx]"]
+    graph = [f"[2:a]aresample=48000,volume=0.55,atrim=0:{end_all:.3f}[sx]"]
+    if ass_path:
+        ass_rel = os.path.relpath(ass_path, ROOT).replace("\\", "/").replace(":", "\\:")
+        fonts_rel = os.path.relpath(ASSETS / "fonts", ROOT)
+        graph.insert(0, f"[0:v]ass='{ass_rel}':fontsdir='{fonts_rel}'[v]")
+        vmap, vcodec = ["-map", "[v]"], ["-c:v", "libx264", "-preset", "medium", "-crf", "20", "-profile:v", "high",
+                                          "-pix_fmt", "yuv420p", "-maxrate", "12M", "-bufsize", "24M", "-r", str(fps)]
+    else:  # picture is already finished (Remotion): copy it untouched
+        vmap, vcodec = ["-map", "0:v"], ["-c:v", "copy"]
     voice = f"[1:a]aresample=48000,apad=whole_dur={end_all:.3f}"
     if music:
         inputs += ["-stream_loop", "-1", "-i", str(music)]
@@ -204,10 +218,32 @@ def render(*, kind: str, scenes: list[dict], timings: list[tuple[float, float]],
         graph += [f"{voice}[vo]", "[vo][sx]amix=inputs=2:duration=first:normalize=0[mix]"]
     graph.append(f"[mix]loudnorm=I={a['loudness_lufs']}:TP=-1.5:LRA=11,aresample=48000[a]")
     run(["ffmpeg", "-nostdin", "-y", "-v", "error", *inputs, "-filter_complex", ";".join(graph),
-         "-map", "[v]", "-map", "[a]", "-t", f"{end_all:.3f}",
-         "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-profile:v", "high", "-pix_fmt", "yuv420p",
-         "-maxrate", "12M", "-bufsize", "24M", "-r", str(fps),
+         *vmap, "-map", "[a]", "-t", f"{end_all:.3f}", *vcodec,
          "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", str(out_path)])
+
+
+def render(*, kind: str, scenes: list[dict], timings: list[tuple[float, float]], total: float,
+           voice_wav: Path, ass_path: Path, stock, work: Path, out_path: Path, seed: str,
+           whoosh_scenes: set[int] | None = None) -> list[Path]:
+    """The simple FFmpeg engine (backup): stock clips + burned-in captions. Returns the segment files."""
+    spec = CFG[kind]
+    w, h, fps = spec["width"], spec["height"], spec["fps"]
+    seg_dir = work / "segments"
+    shutil.rmtree(seg_dir, ignore_errors=True)
+    seg_dir.mkdir(parents=True)
+    shots = plan_shots(kind=kind, scenes=scenes, timings=timings, total=total, stock=stock, seed=seed)
+    jobs = [{**sh, "w": w, "h": h, "fps": fps, "out": seg_dir / f"{i:04d}.mp4"} for i, sh in enumerate(shots)]
+    workers = max(1, (os.cpu_count() or 2) // 2)
+    print(f"  [render] {len(jobs)} cuts, {workers} at a time")
+    with ThreadPoolExecutor(workers) as pool:
+        list(pool.map(_segment, jobs))
+    concat = work / "concat.txt"
+    concat.write_text("".join(f"file '{j['out'].resolve()}'\n" for j in jobs))
+    video_only = work / "video_only.mp4"
+    run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", str(concat), "-c", "copy",
+         str(video_only)])
+    mix(video_only=video_only, voice_wav=voice_wav, timings=timings, total=total, work=work, out_path=out_path,
+        seed=seed, fps=fps, whoosh_scenes=whoosh_scenes, ass_path=ass_path)
     return [j["out"] for j in jobs]
 
 

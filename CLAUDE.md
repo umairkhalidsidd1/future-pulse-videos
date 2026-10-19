@@ -13,3 +13,9 @@ from `config.yaml → channel.job_order`. State lives in `data/plans/<date>.json
   `.env`, `client_secret.json` or tokens.
 - No Metro or simulators in this project, so the multi-project port and device rules don't apply. Rendering
   uses half the CPU cores.
+- Video engine: Remotion project in `remotion/` (React templates: footage, headline/stat/compare/list/quote/
+  outro/chapter cards, captions, progress bar). Python writes `props.json` (shot list) and calls
+  `npx remotion render`; FFmpeg mixes the sound. On failure it falls back to the FFmpeg+ASS engine.
+  On this Mac, Remotion's default headless browser never starts: renders use `--chrome-mode=chrome-for-testing`.
+- Voice: Gemini TTS (~10 requests/day free), Kokoro backup. Captions: wav2vec2 forced alignment (align.py).
+- Google retires old Gemini model names for new keys (2.5-flash is gone): keep model lists in config.yaml current.

@@ -11,13 +11,14 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from . import align, captions, render, thumbnail, trends, tts, writer
+from . import align, captions, remotion_render, render, thumbnail, trends, tts, writer
 from .config import CFG, DATA, OUT, safe_err, today
 from .stock import Stock
 from .upload import instagram, tiktok, youtube
 
 MAX_ATTEMPTS = 3
-CREDIT = "Stock footage: Pexels & Pixabay. Voice: AI narration."
+CREDIT = ("Footage: Pixabay and NASA (where marked). Voice: AI narration.\n"
+          + CFG["audio"].get("music_credit", ""))
 
 
 # ---------- plan ----------
@@ -63,7 +64,7 @@ def make_plan(day: str) -> dict:
         fmt = formats[(offset + i) % len(formats)]
         print(f"[plan] writing short {i}: {s['title'][:70]}  ({fmt})")
         s["short"] = writer.write_short(s, fmt)
-        s["short"]["scenes"] = writer.fact_check(s["short"]["scenes"], s["facts"])
+        s["short"]["scenes"] = writer.verify_cards(writer.fact_check(s["short"]["scenes"], s["facts"]), s["facts"])
 
     print("[plan] writing the long video")
     long = writer.write_long(stories)
@@ -73,7 +74,8 @@ def make_plan(day: str) -> dict:
         except (TypeError, ValueError):
             idx = -1
         if 0 <= idx < len(stories):
-            seg["scenes"] = writer.fact_check(seg["scenes"], stories[idx]["facts"])
+            seg["scenes"] = writer.verify_cards(writer.fact_check(seg["scenes"], stories[idx]["facts"]),
+                                                stories[idx]["facts"])
 
     for s in stories:  # the repo is public: keep the downloaded article text out of it
         s.pop("facts", None)
@@ -96,10 +98,58 @@ def theme_for(day: str) -> dict:
     return themes[n % len(themes)]
 
 
+def headline_card(story: dict, day: str) -> dict:
+    """The REAL headline of the story's best source, for the on-screen headline card."""
+    srcs = story.get("sources") or [{"title": story["title"], "source": "", "url": ""}]
+    best = next((x for x in srcs if x.get("source") not in remotion_render.AGGREGATORS), srcs[0])
+    try:
+        when = date.fromisoformat(day).strftime("%b %-d")
+    except ValueError:
+        when = ""
+    return {"template": "headline", "source": remotion_render.publisher(best) or "News",
+            "title": " ".join(best["title"].split())[:110], "date": when}
+
+
+def fill_cards(scenes: list[dict], story: dict | None, day: str) -> list[dict]:
+    for sc in scenes:
+        card = sc.get("card")
+        if card and card.get("template") == "headline":
+            sc["card"] = headline_card(story, day) if story else None
+    return scenes
+
+
+def draw(*, kind: str, scenes, timings, total, words, wav, work: Path, out: Path, seed: str, day: str,
+         hook: str, extra_cards: list | None = None, overlays: list | None = None, whoosh=None) -> list[Path]:
+    """Make the picture + sound. Pro engine first; if it fails, the simple FFmpeg engine so the day isn't lost.
+    Returns clean footage files (no captions) for the thumbnail."""
+    stock = Stock(vertical=kind == "short", seed=seed)
+    theme = theme_for(day)
+    try:
+        if CFG.get("render", {}).get("engine", "remotion") == "remotion":
+            clips = remotion_render.render(kind=kind, scenes=scenes, timings=timings, total=total, words=words,
+                                           voice_wav=wav, stock=stock, work=work, out_path=out, seed=seed,
+                                           theme=theme, hook=hook, extra_cards=extra_cards, whoosh_scenes=whoosh)
+            stock.save_used()
+            return clips
+    except Exception as e:
+        print(f"  [render] pro engine failed, using the simple engine: {safe_err(e)}")
+    s = CFG[kind]
+    ass = work / "captions.ass"
+    captions.build_ass(words, ass, width=s["width"], height=s["height"], vertical=kind == "short", theme=theme,
+                       total=total + 0.5, overlays=overlays or [],
+                       progress_bar=kind == "short" and CFG["captions"].get("progress_bar", False))
+    segments = render.render(kind=kind, scenes=scenes, timings=timings, total=total, voice_wav=wav,
+                             ass_path=ass, stock=stock, work=work, out_path=out, seed=seed, whoosh_scenes=whoosh)
+    stock.save_used()
+    return segments
+
+
 def build_short(plan: dict, index: int, work: Path) -> dict:
     story = plan["stories"][index]
     sc = story["short"]
-    scenes = writer.finish_ending(sc["scenes"], sc.get("question", ""))
+    scenes = fill_cards(writer.finish_ending(sc["scenes"], sc.get("question", "")), story, plan["date"])
+    if not scenes[-1].get("card") and sc.get("question"):
+        scenes[-1]["card"] = {"template": "outro", "question": sc["question"], "cta": "Follow for daily tech news"}
     seed = f"{plan['date']}-short-{index}"
     work.mkdir(parents=True, exist_ok=True)
     print(f"[short {index}] voice")
@@ -107,18 +157,12 @@ def build_short(plan: dict, index: int, work: Path) -> dict:
     spans, total = tts.synth(scenes, wav, "short")
     print(f"[short {index}] {total:.1f} s, exact caption timing")
     words, timings = align.align_script(wav, scenes, spans)
-    ass = work / "captions.ass"
-    s = CFG["short"]
-    captions.build_ass(words, ass, width=s["width"], height=s["height"], vertical=True, theme=theme_for(plan["date"]),
-                       total=total + 0.5, overlays=[{"text": sc.get("hook_text", ""), "start": 0, "end": 2.6,
-                                                     "style": "Hook"}],
-                       progress_bar=CFG["captions"].get("progress_bar", False))
     print(f"[short {index}] video")
     out = work / f"short_{index}.mp4"
-    stock = Stock(vertical=True, seed=seed)
-    render.render(kind="short", scenes=scenes, timings=timings, total=total, voice_wav=wav, ass_path=ass,
-                  stock=stock, work=work, out_path=out, seed=seed)
-    stock.save_used()
+    hook = sc.get("hook_text", "")
+    draw(kind="short", scenes=scenes, timings=timings, total=total, words=words, wav=wav, work=work, out=out,
+         seed=seed, day=plan["date"], hook=hook,
+         overlays=[{"text": hook, "start": 0, "end": 2.6, "style": "Hook"}])
     sources = "\n".join(f"- {x['source']}: {x['url']}" for x in story["sources"][:4] if x.get("url"))
     return {"video": out, "duration": total,
             "youtube": {"title": sc["youtube_title"],
@@ -132,17 +176,29 @@ def build_long(plan: dict, work: Path) -> dict:
     lg = plan["long"]
     scenes, overlays_at, chapters, whoosh = [], [], [], set()
     chapters.append(("Intro", 0))
-    scenes += lg["intro"]
+    scenes += [{**x, "card": None} for x in lg["intro"]]
     total_segments = len(lg["segments"])
     for n, seg in enumerate(lg["segments"]):
         number = total_segments - n
         chapters.append((f"#{number} {seg['chapter']}", len(scenes)))
-        overlays_at.append((len(scenes), f"#{number}  {seg['chapter'].upper()}"))
+        overlays_at.append((len(scenes), f"#{number}", seg["chapter"]))
         whoosh.add(len(scenes))
-        scenes += seg["scenes"]
+        try:
+            story = plan["stories"][int(seg.get("story", 1)) - 1]
+        except (TypeError, ValueError, IndexError):
+            story = None
+        seg_scenes = fill_cards([dict(x) for x in seg["scenes"]], story, plan["date"])
+        seg_scenes[0]["card"] = None          # the chapter title shows at the start of each segment
+        scenes += seg_scenes
     chapters.append(("What do you think?", len(scenes)))
     whoosh.add(len(scenes))
-    scenes += writer.finish_ending(lg["outro"])
+    outro = [dict(x) for x in writer.finish_ending(lg["outro"])]
+    for x in outro:
+        x["card"] = None
+    if lg.get("pinned_comment"):
+        outro[-1]["card"] = {"template": "outro", "question": lg["pinned_comment"],
+                             "cta": "Subscribe for daily tech news"}
+    scenes += outro
 
     seed = f"{plan['date']}-long"
     work.mkdir(parents=True, exist_ok=True)
@@ -151,21 +207,19 @@ def build_long(plan: dict, work: Path) -> dict:
     spans, total = tts.synth(scenes, wav, "long")
     print(f"[long] {total / 60:.1f} min, exact caption timing")
     words, timings = align.align_script(wav, scenes, spans)
+    fps = CFG["long"]["fps"]
     overlays = [{"text": lg["thumbnail_text"], "start": 0, "end": 2.8, "style": "Hook"}]
-    overlays += [{"text": text, "start": timings[i][0], "end": timings[i][0] + 3.5, "style": "Tag"}
-                 for i, text in overlays_at]
-    ass = work / "captions.ass"
-    s = CFG["long"]
-    captions.build_ass(words, ass, width=s["width"], height=s["height"], vertical=False, theme=theme_for(plan["date"]),
-                       total=total + 0.5, overlays=overlays)
+    overlays += [{"text": f"{num}  {title.upper()}", "start": timings[i][0], "end": timings[i][0] + 3.5, "style": "Tag"}
+                 for i, num, title in overlays_at]
+    chapter_cards = [{"from": round(timings[i][0] * fps), "duration": round(3.5 * fps), "template": "chapter",
+                      "data": {"number": num, "title": title}} for i, num, title in overlays_at]
     print("[long] video")
     out = work / "long.mp4"
-    stock = Stock(vertical=False, seed=seed)
-    segs = render.render(kind="long", scenes=scenes, timings=timings, total=total, voice_wav=wav, ass_path=ass,
-                         stock=stock, work=work, out_path=out, seed=seed, whoosh_scenes=whoosh)
-    stock.save_used()
-    first_story_seg = segs[min(len(segs) - 1, max(0, round(len(segs) * 0.8)))]
-    thumb = thumbnail.make(first_story_seg, lg["thumbnail_text"], work / "thumbnail.jpg")
+    clips = draw(kind="long", scenes=scenes, timings=timings, total=total, words=words, wav=wav, work=work, out=out,
+                 seed=seed, day=plan["date"], hook=lg["thumbnail_text"], extra_cards=chapter_cards,
+                 overlays=overlays, whoosh=whoosh)
+    source = clips[min(len(clips) - 1, round(len(clips) * 0.8))] if clips else out   # story #1 is near the end
+    thumb = thumbnail.make(source, lg["thumbnail_text"], work / "thumbnail.jpg", at=1.0)
     chapter_text = render.chapter_times(timings, chapters)
     sources = "\n".join(f"- {x['source']}: {x['url']}" for st in plan["stories"] for x in st["sources"][:2]
                         if x.get("url"))
