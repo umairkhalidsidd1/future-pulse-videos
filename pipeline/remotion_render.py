@@ -15,7 +15,7 @@ from .captions import _groups
 from .config import CFG, ROOT
 
 REMOTION = ROOT / "remotion"
-CARD_TEMPLATES = {"headline", "stat", "compare", "list", "quote", "outro", "chapter"}
+CARD_TEMPLATES = {"headline", "stat", "compare", "list", "quote", "outro", "chapter", "slam"}
 AGGREGATORS = {"Hacker News", "Google Trends"}
 
 
@@ -49,7 +49,7 @@ def scene_cards(scenes: list[dict], timings, fps: int, total: float) -> list[dic
             continue
         start = s0 if i else 0.3
         end = timings[i + 1][0] if i + 1 < len(timings) else total + ff.TAIL
-        dur = max(1.6, min(end - start, 4.5))
+        dur = max(1.6, min(end - start, 4.5)) if c["template"] != "slam" else min(1.8, max(1.0, end - start))
         cards.append({"from": round(start * fps) + 2, "duration": round(dur * fps), "template": c["template"],
                       "data": {k: v for k, v in c.items() if k != "template"}})
     return cards
@@ -61,12 +61,15 @@ def _hex(c: str) -> str:
 
 def render(*, kind: str, scenes: list[dict], timings, total: float, words: list[dict], voice_wav: Path, stock,
            work: Path, out_path: Path, seed: str, theme: dict, hook: str = "", extra_cards: list[dict] | None = None,
-           whoosh_scenes: set[int] | None = None) -> list[Path]:
+           whoosh_scenes: set[int] | None = None, mood: str | None = None, look: dict | None = None) -> list[Path]:
     """Renders the video; returns the clips/photos it used (for the thumbnail)."""
     spec = CFG[kind]
     fps, vertical = spec["fps"], kind == "short"
     rng = random.Random(seed)
-    shots = ff.plan_shots(kind=kind, scenes=scenes, timings=timings, total=total, stock=stock, seed=seed)
+    shots = ff.plan_shots(kind=kind, scenes=scenes, timings=timings, total=total, stock=stock, seed=seed,
+                          words=words)
+    # every 2nd stressed word (every 3rd in long videos) gets a quick zoom punch
+    key_frames = [round(w["s"] * fps) for w in words if w["key"]][::2 if vertical else 3]
 
     run_id = uuid.uuid4().hex[:10]
     pub = REMOTION / "public" / "runs" / run_id
@@ -88,14 +91,17 @@ def render(*, kind: str, scenes: list[dict], timings, total: float, words: list[
                           "Photo: Wikimedia Commons" if name.startswith("wiki_") else "")
             motion = sh["motion"] if sh["motion"] != "pan" else rng.choice(["pan_left", "pan_right"])
             kind = "image" if sh["clip"] and sh["clip"].suffix.lower() in ff.IMAGE_EXT else "video"
+            punches = [f - sh["from"] for f in key_frames if sh["from"] + 3 <= f < sh["from"] + sh["frames"] - 4]
             props_shots.append({"from": sh["from"], "duration": sh["frames"], "src": src, "kind": kind,
                                 "width": sh["clip_size"][0], "height": sh["clip_size"][1],
-                                "trimBefore": round(sh["offset"] * fps), "motion": motion, "credit": credit})
+                                "trimBefore": round(sh["offset"] * fps), "motion": motion, "credit": credit,
+                                "punches": punches[:2]})
         duration = round((total + ff.TAIL) * fps)
         props = {
             "fps": fps, "durationInFrames": duration, "vertical": vertical,
             "theme": {"text": _hex(theme["text"]), "highlight": _hex(theme["highlight"]),
                       "keyword": _hex(theme["keyword"]), "card": "#F7F7F2", "ink": "#0B0F1A"},
+            "look": look or {"cardStyle": "light", "captionY": 0.6, "hookTilt": -2},
             "brand": CFG["channel"]["name"],
             "hook": {"text": hook, "frames": round((2.6 if vertical else 2.8) * fps)} if hook else None,
             "progressBar": bool(vertical and CFG["captions"].get("progress_bar")),
@@ -119,5 +125,6 @@ def render(*, kind: str, scenes: list[dict], timings, total: float, words: list[
         shutil.rmtree(pub, ignore_errors=True)
 
     ff.mix(video_only=video_only, voice_wav=voice_wav, timings=timings, total=total, work=work, out_path=out_path,
-           seed=seed, fps=fps, whoosh_scenes=whoosh_scenes)
+           seed=seed, fps=fps, whoosh_scenes=whoosh_scenes, words=words, cards=props["cards"], mood=mood,
+           long=not vertical)
     return [sh["clip"] for sh in shots if sh["clip"]]

@@ -1,6 +1,6 @@
 import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig} from "remotion";
 import {BOLD, CONDENSED, HEAVY} from "../fonts";
-import {Card, Theme} from "../types";
+import {Card, Look, Theme} from "../types";
 
 // Cards slide in over the moving footage, like on news channels. All designs are our own (no logos).
 
@@ -31,17 +31,52 @@ const Dim: React.FC = () => {
   return <AbsoluteFill style={{background: "rgba(3,6,14,0.45)", opacity}} />;
 };
 
-const Headline: React.FC<{d: Extract<Card, {template: "headline"}>["data"]; theme: Theme; vertical: boolean}> = ({d, theme, vertical}) => (
-  <Panel theme={theme} vertical={vertical}>
-    <div style={{display: "flex", alignItems: "center", gap: 16, marginBottom: 26}}>
-      <div style={{width: 22, height: 22, borderRadius: 11, background: "#e5383b"}} />
-      <div style={{fontFamily: BOLD, fontWeight: 700, fontSize: vertical ? 34 : 30, letterSpacing: 2, textTransform: "uppercase", opacity: 0.75}}>
-        {d.source}{d.date ? `  ·  ${d.date}` : ""}
+const Headline: React.FC<{d: Extract<Card, {template: "headline"}>["data"]; theme: Theme; vertical: boolean}> = ({d, theme, vertical}) => {
+  const {frame, fps} = useEnterExit();
+  // A marker sweeps over the key words of the real headline, like a reader highlighting it.
+  const sweep = interpolate(frame, [Math.round(fps * 0.45), Math.round(fps * 0.85)], [0, 100], {extrapolateLeft: "clamp", extrapolateRight: "clamp"});
+  const keys = new Set((d.highlight ?? []).map((w) => w.toLowerCase().replace(/[^a-z0-9]/g, "")));
+  return (
+    <Panel theme={theme} vertical={vertical}>
+      <div style={{display: "flex", alignItems: "center", gap: 16, marginBottom: 26}}>
+        <div style={{width: 22, height: 22, borderRadius: 11, background: "#e5383b"}} />
+        <div style={{fontFamily: BOLD, fontWeight: 700, fontSize: vertical ? 34 : 30, letterSpacing: 2, textTransform: "uppercase", opacity: 0.75}}>
+          {d.source}{d.date ? `  ·  ${d.date}` : ""}
+        </div>
       </div>
-    </div>
-    <div style={{fontFamily: HEAVY, fontWeight: 900, fontSize: vertical ? 64 : 62, lineHeight: 1.12}}>{d.title}</div>
-  </Panel>
-);
+      <div style={{fontFamily: HEAVY, fontWeight: 900, fontSize: vertical ? 64 : 62, lineHeight: 1.12}}>
+        {d.title.split(" ").map((w, i) => {
+          const hit = keys.has(w.toLowerCase().replace(/[^a-z0-9]/g, ""));
+          return (
+            <span key={i} style={hit ? {backgroundImage: `linear-gradient(transparent 58%, ${theme.highlight}cc 58%)`,
+              backgroundRepeat: "no-repeat", backgroundSize: `${sweep}% 100%`} : undefined}>{w}{" "}</span>
+          );
+        })}
+      </div>
+    </Panel>
+  );
+};
+
+const Slam: React.FC<{d: Extract<Card, {template: "slam"}>["data"]; theme: Theme; vertical: boolean}> = ({d, theme, vertical}) => {
+  const {frame, fps, opacity} = useEnterExit();
+  const words = d.text.split(" ").slice(0, 5);
+  return (
+    <AbsoluteFill style={{alignItems: "center", justifyContent: "center", background: `rgba(3,6,14,${0.72 * opacity})`}}>
+      <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0 26px", maxWidth: vertical ? 960 : 1600,
+        marginTop: vertical ? -260 : 0}}>
+        {words.map((w, i) => {
+          const s = spring({frame: frame - i * 4, fps, config: {damping: 11, stiffness: 240}, durationInFrames: 9});
+          return (
+            <span key={i} style={{fontFamily: CONDENSED, fontSize: vertical ? 170 : 200, lineHeight: 1.02, textTransform: "uppercase",
+              color: i === words.length - 1 ? theme.highlight : "#fff", opacity: Math.min(1, s * 1.5) * opacity,
+              transform: `scale(${interpolate(s, [0, 1], [2.2, 1])})`, display: "inline-block",
+              WebkitTextStroke: "4px #000", paintOrder: "stroke fill", textShadow: "0 12px 40px rgba(0,0,0,0.7)"}}>{w}</span>
+          );
+        })}
+      </div>
+    </AbsoluteFill>
+  );
+};
 
 const Stat: React.FC<{d: Extract<Card, {template: "stat"}>["data"]; theme: Theme; vertical: boolean}> = ({d, theme, vertical}) => {
   const {frame, fps} = useEnterExit();
@@ -66,7 +101,8 @@ const Compare: React.FC<{d: Extract<Card, {template: "compare"}>["data"]; theme:
   const right = spring({frame: frame - Math.round(fps * 0.45), fps, config: {damping: 13}, durationInFrames: 14});
   const box = (label: string, value: string, strong: boolean, s: number) => (
     <div style={{flex: 1, borderRadius: 24, padding: vertical ? "30px 22px" : "34px 30px", textAlign: "center",
-      background: strong ? theme.highlight : "rgba(0,0,0,0.06)", color: strong ? "#000" : theme.ink,
+      background: strong ? (theme.card === theme.highlight ? theme.ink : theme.highlight) : "rgba(127,127,127,0.12)",
+      color: strong ? (theme.card === theme.highlight ? theme.highlight : "#000") : theme.ink,
       transform: `scale(${s})`, opacity: s}}>
       <div style={{fontFamily: BOLD, fontWeight: 700, fontSize: vertical ? 34 : 32, textTransform: "uppercase", letterSpacing: 2, opacity: 0.8}}>{label}</div>
       <div style={{fontFamily: HEAVY, fontWeight: 900, fontSize: vertical ? 64 : 70, lineHeight: 1.1, marginTop: 12}}>{value}</div>
@@ -138,7 +174,14 @@ const Chapter: React.FC<{d: Extract<Card, {template: "chapter"}>["data"]; theme:
   );
 };
 
-export const CardView: React.FC<{card: Card; theme: Theme; vertical: boolean}> = ({card, theme, vertical}) => {
+const styled = (theme: Theme, look?: Look): Theme => {
+  if (look?.cardStyle === "dark") return {...theme, card: "rgba(12,16,30,0.9)", ink: "#FFFFFF"};
+  if (look?.cardStyle === "accent") return {...theme, card: theme.highlight, ink: "#000000"};
+  return theme;
+};
+
+export const CardView: React.FC<{card: Card; theme: Theme; vertical: boolean; look?: Look}> = ({card, theme: base, vertical, look}) => {
+  const theme = styled(base, look);
   const body = (() => {
     switch (card.template) {
       case "headline": return <Headline d={card.data} theme={theme} vertical={vertical} />;
@@ -148,12 +191,13 @@ export const CardView: React.FC<{card: Card; theme: Theme; vertical: boolean}> =
       case "quote": return <Quote d={card.data} theme={theme} vertical={vertical} />;
       case "outro": return <Outro d={card.data} theme={theme} vertical={vertical} />;
       case "chapter": return <Chapter d={card.data} theme={theme} vertical={vertical} />;
+      case "slam": return <Slam d={card.data} theme={theme} vertical={vertical} />;
       default: return null;
     }
   })();
   return (
     <AbsoluteFill>
-      {card.template !== "chapter" ? <Dim /> : null}
+      {card.template !== "chapter" && card.template !== "slam" ? <Dim /> : null}
       {body}
     </AbsoluteFill>
   );

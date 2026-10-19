@@ -187,49 +187,49 @@
    "short": {
     "hook_candidates": [
      {
-      "mechanism": "curiosity gap",
-      "text": "Elon Musk promised every American child a free SpaceX share.",
-      "score": 8
-     },
-     {
       "mechanism": "specific number",
-      "text": "Musk plans to give kids ten billion dollars in stock.",
+      "text": "Elon Musk wants to give ten billion dollars in SpaceX shares to kids.",
       "score": 8
      },
      {
-      "mechanism": "contrarian",
-      "text": "Musk giving kids SpaceX stock is not just pure charity.",
-      "score": 8
-     },
-     {
-      "mechanism": "self-relevance",
-      "text": "Your child could soon own an actual share of SpaceX.",
+      "mechanism": "curiosity gap",
+      "text": "How will seventy million American children get SpaceX stock next year?",
       "score": 9
      },
      {
+      "mechanism": "contrarian",
+      "text": "Instead of traditional charity, Musk is handing out private space equity.",
+      "score": 7
+     },
+     {
       "mechanism": "stakes",
-      "text": "Seventy million children might become owners of America's rocket company.",
+      "text": "Giving SpaceX shares to every US child changes corporate structure forever.",
       "score": 8
+     },
+     {
+      "mechanism": "timeliness",
+      "text": "Musk just promised one SpaceX share to every child in America.",
+      "score": 9
      }
     ],
-    "hook_text": "FREE SPACEX STOCK FOR KIDS",
+    "hook_text": "TEN BILLION IN SPACE STOCK",
     "scenes": [
      {
-      "text": "Elon Musk says your child could soon own an actual share of SpaceX.",
-      "visual": "child holding piggybank",
-      "visual_alt": "child",
+      "text": "Elon Musk claims he will give one SpaceX share to every child in America starting next year.",
+      "visual": "rocket launch",
+      "visual_alt": "rocket",
+      "wiki": "SpaceX",
       "keywords": [
-       "SpaceX",
-       "share"
+       "SpaceX share"
       ],
       "card": null
      },
      {
-      "text": "Musk pledged to give one share to every American kid, totaling over ten billion dollars.",
-      "visual": "rocket launch pad",
-      "visual_alt": "rocket",
+      "text": "According to reports, the plan involves around 72 million children and roughly $10.5 billion worth of shares.",
+      "visual": "children classroom",
+      "visual_alt": "students",
+      "wiki": "",
       "keywords": [
-       "pledged",
        "ten billion"
       ],
       "card": {
@@ -237,78 +237,70 @@
       }
      },
      {
-      "text": "With over seventy million children in the US, the gifts appear set to distribute through government Trump Accounts.",
-      "visual": "treasury building exterior",
-      "visual_alt": "bank",
+      "text": "The shares are planned to be given away through Trump Accounts, which are tax-advantaged investment accounts for American children.",
+      "visual": "financial chart",
+      "visual_alt": "money",
+      "wiki": "",
       "keywords": [
-       "seventy million",
-       "Trump Accounts"
+       "investment accounts"
       ],
       "card": null
      },
      {
-      "text": "But here is the detail everyone missed.",
-      "visual": "financial charts screen",
-      "visual_alt": "computer",
-      "keywords": [
-       "detail",
-       "missed"
-      ],
-      "card": null
-     },
-     {
-      "text": "Musk holds over five billion supervoting shares, alongside around 849 million Class A common shares.",
-      "visual": "boardroom empty chairs",
+      "text": "With around 72 million children in the US as of July 2025, this giveaway marks a significant distribution.",
+      "visual": "corporate office",
       "visual_alt": "office",
+      "wiki": "",
       "keywords": [
-       "supervoting",
-       "control"
+       "public equity"
       ],
       "card": {
        "template": "stat",
-       "value": 5.5,
-       "label": "Musk supervoting shares",
-       "prefix": ">",
-       "suffix": "billion",
-       "decimals": 1
+       "value": 72.0,
+       "label": "children in the US",
+       "prefix": "",
+       "suffix": "million",
+       "decimals": 0
       }
      },
      {
-      "text": "However, reports note it remains unclear how Musk actually plans to distribute shares directly to the public.",
-      "visual": "stock market ticker",
-      "visual_alt": "trading",
+      "text": "Musk added that this giveaway will be the first of many.",
+      "visual": "legal document",
+      "visual_alt": "papers",
+      "wiki": "",
       "keywords": [
-       "scrutiny",
-       "retail"
+       "giveaway"
       ],
       "card": null
      },
      {
-      "text": "Would you hold or sell that share? Let me know in the comments.",
-      "visual": "smartphone hand typing",
-      "visual_alt": "smartphone",
+      "text": "What does this mean for the future of private space stock distributions?",
+      "visual": "smartphone hand",
+      "visual_alt": "phone",
+      "wiki": "",
       "keywords": [
-       "hold",
-       "sell"
+       "space stock"
       ],
       "card": null
      }
     ],
-    "question": "Would you hold or sell that share?",
-    "youtube_title": "Musk Pledges SpaceX Stock to Every US Child #Shorts",
-    "youtube_description": "Elon Musk says he will donate one SpaceX share to every child in the United States through Trump Accounts.\nHere is what distributing equity to 70 million kids means for SpaceX's governance.\n\nSources: The Verge, TechCrunch",
+    "question": "So would you hold private space stock for your children?",
+    "music_mood": "curious",
+    "youtube_title": "Elon Musk's $10B SpaceX Share Plan Explained #Shorts",
+    "youtube_description": "Elon Musk plans to distribute SpaceX shares to every child in the US through investment accounts. Here is what this means for SpaceX's corporate structure.\n\n#SpaceX #ElonMusk #TechNews #Space #Business\nSources: The Verge, TechCrunch",
     "tags": [
-     "spacex",
-     "elon musk",
-     "trump accounts",
-     "investing",
-     "spacex stock",
-     "space tech",
-     "business news",
-     "finance"
+     "SpaceX",
+     "Elon Musk",
+     "SpaceX shares",
+     "Trump Accounts",
+     "Tech news",
+     "Space",
+     "Business",
+     "Public equity"
     ],
-    "instagram_caption": "Elon Musk pledged to give one SpaceX share to every American child, worth over $10 billion.\n\nWould you hold or sell that share?\n\n#spacex #elonmusk #finance #tech #investing #stocks",
-    "tiktok_caption": "Musk pledged a SpaceX share to every US child. Here is what that really means. #spacex #elonmusk #tech #finance"
+    "instagram_caption": "Elon Musk plans to give SpaceX shares to every US child. Here is what it means for corporate structure.\n\nSo would you hold private space stock for your children?\n\n#SpaceX #ElonMusk #TechNews #Space #Business",
+    "tiktok_caption": "Elon Musk wants to give SpaceX shares to every US child. What does this mean for the company? #SpaceX #ElonMusk #TechNews #Space",
+    "error": null
    }
   },
   {

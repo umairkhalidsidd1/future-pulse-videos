@@ -18,9 +18,18 @@ export type Shot = {
   trimBefore: number; // frames to skip at the start of the clip
   motion: "zoom_in" | "zoom_out" | "pan_left" | "pan_right";
   credit?: string;    // e.g. "NASA" (shown small in a corner)
+  punches?: number[]; // frames (from the shot start) where a key word is stressed: quick zoom-in
 };
 
-export type HeadlineData = {source: string; title: string; date?: string};
+// The look changes per series, so videos don't all look like one template.
+export type Look = {
+  cardStyle: "light" | "dark" | "accent";
+  captionY: number;   // 0..1 of the height
+  hookTilt: number;   // degrees
+};
+
+export type HeadlineData = {source: string; title: string; date?: string; highlight?: string[]};
+export type SlamData = {text: string};
 export type StatData = {value: number; prefix?: string; suffix?: string; decimals?: number; label: string};
 export type CompareData = {title?: string; leftLabel: string; leftValue: string; rightLabel: string; rightValue: string};
 export type ListData = {title: string; items: string[]};
@@ -35,7 +44,8 @@ export type Card =
   | {from: number; duration: number; template: "list"; data: ListData}
   | {from: number; duration: number; template: "quote"; data: QuoteData}
   | {from: number; duration: number; template: "outro"; data: OutroData}
-  | {from: number; duration: number; template: "chapter"; data: ChapterData};
+  | {from: number; duration: number; template: "chapter"; data: ChapterData}
+  | {from: number; duration: number; template: "slam"; data: SlamData};
 
 export type CaptionWord = {text: string; startMs: number; endMs: number; key: boolean};
 export type CaptionPage = {startMs: number; endMs: number; words: CaptionWord[]};
@@ -45,6 +55,7 @@ export type VideoProps = {
   durationInFrames: number;
   vertical: boolean;
   theme: Theme;
+  look: Look;
   brand: string;
   hook: {text: string; frames: number} | null;
   progressBar: boolean;

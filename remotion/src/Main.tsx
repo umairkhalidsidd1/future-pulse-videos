@@ -15,13 +15,13 @@ const ProgressBar: React.FC<{color: string}> = ({color}) => {
   );
 };
 
-const Hook: React.FC<{text: string; color: string; vertical: boolean}> = ({text, color, vertical}) => {
+const Hook: React.FC<{text: string; color: string; vertical: boolean; tilt: number}> = ({text, color, vertical, tilt}) => {
   const frame = useCurrentFrame();
   const pop = interpolate(frame, [0, 6, 10], [0.6, 1.06, 1], {extrapolateRight: "clamp"});
   return (
     <AbsoluteFill style={{alignItems: "center", paddingTop: vertical ? 300 : 120}}>
       <div style={{background: color, color: "#000", fontFamily: CONDENSED, fontSize: vertical ? 104 : 120,
-        lineHeight: 1.05, padding: "18px 34px", borderRadius: 18, transform: `scale(${pop}) rotate(-2deg)`,
+        lineHeight: 1.05, padding: "18px 34px", borderRadius: 18, transform: `scale(${pop}) rotate(${tilt}deg)`,
         textAlign: "center", maxWidth: vertical ? 920 : 1500, textTransform: "uppercase",
         boxShadow: "0 18px 50px rgba(0,0,0,0.45)"}}>
         {text}
@@ -41,13 +41,13 @@ export const Main: React.FC<VideoProps> = (p) => {
       ))}
       {p.cards.map((c, i) => (
         <Sequence key={`card-${i}`} name={`Card ${c.template}`} from={c.from} durationInFrames={c.duration}>
-          <CardView card={c} theme={theme} vertical={p.vertical} />
+          <CardView card={c} theme={theme} vertical={p.vertical} look={p.look} />
         </Sequence>
       ))}
-      <Captions pages={p.captions} theme={theme} vertical={p.vertical} />
+      <Captions pages={p.captions} theme={theme} vertical={p.vertical} y={p.look?.captionY} />
       {p.hook && p.hook.text ? (
         <Sequence name="Hook" durationInFrames={p.hook.frames}>
-          <Hook text={p.hook.text} color={theme.highlight} vertical={p.vertical} />
+          <Hook text={p.hook.text} color={theme.highlight} vertical={p.vertical} tilt={p.look?.hookTilt ?? -2} />
         </Sequence>
       ) : null}
       {p.progressBar ? <ProgressBar color={theme.highlight} /> : null}

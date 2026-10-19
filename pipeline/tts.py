@@ -60,18 +60,44 @@ def _gemini(model: str, text: str) -> np.ndarray:
     return audio
 
 
-def _check_start(audio: np.ndarray, script: str):
-    """Reject audio where the AI read out its own instructions instead of starting with the script."""
+def _words(text: str) -> list[str]:
+    from .align import _norm, spoken
+    text = re.sub(r"<[^>]+>", " ", text)
+    return [w for w in (_norm(x) for x in spoken(text).split()) if w]
+
+
+def _check_full(audio: np.ndarray, script: str):
+    """Listen to the WHOLE recording and compare it with the script. Rejects audio where the AI read its
+    instructions out loud, skipped a sentence, or added words (a start check alone misses those)."""
+    import difflib
     from faster_whisper import WhisperModel
-    from .align import _norm
-    clip = audio[: RATE * 6]
-    clip16 = np.interp(np.linspace(0, len(clip) - 1, len(clip) * 2 // 3), np.arange(len(clip)), clip)
+    a16 = np.interp(np.linspace(0, len(audio) - 1, len(audio) * 2 // 3), np.arange(len(audio)), audio)
     model = WhisperModel("base.en", device="cpu", compute_type="int8", download_root=str(MODELS / "whisper"))
-    segs, _ = model.transcribe(clip16.astype(np.float32), language="en")
-    heard = {_norm(w) for s in segs for w in s.text.split()}
-    first = [_norm(w) for w in script.split()[:6] if len(_norm(w)) > 2]
-    if first and not any(w in heard for w in first):
-        raise VoiceError("voice does not start with the script")
+    segs, _ = model.transcribe(a16.astype(np.float32), language="en")
+    heard = _words(" ".join(s.text for s in segs))
+    want = _words(script)
+    sm = difflib.SequenceMatcher(None, want, heard, autojunk=False)
+    matched = sum(b.size for b in sm.get_matching_blocks())
+    missing = 1 - matched / max(1, len(want))
+    extra = 1 - matched / max(1, len(heard))
+    first = want[:4]
+    starts_ok = any(w in heard[:12] for w in first if len(w) > 2) if first else True
+    if missing > 0.15 or extra > 0.15 or not starts_ok:
+        raise VoiceError(f"voice does not match the script ({missing:.0%} missing, {extra:.0%} extra)")
+
+
+def speech_text(scenes: list[dict]) -> str:
+    """What the voice reads: the script with the key word of each scene in CAPS (Gemini stresses it) and a
+    short pause before reveal lines. Captions still show the plain script."""
+    parts = []
+    for i, sc in enumerate(scenes):
+        text = sc["text"]
+        for kw in sc.get("keywords", [])[:1]:
+            if len(kw) > 3 and not kw.isupper():
+                text = re.sub(rf"\b{re.escape(kw)}\b", kw.upper(), text, count=1)
+        reveal = i == len(scenes) - 1 or re.match(r"(but|here's|here is|so|and that's|now)\b", text, re.I)
+        parts.append(("<short pause> " if i and reveal else "") + text)
+    return " ".join(parts)
 
 
 # ---------- Kokoro (backup) ----------
@@ -116,18 +142,18 @@ def _trim(audio: np.ndarray, pad: float = 0.08) -> np.ndarray:
     return audio[a:b]
 
 
-def _chunks(scenes: list[dict], max_words: int = 600) -> list[str]:
-    """Whole scenes joined into pieces of at most ~600 words (one Gemini request each)."""
+def _chunks(scenes: list[dict], max_words: int = 600) -> list[list[dict]]:
+    """Whole scenes grouped into pieces of at most ~600 words (one Gemini request each)."""
     out, cur, n = [], [], 0
     for sc in scenes:
         k = len(sc["text"].split())
         if cur and n + k > max_words:
-            out.append(" ".join(cur))
+            out.append(cur)
             cur, n = [], 0
-        cur.append(sc["text"])
+        cur.append(sc)
         n += k
     if cur:
-        out.append(" ".join(cur))
+        out.append(cur)
     return out
 
 
@@ -163,13 +189,13 @@ def synth(scenes: list[dict], out_wav: Path, kind: str = "short") -> tuple[None,
     for model in v.get("gemini_models", []):
         try:
             parts = []
-            for i, text in enumerate(pieces):
-                part = _trim(_gemini(model, text))
-                expected = len(text.split()) / 150 * 60
+            for piece in pieces:
+                plain = " ".join(sc["text"] for sc in piece)
+                part = _trim(_gemini(model, speech_text(piece)))
+                expected = len(plain.split()) / 150 * 60
                 if not 0.5 * expected < len(part) / RATE < 1.8 * expected:
                     raise VoiceError(f"odd length {len(part) / RATE:.0f}s for ~{expected:.0f}s of text")
-                if i == 0:
-                    _check_start(part, text)
+                _check_full(part, plain)
                 parts.append(part)
             gap = np.zeros(int(0.25 * RATE), dtype=np.float32)
             audio = np.concatenate([x for p in parts for x in (p, gap)][:-1])
@@ -178,7 +204,7 @@ def synth(scenes: list[dict], out_wav: Path, kind: str = "short") -> tuple[None,
         except (VoiceError, requests.RequestException) as e:
             print(f"  [tts] {safe_err(e)}; trying the next voice engine")
     if audio is None:
-        audio = _trim(np.concatenate([_kokoro_say(t) for t in pieces]))
+        audio = _trim(np.concatenate([_kokoro_say(" ".join(sc["text"] for sc in p)) for p in pieces]))
         engine = f"kokoro ({v['kokoro_voice']})"
 
     target = v["target_wpm"][kind]

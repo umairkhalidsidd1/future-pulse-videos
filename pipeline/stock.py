@@ -157,6 +157,7 @@ def _nasa(query: str) -> list[dict]:
             continue
         out.append({"id": f"nasa_{re.sub(r'[^A-Za-z0-9]+', '_', d.get('nasa_id', ''))[:60]}",
                     "url": thumb.replace("~thumb.", "~large."), "kind": "image", "duration": 999, "tall": False,
+                    "alt_urls": [thumb.replace("~thumb.", "~medium."), thumb.replace("~thumb.", "~orig.")],
                     "thumb": thumb, "credit": "Image: NASA"})
     return out
 
@@ -206,17 +207,20 @@ class Stock:
         path = CLIPS / f"{item['id']}{ext}"
         if path.exists() and path.stat().st_size > 10_000:
             return path
-        try:
-            with requests.get(item["url"], stream=True, timeout=120, headers=WIKI_UA) as r:
-                r.raise_for_status()
-                with open(path, "wb") as f:
-                    for chunk in r.iter_content(1 << 20):
-                        f.write(chunk)
-            return path
-        except requests.RequestException as e:
-            print(f"  [stock] download failed {item['id']}: {safe_err(e)}")
-            path.unlink(missing_ok=True)
-            return None
+        last = None
+        for url in [item["url"], *item.get("alt_urls", [])]:   # NASA: not every size exists for every photo
+            try:
+                with requests.get(url, stream=True, timeout=120, headers=WIKI_UA) as r:
+                    r.raise_for_status()
+                    with open(path, "wb") as f:
+                        for chunk in r.iter_content(1 << 20):
+                            f.write(chunk)
+                return path
+            except requests.RequestException as e:
+                last = e
+                path.unlink(missing_ok=True)
+        print(f"  [stock] download failed {item['id']}: {safe_err(last)}")
+        return None
 
     def _candidates(self, query: str, alt: str, want: int) -> list[dict]:
         """Clips for one scene, best search matches first (falls back to simpler and generic searches)."""
@@ -312,7 +316,9 @@ def rank_clips(scenes: list[dict], cands: list[list[dict]]) -> list[list[int]] |
         parts = [{"text": "For each scene below you see the narration and numbered preview pictures of stock clips. "
                           "Score EVERY clip from 0 to 10 for how well it fits what is being said: 9-10 shows "
                           "exactly that, 6-8 clearly related, 4-5 loosely related but fine as background "
-                          "(e.g. a lab for a science line), 0-3 unrelated or odd. Give 0 to clips with visible text, "
+                          "(e.g. a lab for a science line), 0-3 unrelated or odd. Brand names mean the COMPANY or "
+                          "PRODUCT (Apple = the tech company, Amazon = the company, Meta, X, Tesla...): fruit, "
+                          "rainforests or the letter X score 0. Give 0 to clips with visible text, "
                           "logos or watermarks, low quality, or a stranger who could be mistaken for a real named "
                           'person. Answer like {"S0": {"C0": 7, "C1": 2}, "S1": {"C0": 9}}.'}]
         for si in range(start, min(start + 10, len(scenes))):

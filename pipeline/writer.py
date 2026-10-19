@@ -54,7 +54,9 @@ Use cards on about 40% of scenes, never on the first scene, never on two scenes 
   "rightLabel": "Now", "rightValue": "$2,700/kg"} : then vs now or A vs B, values from the SOURCES, max 14 chars each.
 - {"template": "list", "title": "3 things to know", "items": ["max 5 words", "max 5 words", "max 5 words"]}
 - {"template": "quote", "text": "...", "who": "Name", "where": "where they said it"} : ONLY a quote that appears
-  WORD FOR WORD in the SOURCES. Max 20 words. Otherwise no quote card."""
+  WORD FOR WORD in the SOURCES. Max 20 words. Otherwise no quote card.
+- {"template": "slam", "text": "FIVE GIGAWATTS BY 2039"} : the single most striking fact in 2-4 big words, once
+  per video, on a scene that says those words."""
 
 VISUAL_RULES = """VISUAL RULES: every scene has "visual": a 1-3 word STOCK FOOTAGE search query for something concrete and
 filmable that MATCHES what is being said (e.g. "electric car highway", "robot arm factory", "rocket launch",
@@ -118,6 +120,9 @@ def clean_card(c):
             items = [_short(x, 36) for x in c.get("items", []) if str(x).strip()][:4]
             return {"template": "list", "title": _short(c.get("title", "Key points"), 34), "items": items} \
                 if len(items) >= 2 else None
+        if t == "slam":
+            text = _short(c.get("text", ""), 40)
+            return {"template": "slam", "text": text} if 1 <= len(text.split()) <= 5 else None
         if t == "quote":
             text, who = _short(c.get("text", ""), 170), _short(c.get("who", ""), 40)
             return {"template": "quote", "text": text.strip('"“”'), "who": who,
@@ -188,6 +193,8 @@ def _check_short(r):
         raise ValueError("missing youtube_title")
     title = r["youtube_title"]
     r.setdefault("hook_text", "")
+    if r.get("music_mood") not in ("energetic", "upbeat", "curious", "inspiring"):
+        r["music_mood"] = "upbeat"
     r.setdefault("youtube_description", title)
     r.setdefault("instagram_caption", title)
     r.setdefault("tiktok_caption", title)
@@ -215,6 +222,11 @@ def _check_long(r):
     r.setdefault("description", "{CHAPTERS}")
     if not isinstance(r.get("tags"), list):
         r["tags"] = []
+    words = sum(len(s["text"].split()) for part in [r["intro"], r["outro"]] + [g["scenes"] for g in segs]
+                for s in part)
+    need = CFG["long"]["target_minutes"][0] * 135
+    if words < need:
+        raise ValueError(f"script too short: {words} words, need at least {need}")
 
 
 def pick_stories(candidates: list[dict], n: int) -> list[dict]:
@@ -281,9 +293,11 @@ STRUCTURE:
 - Scene 1 = the chosen hook (spoken).
 - 5-9 scenes in total. Each scene 1-2 short sentences, max 22 words. Relentless pace, no wind-up.
 - Around the middle, a rehook line that raises the stakes ("But here's the part that matters...", vary it).
-- Last scene: a short question that makes people comment, then ONE short, complete closing sentence
-  (for example "Tell me in the comments."). EVERY sentence must be complete. Never end with "...",
-  "Because", "and", "but", "so", "that" or any unfinished sentence.
+- Last scene: ONE complete yes/no question tied to our point of view, that also leads naturally back into the
+  hook when the Short replays (e.g. hook "Amazon is funding twelve nuclear reactors." / last line "So would
+  you live next to one?"). EVERY sentence must be complete. Never end with "...", "Because", "and", "but",
+  "so", "that" or any unfinished sentence.
+- Open a question in the first 3 seconds and answer it near the end (70-80% of the way through).
 
 {SCRIPT_RULES}
 
@@ -292,17 +306,20 @@ STRUCTURE:
 {VISUAL_RULES}
 
 METADATA:
-- youtube_title: max 70 characters, the key search words first, concrete and accurate, ends with " #Shorts"
-- youtube_description: 2-3 short lines, then "Sources:" and the source names
+- youtube_title: max 70 characters: the named thing + a specific number or change + what it means
+  (e.g. "Nvidia's new chip is 4x faster. Here's the catch"), accurate, ends with " #Shorts"
+- youtube_description: 2-3 short lines, then 3-5 hashtags on their own line, then "Sources:" and the
+  source names
+- music_mood: one of "energetic", "upbeat", "curious", "inspiring" (fits the story's feeling)
 - tags: 8-12 search tags
-- instagram_caption: 1-2 punchy lines + the question + 5-8 relevant hashtags
+- instagram_caption: 1-2 punchy lines + the question + 3-5 relevant hashtags
 - tiktok_caption: max 150 characters + 3-5 hashtags
 
 Return JSON:
 {{"hook_candidates": [{{"mechanism": "...", "text": "...", "score": 0}}],
  "hook_text": "ALL CAPS FIRST FRAME TEXT",
  "scenes": [{{"text": "...", "visual": "...", "visual_alt": "...", "wiki": "...", "keywords": ["..."], "card": null}}],
- "question": "the comment question you used",
+ "question": "the comment question you used", "music_mood": "curious",
  "youtube_title": "...", "youtube_description": "...", "tags": ["..."],
  "instagram_caption": "...", "tiktok_caption": "..."}}"""
     return ask_json(SYSTEM, prompt, validate=_check_short)
@@ -318,14 +335,17 @@ def write_long(stories: list[dict]) -> dict:
 
 {chr(10).join(blocks)}
 
-LENGTH: {lo}-{hi} minutes spoken = about {lo * 155}-{hi * 150} words in total.
+LENGTH: {lo}-{hi} minutes spoken = about {lo * 155}-{hi * 150} words in total. This is a HARD minimum:
+under {lo * 140} words will be rejected. Count your words.
 
 STRUCTURE (built for retention):
 - Count DOWN from story {len(stories)} to story 1. Story 1 must be the biggest one. You choose the order.
 - intro (15-25 seconds): a strong hook about the biggest story, but hold the full reveal for the end
   ("...and number one could change how you ..."). Then one line about what's coming. No "welcome back".
-- segments: one per story. Each 150-260 words: what happened, why it matters, what happens next.
+- segments: one per story. Each 180-280 words: what happened, why it matters, what happens next.
   Start each segment with a fresh mini-hook. End each one with a bridge that teases the next story.
+  Every 60-90 seconds add a re-hook line that opens a new question.
+- chapter: each chapter title is a short QUESTION (e.g. "Why is Amazon buying nuclear?").
 - outro (15-25 seconds): a question for the comments, then a short ask to subscribe for daily updates.
 
 Each scene: 1-3 spoken sentences. Intro 2-4 scenes, each segment 6-12 scenes, outro 2-3 scenes.

@@ -8,7 +8,9 @@ from .config import ASSETS
 
 
 def _frame(video: Path, out: Path, at: float = 0.5) -> Image.Image:
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{at:.2f}", "-i", str(video), "-frames:v", "1", str(out)],
+    seek = ["-ss", f"{at:.2f}"] if at > 0 else []          # seeking inside a photo gives no frame at all
+    out.unlink(missing_ok=True)
+    subprocess.run(["ffmpeg", "-y", "-v", "error", *seek, "-i", str(video), "-frames:v", "1", "-update", "1", str(out)],
                    check=False)
     if out.exists():
         return Image.open(out).convert("RGB")

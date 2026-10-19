@@ -72,6 +72,7 @@ long:
 
 render:
   engine: "remotion"              # remotion = pro look (cards, animated captions). ffmpeg = simple backup
+  finish_look: true               # light film grain + soft vignette on the final video
 
 captions:
   whisper_model: "base.en"
@@ -91,7 +92,13 @@ audio:
   music_tracks: ["Voxel Revolution", "Digital Lemonade", "Inspired", "EDM Detection Mode", "Hyperfun",
                  "Ouroboros", "Pamgaea", "Funk Game Loop", "Raving Energy"]
   music_credit: "Music: Kevin MacLeod (incompetech.com), licensed under CC BY 4.0 (creativecommons.org/licenses/by/4.0/)"
-  music_volume: 0.12
+  music_under_voice_db: -26       # music level while words are spoken (voice sits ~18 dB above it)
+  music_in_pauses_db: -17         # music comes up in pauses
+  music_moods:                    # the writer picks a mood per story; tracks are chosen from that pool
+    energetic: ["EDM Detection Mode", "Raving Energy", "Voxel Revolution"]
+    upbeat: ["Digital Lemonade", "Pamgaea", "Funk Game Loop", "Hyperfun"]
+    curious: ["Ouroboros", "Voxel Revolution", "Digital Lemonade"]
+    inspiring: ["Inspired", "Ouroboros"]
   whoosh: true
   loudness_lufs: -14
 

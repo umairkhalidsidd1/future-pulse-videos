@@ -98,7 +98,25 @@ def theme_for(day: str) -> dict:
     return themes[n % len(themes)]
 
 
-def headline_card(story: dict, day: str) -> dict:
+LOOKS = [  # one look per series (index in config short.formats); long videos use LONG_LOOK
+    {"cardStyle": "light", "captionY": 0.60, "hookTilt": -2},
+    {"cardStyle": "dark", "captionY": 0.62, "hookTilt": 2},
+    {"cardStyle": "dark", "captionY": 0.58, "hookTilt": -1},
+    {"cardStyle": "accent", "captionY": 0.60, "hookTilt": 0},
+    {"cardStyle": "light", "captionY": 0.63, "hookTilt": 2},
+]
+LONG_LOOK = {"cardStyle": "dark", "captionY": 0.6, "hookTilt": 0}
+
+
+def series_of(plan: dict, index: int) -> int:
+    n = len(CFG["short"]["formats"])
+    try:
+        return (date.fromisoformat(plan["date"]).toordinal() + index) % n
+    except ValueError:
+        return index % n
+
+
+def headline_card(story: dict, day: str, scenes: list[dict] | None = None) -> dict:
     """The REAL headline of the story's best source, for the on-screen headline card."""
     srcs = story.get("sources") or [{"title": story["title"], "source": "", "url": ""}]
     best = next((x for x in srcs if x.get("source") not in remotion_render.AGGREGATORS), srcs[0])
@@ -106,20 +124,25 @@ def headline_card(story: dict, day: str) -> dict:
         when = date.fromisoformat(day).strftime("%b %-d")
     except ValueError:
         when = ""
-    return {"template": "headline", "source": remotion_render.publisher(best) or "News",
-            "title": " ".join(best["title"].split())[:110], "date": when}
+    title = " ".join(best["title"].split())[:110]
+    keys = {k.lower() for sc in scenes or [] for kw in sc.get("keywords", []) for k in kw.split()}
+    words = [w for w in title.split() if len(w) > 3]
+    marked = [w for w in words if w.lower().strip(".,:;'\"") in keys][:3] or sorted(words, key=len)[-2:]
+    return {"template": "headline", "source": remotion_render.publisher(best) or "News", "title": title,
+            "date": when, "highlight": marked}
 
 
 def fill_cards(scenes: list[dict], story: dict | None, day: str) -> list[dict]:
     for sc in scenes:
         card = sc.get("card")
         if card and card.get("template") == "headline":
-            sc["card"] = headline_card(story, day) if story else None
+            sc["card"] = headline_card(story, day, scenes) if story else None
     return scenes
 
 
 def draw(*, kind: str, scenes, timings, total, words, wav, work: Path, out: Path, seed: str, day: str,
-         hook: str, extra_cards: list | None = None, overlays: list | None = None, whoosh=None) -> tuple[list, list]:
+         hook: str, extra_cards: list | None = None, overlays: list | None = None, whoosh=None,
+         mood: str | None = None, look: dict | None = None) -> tuple[list, list]:
     """Make the picture + sound. Pro engine first; if it fails, the simple FFmpeg engine so the day isn't lost.
     Returns (clean footage files for the thumbnail, credit lines for the description)."""
     stock = Stock(vertical=kind == "short", seed=seed)
@@ -128,7 +151,8 @@ def draw(*, kind: str, scenes, timings, total, words, wav, work: Path, out: Path
         if CFG.get("render", {}).get("engine", "remotion") == "remotion":
             clips = remotion_render.render(kind=kind, scenes=scenes, timings=timings, total=total, words=words,
                                            voice_wav=wav, stock=stock, work=work, out_path=out, seed=seed,
-                                           theme=theme, hook=hook, extra_cards=extra_cards, whoosh_scenes=whoosh)
+                                           theme=theme, hook=hook, extra_cards=extra_cards, whoosh_scenes=whoosh,
+                                           mood=mood, look=look)
             stock.save_used()
             return clips, stock.credits()
     except Exception as e:
@@ -161,7 +185,7 @@ def build_short(plan: dict, index: int, work: Path) -> dict:
     out = work / f"short_{index}.mp4"
     hook = sc.get("hook_text", "")
     _, credits = draw(kind="short", scenes=scenes, timings=timings, total=total, words=words, wav=wav, work=work, out=out,
-         seed=seed, day=plan["date"], hook=hook,
+         seed=seed, day=plan["date"], hook=hook, mood=sc.get("music_mood"), look=LOOKS[series_of(plan, index)],
          overlays=[{"text": hook, "start": 0, "end": 2.6, "style": "Hook"}])
     sources = "\n".join(f"- {x['source']}: {x['url']}" for x in story["sources"][:4] if x.get("url"))
     return {"video": out, "duration": total,
@@ -218,7 +242,7 @@ def build_long(plan: dict, work: Path) -> dict:
     out = work / "long.mp4"
     clips, credits = draw(kind="long", scenes=scenes, timings=timings, total=total, words=words, wav=wav, work=work, out=out,
                  seed=seed, day=plan["date"], hook=lg["thumbnail_text"], extra_cards=chapter_cards,
-                 overlays=overlays, whoosh=whoosh)
+                 overlays=overlays, whoosh=whoosh, mood="inspiring", look=LONG_LOOK)
     source = clips[min(len(clips) - 1, round(len(clips) * 0.8))] if clips else out   # story #1 is near the end
     at = 0.0 if source.suffix.lower() in render.IMAGE_EXT else 1.0
     thumb = thumbnail.make(source, lg["thumbnail_text"], work / "thumbnail.jpg", at=at)

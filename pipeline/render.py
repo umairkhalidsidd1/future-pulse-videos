@@ -122,14 +122,60 @@ def _whoosh(rate: int, length: float = 0.45) -> np.ndarray:
     return (out / (np.max(np.abs(out)) or 1) * 0.5).astype(np.float32)
 
 
-def _sfx_track(times: list[float], total: float, path: Path, rate: int = 48000):
+def _pop(rate: int) -> np.ndarray:
+    """Short soft 'pop' (pitch-dropping sine) for a card appearing."""
+    t = np.arange(int(rate * 0.09)) / rate
+    tone = np.sin(2 * np.pi * (900 - 3500 * t) * t) * np.exp(-t * 45)
+    return (tone * 0.35).astype(np.float32)
+
+
+def _impact(rate: int) -> np.ndarray:
+    """Low 'boom' for a number landing: decaying 55 Hz sine plus a little noise."""
+    t = np.arange(int(rate * 0.6)) / rate
+    boom = np.sin(2 * np.pi * (55 + 30 * np.exp(-t * 12)) * t) * np.exp(-t * 7)
+    hit = np.random.default_rng(3).standard_normal(len(t)) * np.exp(-t * 60) * 0.25
+    return ((boom + hit) * 0.55).astype(np.float32)
+
+
+def _riser(rate: int, length: float = 1.0) -> np.ndarray:
+    """Rising noise sweep that ends exactly on a reveal."""
+    w = _whoosh(rate, length)
+    env = np.linspace(0.15, 1.0, len(w)) ** 2
+    return (w * env * 0.8).astype(np.float32)
+
+
+def _sfx_track(events: list[tuple[float, str]], total: float, path: Path, rate: int = 48000):
+    """events: (time in seconds, 'whoosh' | 'pop' | 'impact' | 'riser'). A riser ENDS at its time."""
     track = np.zeros(int(rate * (total + 1)), dtype=np.float32)
     if CFG["audio"].get("whoosh"):
-        w = _whoosh(rate)
-        for t in times:
-            i = max(0, int((t - 0.2) * rate))
-            track[i:i + len(w)] += w[: len(track) - i]
-    sf.write(path, track, rate)
+        sounds = {"whoosh": (_whoosh(rate), 0.2), "pop": (_pop(rate), 0.0), "impact": (_impact(rate), 0.0)}
+        riser = _riser(rate)
+        sounds["riser"] = (riser, len(riser) / rate)
+        for t, kind in events:
+            snd, lead = sounds[kind]
+            i = max(0, int((t - lead) * rate))
+            track[i:i + len(snd)] += snd[: len(track) - i]
+    sf.write(path, np.clip(track, -1, 1), rate)
+
+
+def sound_events(timings, cards: list[dict] | None, fps: int, whoosh_scenes: set[int] | None) -> list:
+    """Where the sound effects go: a pop when a card appears, a riser into headline/slam cards, an impact when
+    a number lands, a whoosh at scene changes without a card (not every effect everywhere: it gets tiring)."""
+    events, card_times = [], []
+    for c in cards or []:
+        t = c["from"] / fps
+        card_times.append(t)
+        if c["template"] in ("headline", "slam"):
+            events.append((t, "riser"))
+        if c["template"] == "stat":
+            events.append((t + 1.1, "impact"))
+        if c["template"] not in ("chapter",):
+            events.append((t, "pop"))
+    for i in range(1, len(timings)):
+        t = timings[i][0]
+        if (whoosh_scenes is None or i in whoosh_scenes) and not any(abs(t - ct) < 0.4 for ct in card_times):
+            events.append((t, "whoosh"))
+    return events
 
 
 def ensure_music():
@@ -152,16 +198,47 @@ def ensure_music():
             print(f"  [music] could not download {name}: {e.__class__.__name__}")
 
 
-def _music(seed: str) -> Path | None:
+def _music(seed: str, mood: str | None = None) -> Path | None:
     ensure_music()
-    folder = ROOT / CFG["audio"]["music_dir"]
+    a = CFG["audio"]
+    folder = ROOT / a["music_dir"]
     tracks = sorted(p for p in folder.glob("*") if p.suffix.lower() in (".mp3", ".m4a", ".wav", ".ogg"))
-    return random.Random(seed).choice(tracks) if tracks else None
+    pool = [t for t in tracks if t.stem in a.get("music_moods", {}).get(mood or "", [])]
+    choices = pool or tracks
+    return random.Random(seed).choice(choices) if choices else None
+
+
+def music_bed(music: Path, words: list[dict] | None, total: float, path: Path, seed: str, long: bool,
+              rate: int = 48000):
+    """The music, with its volume set word by word: low under the voice, up in pauses and at the very start,
+    so it never fights the narration. Starts at a random point of the track (skips the slow intro)."""
+    p = subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-i", str(music), "-ac", "1", "-ar", str(rate),
+                        "-f", "f32le", "-"], capture_output=True)
+    song = np.frombuffer(p.stdout, dtype=np.float32)
+    n = int(rate * total)
+    if len(song) < rate:
+        song = np.zeros(n, dtype=np.float32)
+    start = random.Random(seed).randint(0, max(0, min(len(song) - n, int(len(song) * 0.4))))
+    bed = np.resize(song[start:] if len(song) - start >= n else song, n).astype(np.float32)
+    a = CFG["audio"]
+    under, gap, open_db = a.get("music_under_voice_db", -26), a.get("music_in_pauses_db", -17), -14
+    gain = np.full(n, 10 ** (gap / 20), dtype=np.float32)
+    for w in words or []:                       # under the voice while words are spoken
+        i, j = int(max(0, w["s"] - 0.08) * rate), int((w["e"] + 0.12) * rate)
+        gain[i:j] = 10 ** (under / 20)
+    gain[: int(rate * 0.9)] = np.maximum(gain[: int(rate * 0.9)], 10 ** (open_db / 20))   # louder first second
+    ramp = int(rate * 0.12)
+    gain = np.convolve(gain, np.ones(ramp) / ramp, mode="same").astype(np.float32)        # smooth 120 ms fades
+    if long:                                     # long videos fade out at the end; Shorts loop, so no fade
+        f = int(rate * 2.5)
+        gain[-f:] *= np.linspace(1, 0, f)
+    sf.write(path, bed * gain, rate)
 
 
 def plan_shots(*, kind: str, scenes: list[dict], timings: list[tuple[float, float]], total: float, stock,
-               seed: str) -> list[dict]:
-    """Cut list for the whole video: which clip plays when, from which moment, with which motion."""
+               seed: str, words: list[dict] | None = None) -> list[dict]:
+    """Cut list for the whole video: which clip plays when, from which moment, with which motion.
+    Cuts land exactly on the start of a spoken word (like an editor cutting on the beat)."""
     spec = CFG[kind]
     fps, cut = spec["fps"], spec["cut_seconds"]
     rng = random.Random(seed)
@@ -175,9 +252,15 @@ def plan_shots(*, kind: str, scenes: list[dict], timings: list[tuple[float, floa
     all_clips = stock.clips_for_scenes(scenes, [n for _, _, n in plan])
     shots, lengths = [], {}
     for i, ((start, dur, n), clips) in enumerate(zip(plan, all_clips)):
+        starts = [w["s"] for w in (words or []) if w["scene"] == i and start + 0.6 < w["s"] < start + dur - 0.6]
+
+        def snap(t: float) -> float:
+            near = min(starts, key=lambda x: abs(x - t), default=None)
+            return near if near is not None and abs(near - t) < 0.6 else t
+        bounds = [start] + [snap(start + dur * k / n) for k in range(1, n)] + [start + dur]
         for k in range(n):
-            a = round((start + dur * k / n) * fps)
-            b = round((start + dur * (k + 1) / n) * fps)
+            a = round(bounds[k] * fps)
+            b = round(bounds[k + 1] * fps)
             if b <= a:
                 continue
             need = (b - a) / fps + 0.2
@@ -201,38 +284,63 @@ def plan_shots(*, kind: str, scenes: list[dict], timings: list[tuple[float, floa
 
 
 def mix(*, video_only: Path, voice_wav: Path, timings, total: float, work: Path, out_path: Path, seed: str,
-        fps: int, whoosh_scenes: set[int] | None = None, ass_path: Path | None = None):
-    """Final file: picture + voice + whooshes + ducked music, loudness-normalised for social platforms."""
+        fps: int, whoosh_scenes: set[int] | None = None, ass_path: Path | None = None, words=None, cards=None,
+        mood: str | None = None, long: bool = False):
+    """Final file: picture + voice + sound effects + music bed, loudness-normalised for social platforms."""
     end_all = total + TAIL
-    whoosh_at = [timings[i][0] for i in range(1, len(timings)) if whoosh_scenes is None or i in whoosh_scenes]
     sfx = work / "sfx.wav"
-    _sfx_track(whoosh_at, end_all, sfx)
-    music = _music(seed)
+    _sfx_track(sound_events(timings, cards, fps, whoosh_scenes), end_all, sfx)
+    music = _music(seed, mood)
     a = CFG["audio"]
     inputs = ["-i", str(video_only), "-i", str(voice_wav), "-i", str(sfx)]
     graph = [f"[2:a]aresample=48000,volume=0.55,atrim=0:{end_all:.3f}[sx]"]
+    finish = CFG.get("render", {}).get("finish_look", True)
+    look = "noise=alls=5:allf=t,vignette=angle=PI/6"   # light film grain + soft vignette
     if ass_path:
         ass_rel = os.path.relpath(ass_path, ROOT).replace("\\", "/").replace(":", "\\:")
         fonts_rel = os.path.relpath(ASSETS / "fonts", ROOT)
-        graph.insert(0, f"[0:v]ass='{ass_rel}':fontsdir='{fonts_rel}'[v]")
+        graph.insert(0, f"[0:v]ass='{ass_rel}':fontsdir='{fonts_rel}'" + (f",{look}" if finish else "") + "[v]")
+    elif finish:
+        graph.insert(0, f"[0:v]{look}[v]")
+    if ass_path or finish:
         vmap, vcodec = ["-map", "[v]"], ["-c:v", "libx264", "-preset", "medium", "-crf", "20", "-profile:v", "high",
-                                          "-pix_fmt", "yuv420p", "-maxrate", "12M", "-bufsize", "24M", "-r", str(fps)]
+                                         "-pix_fmt", "yuv420p", "-maxrate", "12M", "-bufsize", "24M", "-r", str(fps)]
     else:  # picture is already finished (Remotion): copy it untouched
         vmap, vcodec = ["-map", "0:v"], ["-c:v", "copy"]
-    voice = f"[1:a]aresample=48000,apad=whole_dur={end_all:.3f}"
+    voice = f"[1:a]aresample=48000,apad=whole_dur={end_all:.3f}[vo]"
     if music:
-        inputs += ["-stream_loop", "-1", "-i", str(music)]
-        graph += [f"{voice},asplit=2[vo][vk]",
-                  f"[3:a]aresample=48000,volume={a['music_volume']},atrim=0:{end_all:.3f}[m]",
-                  "[m][vk]sidechaincompress=threshold=0.02:ratio=6:attack=15:release=350[md]",
-                  "[vo][sx][md]amix=inputs=3:duration=first:normalize=0[mix]"]
-        print(f"  [render] music: {music.name}")
+        bed = work / "music_bed.wav"
+        music_bed(music, words, end_all, bed, seed, long)
+        inputs += ["-i", str(bed)]
+        graph += [voice, "[3:a]aresample=48000[md]", "[vo][sx][md]amix=inputs=3:duration=first:normalize=0[mix]"]
+        print(f"  [render] music: {music.name} ({mood or 'any'} mood)")
     else:
-        graph += [f"{voice}[vo]", "[vo][sx]amix=inputs=2:duration=first:normalize=0[mix]"]
+        graph += [voice, "[vo][sx]amix=inputs=2:duration=first:normalize=0[mix]"]
     graph.append(f"[mix]loudnorm=I={a['loudness_lufs']}:TP=-1.5:LRA=11,aresample=48000[a]")
     run(["ffmpeg", "-nostdin", "-y", "-v", "error", *inputs, "-filter_complex", ";".join(graph),
          *vmap, "-map", "[a]", "-t", f"{end_all:.3f}", *vcodec,
          "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", str(out_path)])
+    fix_loudness(out_path, a["loudness_lufs"])
+
+
+def loudness(path: Path) -> float | None:
+    p = subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-i", str(path), "-af", "ebur128", "-f", "null", "-"],
+                       capture_output=True, text=True)
+    found = [float(x) for x in __import__("re").findall(r"^\s+I:\s+(-?[\d.]+) LUFS", p.stderr, flags=8)]
+    return found[-1] if found else None
+
+
+def fix_loudness(path: Path, target: float):
+    """One-pass loudnorm lands 1-2 dB off; measure the finished file and correct it exactly (video copied)."""
+    now = loudness(path)
+    if now is None or abs(now - target) < 0.5:
+        return
+    tmp = path.with_suffix(".loud.mp4")
+    run(["ffmpeg", "-nostdin", "-y", "-v", "error", "-i", str(path), "-map", "0:v", "-map", "0:a", "-c:v", "copy",
+         "-af", f"volume={target - now:.2f}dB,alimiter=limit=0.89:level=false", "-c:a", "aac", "-b:a", "192k",
+         "-ar", "48000", "-movflags", "+faststart", str(tmp)])
+    tmp.replace(path)
+    print(f"  [render] loudness {now:.1f} -> {loudness(path):.1f} LUFS")
 
 
 def render(*, kind: str, scenes: list[dict], timings: list[tuple[float, float]], total: float,

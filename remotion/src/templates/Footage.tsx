@@ -1,4 +1,4 @@
-import {AbsoluteFill, Img, OffthreadVideo, staticFile, useCurrentFrame, useVideoConfig} from "remotion";
+import {AbsoluteFill, Img, OffthreadVideo, spring, staticFile, useCurrentFrame, useVideoConfig} from "remotion";
 import {BOLD} from "../fonts";
 import {Shot} from "../types";
 
@@ -6,9 +6,13 @@ import {Shot} from "../types";
 // blurred copy of itself, instead of being cropped hard (which looks far too zoomed in).
 export const Footage: React.FC<{shot: Shot; vertical: boolean}> = ({shot, vertical}) => {
   const frame = useCurrentFrame();
-  const {durationInFrames} = useVideoConfig();
+  const {durationInFrames, fps} = useVideoConfig();
   const t = frame / Math.max(1, durationInFrames - 1);
-  const zoom = shot.motion === "zoom_in" ? 1 + 0.08 * t : shot.motion === "zoom_out" ? 1.08 - 0.08 * t : 1.06;
+  // A punch is a quick zoom-in on a stressed word that holds until the next cut.
+  const punch = (shot.punches ?? []).reduce((acc, p) => acc + (frame >= p
+    ? 0.09 * spring({frame: frame - p, fps, config: {damping: 14, stiffness: 320}, durationInFrames: 5}) : 0), 0);
+  const base = shot.motion === "zoom_in" ? 1 + 0.08 * t : shot.motion === "zoom_out" ? 1.08 - 0.08 * t : 1.06;
+  const zoom = base + Math.min(punch, 0.18);
   const pan = shot.motion === "pan_left" ? 3 - 6 * t : shot.motion === "pan_right" ? -3 + 6 * t : 0;
   const grade = "contrast(1.07) saturate(1.22) brightness(1.01)";
 
