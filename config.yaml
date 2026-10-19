@@ -38,14 +38,10 @@ voice:
   # 1st choice: Gemini TTS (very natural). Tried in order; each model has its own small daily limit.
   gemini_models: ["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts", "gemini-2.5-flash-preview-tts"]
   gemini_voice: "Charon"          # calm, trustworthy ("informative"). Others: Puck (upbeat), Gacrux (mature)
-  # Google's recommended layout: director's notes, then the TRANSCRIPT. Without it the model sometimes reads
-  # the instructions out loud.
-  style: |-
-    # AUDIO PROFILE: a trusted tech news explainer on a popular YouTube channel.
-    ### DIRECTOR'S NOTES
-    Style: confident, warm and engaged, like explaining big news to a smart friend. Natural human rhythm,
-    clear emphasis on key words and numbers, a little energy, never shouting or salesy.
-    Pace: brisk but clear. Short natural pauses between sentences, no long pauses.
+  # Keep this SHORT: Google warns long "director's notes" make the voice drift. The script follows a
+  # "#### TRANSCRIPT" line, so the model reads only the script.
+  style: "Style: calm, confident and warm, like explaining big news to a smart friend. Brisk, clear, natural."
+  max_words_per_request: 240      # Gemini 3.8 can change voice mid-way on longer texts (known bug, Oct 2026)
   # Backup when Gemini's limit is used up
   kokoro_voice: "af_heart"
   target_wpm: {short: 160, long: 150}   # pro pace from research: Shorts 150-165, long videos ~150

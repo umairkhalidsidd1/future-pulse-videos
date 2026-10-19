@@ -3,7 +3,8 @@ from pathlib import Path
 
 from ..config import CFG, secret
 
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.force-ssl"]
+SCOPES = ["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.force-ssl",
+          "https://www.googleapis.com/auth/yt-analytics.readonly"]   # the learning loop reads channel statistics
 
 
 def ready() -> bool:
@@ -16,7 +17,7 @@ def _client():
     from googleapiclient.discovery import build
     creds = Credentials(None, refresh_token=secret("YT_REFRESH_TOKEN"), client_id=secret("YT_CLIENT_ID"),
                         client_secret=secret("YT_CLIENT_SECRET"), token_uri="https://oauth2.googleapis.com/token",
-                        scopes=SCOPES)
+                        scopes=SCOPES[:2])   # upload only: older logins don't include the statistics permission
     return build("youtube", "v3", credentials=creds, cache_discovery=False)
 
 

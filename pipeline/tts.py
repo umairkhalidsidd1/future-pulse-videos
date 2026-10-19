@@ -174,7 +174,7 @@ def synth(scenes: list[dict], out_wav: Path, kind: str = "short") -> tuple[None,
     """Speaks the whole script into out_wav. Returns (None, length in seconds); exact word and scene
     times come from align.align_script afterwards."""
     v = CFG["voice"]
-    pieces = _chunks(scenes)
+    pieces = _chunks(scenes, v.get("max_words_per_request", 240))
     script = " ".join(sc["text"] for sc in scenes)
     words = len(script.split())
     import hashlib

@@ -4,6 +4,8 @@
   python -m pipeline plan            only pick today's stories and write the scripts
   python -m pipeline render short:0  render one job without uploading (also: long)
   python -m pipeline test            offline test: sample scripts, no keys, no uploads
+  python -m pipeline rewrite [short:2 ... long]   rewrite today's scripts with the current rules (same stories)
+  python -m pipeline batch           render ALL of today's videos without uploading (for review)
 """
 import json
 import random
@@ -58,33 +60,70 @@ def make_plan(day: str) -> dict:
     if len(stories) < n:
         print(f"  [plan] only {len(stories)} stories had readable sources; making fewer Shorts today")
 
-    formats = CFG["short"]["formats"]
-    offset = date.fromisoformat(day).toordinal()
-    for i, s in enumerate(stories):
-        fmt = formats[(offset + i) % len(formats)]
-        print(f"[plan] writing short {i}: {s['title'][:70]}  ({fmt})")
-        s["short"] = writer.write_short(s, fmt)
-        s["short"]["scenes"] = writer.verify_cards(writer.fact_check(s["short"]["scenes"], s["facts"]), s["facts"])
-
-    print("[plan] writing the long video")
-    long = writer.write_long(stories)
-    for seg in long.get("segments", []):
-        try:
-            idx = int(seg.get("story", 1)) - 1
-        except (TypeError, ValueError):
-            idx = -1
-        if 0 <= idx < len(stories):
-            seg["scenes"] = writer.verify_cards(writer.fact_check(seg["scenes"], stories[idx]["facts"]),
-                                                stories[idx]["facts"])
-
-    for s in stories:  # the repo is public: keep the downloaded article text out of it
-        s.pop("facts", None)
-    plan = {"date": day, "stories": stories, "long": long,
+    plan = {"date": day, "stories": stories}
+    write_scripts(plan, [f"short:{i}" for i in range(len(stories))] + ["long"])
+    plan.update({
             "jobs": [{"id": j, "attempts": 0, "status": {}, "links": {}} for j in CFG["channel"]["job_order"]
-                     if j == "long" or int(j.split(":")[1]) < len(stories)]}
+                     if j == "long" or int(j.split(":")[1]) < len(stories)]})
     save_plan(plan)
     trends.add_history([s["title"] for s in stories])
     return plan
+
+
+def save_safe(plan: dict):
+    """Save the plan without the downloaded article text (the repo is public)."""
+    save_plan({**plan, "stories": [{k: v for k, v in s.items() if k != "facts"} for s in plan["stories"]]})
+
+
+def write_scripts(plan: dict, which: list[str]):
+    """Write (or rewrite) the scripts of the given jobs with the current rules. Downloads the sources again
+    if needed; the article text is never saved (the repo is public)."""
+    stories = plan["stories"]
+    formats = CFG["short"]["formats"]
+    need = {int(j.split(":")[1]) for j in which if j.startswith("short:")}
+    if "long" in which:
+        need |= set(range(len(stories)))
+    for i in sorted(need):
+        if not stories[i].get("facts"):
+            stories[i]["facts"] = writer.gather_facts(stories[i])
+    for j in which:
+        if not j.startswith("short:"):
+            continue
+        i = int(j.split(":")[1])
+        s, fmt = stories[i], formats[series_of(plan, i)]
+        print(f"[plan] writing short {i}: {s['title'][:70]}  ({fmt.split(':')[0]})")
+        s["short"] = writer.write_short(s, fmt)
+        s["short"]["scenes"] = writer.verify_cards(writer.fact_check(s["short"]["scenes"], s["facts"]), s["facts"])
+        if plan.get("jobs"):
+            save_safe(plan)       # keep each finished script even if a later one fails
+    if "long" in which:
+        print("[plan] writing the long video")
+        long = writer.write_long(stories)
+        for seg in long.get("segments", []):
+            try:
+                idx = int(seg.get("story", 1)) - 1
+            except (TypeError, ValueError):
+                idx = -1
+            if 0 <= idx < len(stories):
+                seg["scenes"] = writer.verify_cards(writer.fact_check(seg["scenes"], stories[idx]["facts"]),
+                                                    stories[idx]["facts"])
+        plan["long"] = long
+    for s in stories:  # the repo is public: keep the downloaded article text out of it
+        s.pop("facts", None)
+
+
+def batch(plan: dict):
+    """Renders every job of the day without uploading, then prints a summary for review."""
+    rows = []
+    for job in plan["jobs"]:
+        try:
+            built = run_job(plan, {"id": job["id"], "attempts": 0, "status": {}, "links": {}}, upload=False)
+            rows.append((job["id"], f"{built['duration']:.0f} s", str(built["video"])))
+        except Exception as e:
+            rows.append((job["id"], "FAILED", safe_err(e)))
+    print("\n[batch] summary")
+    for r in rows:
+        print("  ", *r)
 
 
 # ---------- build one video ----------
@@ -344,6 +383,14 @@ def main(argv: list[str]):
         run_job(plan, {"id": argv[1], "attempts": 0, "status": {}, "links": {}}, upload=False)
     elif cmd == "test":
         test()
+    elif cmd == "rewrite":
+        plan = load_plan(today())
+        which = argv[1:] or [j["id"] for j in plan["jobs"]]
+        write_scripts(plan, which)
+        save_plan(plan)
+    elif cmd == "batch":
+        day = today()
+        batch(load_plan(day) or make_plan(day))
     else:
         print(__doc__)
         sys.exit(1)

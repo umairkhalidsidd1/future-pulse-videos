@@ -306,10 +306,10 @@ STRUCTURE:
 {VISUAL_RULES}
 
 METADATA:
-- youtube_title: max 70 characters: the named thing + a specific number or change + what it means
-  (e.g. "Nvidia's new chip is 4x faster. Here's the catch"), accurate, ends with " #Shorts"
-- youtube_description: 2-3 short lines, then 3-5 hashtags on their own line, then "Sources:" and the
-  source names
+- youtube_title: 4-6 words, max 40 characters (phones cut longer titles): the named thing + a specific
+  number or change (e.g. "Nvidia's chip is 4x faster"), accurate, no hashtags in the title
+- youtube_description: 2-3 short lines, then a line with #Shorts and 2-4 more hashtags, then "Sources:" and
+  the source names
 - music_mood: one of "energetic", "upbeat", "curious", "inspiring" (fits the story's feeling)
 - tags: 8-12 search tags
 - instagram_caption: 1-2 punchy lines + the question + 3-5 relevant hashtags
@@ -335,8 +335,8 @@ def write_long(stories: list[dict]) -> dict:
 
 {chr(10).join(blocks)}
 
-LENGTH: {lo}-{hi} minutes spoken = about {lo * 155}-{hi * 150} words in total. This is a HARD minimum:
-under {lo * 140} words will be rejected. Count your words.
+LENGTH: {lo}-{hi} minutes spoken. Write {lo * 175}-{hi * 160} words in total (each segment at least
+{int(lo * 175 / 5)} words). This is a HARD minimum: under {lo * 140} words will be rejected. Count your words.
 
 STRUCTURE (built for retention):
 - Count DOWN from story {len(stories)} to story 1. Story 1 must be the biggest one. You choose the order.

@@ -9,10 +9,13 @@
 import re
 from pathlib import Path
 
+import sys
+
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 ROOT = Path(__file__).resolve().parent.parent
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.force-ssl"]
+sys.path.insert(0, str(ROOT))
+from pipeline.upload.youtube import SCOPES  # noqa: E402  (one list, used by login and upload)
 
 
 def save_env(values: dict):
