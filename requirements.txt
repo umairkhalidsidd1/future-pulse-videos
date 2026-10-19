@@ -1,0 +1,13 @@
+# Pinned to versions tested on 2026-10-19, so an unattended run doesn't break on a surprise update.
+requests>=2.32,<3
+pyyaml>=6.0,<7
+feedparser>=6.0.11,<7
+trafilatura>=2.0,<3
+numpy>=2.0,<3
+soundfile>=0.13,<0.15
+kokoro-onnx>=0.6.1,<0.7
+faster-whisper>=1.2,<1.3
+pillow>=11,<14
+google-api-python-client>=2.150,<3
+google-auth>=2.35,<3
+google-auth-oauthlib>=1.2,<2

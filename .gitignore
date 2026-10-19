@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+models/
+cache/
+out/
+.env
+client_secret*.json
+token*.json
+.DS_Store
+# music licences forbid re-sharing the files; they live in a private repo
+assets/music/

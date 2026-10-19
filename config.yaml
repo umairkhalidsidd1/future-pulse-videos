@@ -1,0 +1,91 @@
+# Main settings for the daily video machine.
+# Change things here, not in the code.
+
+channel:
+  name: "Future Pulse"            # shown in the outro and descriptions
+  niche: "technology and the future: AI, Elon Musk and his companies, gadgets, space, EVs, robots, science breakthroughs"
+  language: "en"
+  timezone: "America/New_York"    # the "day" of the plan is counted in this timezone
+  stories_per_day: 5
+  # Ordered list of today's jobs. Each GitHub run does the first unfinished one.
+  job_order: ["short:0", "short:1", "long", "short:2", "short:3", "short:4"]
+  avoid_repeat_days: 14           # don't pick a story we covered in the last N days
+
+trends:
+  max_age_hours: 36
+  hacker_news: true
+  google_trends_geo: "US"
+  rss:
+    - https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=en-US&gl=US&ceid=US:en
+    - https://news.google.com/rss/headlines/section/topic/SCIENCE?hl=en-US&gl=US&ceid=US:en
+    - https://www.theverge.com/rss/index.xml
+    - https://techcrunch.com/feed/
+    - https://feeds.arstechnica.com/arstechnica/index
+    - https://www.space.com/feeds/all
+    - https://electrek.co/feed/
+    - https://www.engadget.com/rss.xml
+  reddit: []                     # Reddit blocks bots (HTTP 403), so it is off. Add subreddit names to try again.
+
+llm:
+  # Tried in order. If a model name stops existing, the next one is used.
+  gemini_models: ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite"]
+  groq_models: ["openai/gpt-oss-120b", "llama-3.3-70b-versatile"]
+  temperature: 0.9
+  fact_check: true                # second AI pass that checks the script against the sources
+
+voice:
+  model: kokoro
+  voice: "af_heart"               # best-rated Kokoro voice. Male options: am_michael, am_fenrir, am_puck
+  speed: 1.12                     # a little faster than normal = better retention
+  scene_gap: 0.06                 # seconds of silence between scenes (keep tiny: no dead air)
+
+short:
+  width: 1080
+  height: 1920
+  fps: 30
+  target_seconds: [25, 45]
+  cut_seconds: 2.4                # a new clip every ~2.4 s
+  formats:                        # rotated so videos don't all look the same
+    - "breaking news breakdown: what happened, why it matters, what's next"
+    - "3 things you need to know"
+    - "what this means for YOU"
+    - "myth vs reality"
+    - "the surprising detail nobody is talking about"
+
+long:
+  width: 1920
+  height: 1080
+  fps: 30
+  target_minutes: [6, 10]
+  cut_seconds: 3.6
+
+captions:
+  whisper_model: "base.en"
+  font: "Anton"
+  # Color themes rotate by day. Colors are in RGB hex.
+  themes:
+    - {text: "FFFFFF", highlight: "FFE600", keyword: "39FF14"}
+    - {text: "FFFFFF", highlight: "00E5FF", keyword: "FF3D7F"}
+    - {text: "FFFFFF", highlight: "FF9F1C", keyword: "00E5FF"}
+
+audio:
+  music_dir: "assets/music"       # put YouTube Audio Library tracks here (.mp3)
+  music_volume: 0.12
+  whoosh: true
+  loudness_lufs: -14
+
+upload:
+  youtube:
+    enabled: true
+    privacy: "public"             # public | unlisted | private
+    category_id: "28"             # Science & Technology
+    post_question_comment: true   # posts the end question as a comment (pinning is not possible by API)
+    ai_disclosure: false          # set true if you add realistic AI images of real people/events
+  instagram:
+    enabled: true
+    graph_version: "v26.0"
+    share_to_feed: true
+  tiktok:
+    enabled: true
+    mode: "direct"                # direct = post right away | inbox = send as a draft to the TikTok app
+    is_aigc: true                 # TikTok "AI-generated" label

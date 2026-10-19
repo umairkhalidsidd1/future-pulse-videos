@@ -1,0 +1,65 @@
+{
+ "date": "test",
+ "stories": [
+  {
+   "title": "TEST STORY: why reusable rockets made space cheaper",
+   "angle": "Landing rockets instead of throwing them away changed the cost of space",
+   "viral_score": 7,
+   "sources": [{"title": "Sample source", "url": "", "source": "Test"}],
+   "facts": "",
+   "short": {
+    "hook_text": "THIS ROCKET CAME BACK",
+    "scenes": [
+     {"text": "For sixty years, every rocket we launched was thrown away after one flight.", "visual": "rocket launch", "keywords": ["thrown away"]},
+     {"text": "Imagine flying a plane across the ocean, then scrapping it on landing.", "visual": "airplane sky", "keywords": ["scrapping"]},
+     {"text": "That's why getting anything into space cost a fortune.", "visual": "money counting", "keywords": ["fortune"]},
+     {"text": "But here's the part that matters: rockets can now land themselves and fly again.", "visual": "rocket landing", "keywords": ["land themselves"]},
+     {"text": "Reuse the hardware, and the price of every launch drops.", "visual": "factory robots", "keywords": ["price"]},
+     {"text": "Would you ride a rocket that has already flown ten times? Because for sixty years, every rocket was thrown away.", "visual": "space stars", "keywords": ["ten times"]}
+    ],
+    "question": "Would you ride a rocket that has already flown ten times?",
+    "youtube_title": "Why Reusable Rockets Changed Everything #Shorts",
+    "youtube_description": "Test video.",
+    "tags": ["rockets", "space", "test"],
+    "instagram_caption": "Test video #space",
+    "tiktok_caption": "Test video #space"
+   }
+  },
+  {
+   "title": "TEST STORY: robots in warehouses",
+   "angle": "Robots now move packages",
+   "viral_score": 6,
+   "sources": [{"title": "Sample source", "url": "", "source": "Test"}],
+   "facts": ""
+  }
+ ],
+ "long": {
+  "title": "TEST: 2 Tech Stories Explained",
+  "thumbnail_text": "ROCKETS CAME BACK",
+  "description": "Test video.\n{CHAPTERS}",
+  "tags": ["test"],
+  "pinned_comment": "Which story surprised you most?",
+  "intro": [
+   {"text": "One of these ideas sounds like science fiction, and it's already happening.", "visual": "futuristic city", "keywords": ["science fiction"]},
+   {"text": "Here are two tech stories, counting down to the biggest one.", "visual": "technology abstract", "keywords": ["two"]}
+  ],
+  "segments": [
+   {"story": 2, "chapter": "Warehouse robots", "scenes": [
+    {"text": "Number two. Walk into a modern warehouse and you might see more robots than people.", "visual": "warehouse robot", "keywords": ["robots"]},
+    {"text": "Small machines carry whole shelves to human workers, so nobody walks miles a day.", "visual": "warehouse shelves", "keywords": ["shelves"]},
+    {"text": "It's faster, and it changes what warehouse jobs look like.", "visual": "logistics boxes", "keywords": ["faster"]},
+    {"text": "But the next story goes much higher. Literally.", "visual": "sky clouds", "keywords": ["higher"]}
+   ]},
+   {"story": 1, "chapter": "Reusable rockets", "scenes": [
+    {"text": "Number one. For decades, every rocket was used once and thrown away.", "visual": "rocket launch", "keywords": ["once"]},
+    {"text": "Now some rockets land upright, get checked, and fly again.", "visual": "rocket landing", "keywords": ["fly again"]},
+    {"text": "Reusing them is a big reason launch prices have dropped.", "visual": "space station", "keywords": ["prices"]}
+   ]}
+  ],
+  "outro": [
+   {"text": "So which one surprised you more? Tell me in the comments.", "visual": "smartphone hand", "keywords": ["comments"]},
+   {"text": "Subscribe for the biggest tech stories, every single day.", "visual": "city night timelapse", "keywords": ["every single day"]}
+  ]
+ },
+ "jobs": []
+}
