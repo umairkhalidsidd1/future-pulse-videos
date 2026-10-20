@@ -15,6 +15,7 @@
   python -m pipeline dashboard             rebuild out/dashboard.html
 """
 import json
+import os
 import random
 import sys
 from datetime import date
@@ -188,10 +189,10 @@ def fill_cards(scenes: list[dict], story: dict | None, day: str) -> list[dict]:
 
 def draw(*, kind: str, scenes, timings, total, words, wav, work: Path, out: Path, seed: str, day: str,
          hook: str, extra_cards: list | None = None, overlays: list | None = None, whoosh=None,
-         mood: str | None = None, look: dict | None = None) -> tuple[list, list]:
+         mood: str | None = None, look: dict | None = None, topic: str = "") -> tuple[list, list]:
     """Make the picture + sound. Pro engine first; if it fails, the simple FFmpeg engine so the day isn't lost.
     Returns (clean footage files for the thumbnail, credit lines for the description)."""
-    stock = Stock(vertical=kind == "short", seed=seed)
+    stock = Stock(vertical=kind == "short", seed=seed, topic=topic)
     theme = theme_for(day)
     try:
         if CFG.get("render", {}).get("engine", "remotion") == "remotion":
@@ -392,8 +393,9 @@ def main(argv: list[str]):
         test()
     elif cmd.startswith("factory") or cmd == "dashboard":
         from . import factory, status
-        if cmd == "factory":
-            factory.next_job(upload=True)
+        if cmd == "factory":              # FACTORY_UPLOAD=0: make the videos but never post them
+            ran = factory.next_job(upload=os.environ.get("FACTORY_UPLOAD", "1") != "0")
+            sys.exit(0 if ran else 3)        # 3 = nothing to do right now
         elif cmd == "factory-plan":
             factory.make_plan(today())
         elif cmd == "factory-batch":

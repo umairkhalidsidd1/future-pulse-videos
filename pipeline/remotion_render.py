@@ -3,16 +3,18 @@ FFmpeg then adds the sound mix. If Remotion fails, main.py falls back to the sim
 import json
 import os
 import random
+import resource
 import shutil
 import subprocess
 import sys
+import time
 import uuid
 from pathlib import Path
 from urllib.parse import urlparse
 
 from . import render as ff
 from .captions import _groups
-from .config import CFG, ROOT
+from .config import CFG, ROOT, workers
 
 REMOTION = ROOT / "remotion"
 CARD_TEMPLATES = {"headline", "stat", "compare", "list", "quote", "outro", "chapter", "slam", "map", "timeline",
@@ -58,6 +60,18 @@ def scene_cards(scenes: list[dict], timings, fps: int, total: float) -> list[dic
 
 def _hex(c: str) -> str:
     return "#" + c.lstrip("#").upper()
+
+
+def _cpu_seconds() -> tuple[float, float]:
+    """(busy, stolen) CPU seconds of the whole machine from /proc/stat (Linux); this process's children elsewhere.
+    Counting only our children missed Chrome's helper processes."""
+    try:
+        f = [int(x) for x in Path("/proc/stat").read_text().split("\n", 1)[0].split()[1:]]
+        hz = os.sysconf("SC_CLK_TCK")
+        return (f[0] + f[1] + f[2] + f[5] + f[6]) / hz, (f[7] if len(f) > 7 else 0) / hz
+    except (OSError, ValueError, IndexError):
+        r = resource.getrusage(resource.RUSAGE_CHILDREN)
+        return r.ru_utime + r.ru_stime, 0.0
 
 
 def render(*, kind: str, scenes: list[dict], timings, total: float, words: list[dict], voice_wav: Path, stock,
@@ -113,19 +127,40 @@ def render(*, kind: str, scenes: list[dict], timings, total: float, words: list[
         props_file = work / "props.json"
         props_file.write_text(json.dumps(props))
         video_only = work / "video_only.mp4"
-        cmd = ["npx", "remotion", "render", "src/index.ts", "Short" if vertical else "Long", str(video_only.resolve()),
-               f"--props={props_file.resolve()}", "--muted", "--codec=h264", "--crf=20", "--log=error",
-               f"--concurrency={max(1, (os.cpu_count() or 2) // 2)}", "--timeout=120000"]
-        if sys.platform == "darwin":       # Remotion's default small browser does not start on this macOS
-            cmd.append("--chrome-mode=chrome-for-testing")
+        tabs = workers()
         print(f"  [remotion] {len(props_shots)} shots, {len(props['cards'])} cards, {duration} frames")
-        p = subprocess.run(cmd, cwd=REMOTION, capture_output=True, text=True)
-        if p.returncode != 0 or not video_only.exists():
-            raise RuntimeError(f"Remotion failed: {(p.stderr or p.stdout)[-1500:]}")
+        # A busy machine can miss Remotion's per-frame time limit ("delayRender ... not cleared"):
+        # try once more with half the browser tabs before giving up on the pro engine.
+        for attempt, conc in enumerate([tabs, max(1, tabs // 2)]):
+            cmd = ["npx", "remotion", "render", "src/index.ts", "Short" if vertical else "Long",
+                   str(video_only.resolve()), f"--props={props_file.resolve()}", "--muted", "--codec=h264",
+                   "--crf=20", "--log=error", f"--concurrency={conc}", "--timeout=240000"]
+            if sys.platform == "darwin":   # Remotion's default small browser does not start on this macOS
+                cmd.append("--chrome-mode=chrome-for-testing")
+            t0 = time.time()
+            cpu0 = _cpu_seconds()
+            try:
+                p = subprocess.run(cmd, cwd=REMOTION, capture_output=True, text=True,
+                                   timeout=1800 + duration / fps * 12)
+                err = (p.stderr or p.stdout)[-1500:] if p.returncode != 0 or not video_only.exists() else ""
+            except subprocess.TimeoutExpired:
+                err = "Remotion froze (wall-clock limit reached)"
+            if not err:
+                wall = time.time() - t0
+                used = [b - a for a, b in zip(cpu0, _cpu_seconds())]
+                print(f"  [remotion] drew {duration} frames in {wall:.0f} s ({conc} tabs, "
+                      f"~{used[0] / max(wall, 1):.1f} cores busy, ~{used[1] / max(wall, 1):.1f} cores stolen by "
+                      f"other users of the machine)")
+                break
+            print(f"  [remotion] try {attempt + 1} failed ({conc} tabs): {err.strip().splitlines()[0][:160]}")
+        if err:
+            raise RuntimeError(f"Remotion failed: {err}")
     finally:
         shutil.rmtree(pub, ignore_errors=True)
 
+    t1 = time.time()
     ff.mix(video_only=video_only, voice_wav=voice_wav, timings=timings, total=total, work=work, out_path=out_path,
            seed=seed, fps=fps, whoosh_scenes=whoosh_scenes, words=words, cards=props["cards"], mood=mood,
            long=not vertical)
+    print(f"  [render] sound mix + finish in {time.time() - t1:.0f} s")
     return [sh["clip"] for sh in shots if sh["clip"]]

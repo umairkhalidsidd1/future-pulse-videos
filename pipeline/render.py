@@ -11,14 +11,18 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 
-from .config import ASSETS, CFG, ROOT
+from .config import ASSETS, CFG, ROOT, workers
 
 PLACEHOLDER_COLORS = [("0x0f2027", "0x2c5364"), ("0x1a0533", "0x3b1c6e"), ("0x0b1d3a", "0x0f5e7a"),
                       ("0x231942", "0x5e548e"), ("0x101820", "0x1f4068")]
 
 
-def run(cmd: list[str]):
-    p = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
+def run(cmd: list[str], timeout: float = 3600):
+    """Run FFmpeg; a run that freezes is killed after `timeout` seconds instead of blocking the factory."""
+    try:
+        p = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(f"ffmpeg froze (no finish after {timeout:.0f} s): {' '.join(cmd[:8])} ...")
     if p.returncode != 0:
         raise RuntimeError(f"ffmpeg failed: {' '.join(cmd[:8])} ...\n{p.stderr[-1500:]}")
 
@@ -292,34 +296,47 @@ def mix(*, video_only: Path, voice_wav: Path, timings, total: float, work: Path,
     _sfx_track(sound_events(timings, cards, fps, whoosh_scenes), end_all, sfx)
     music = _music(seed, mood)
     a = CFG["audio"]
-    inputs = ["-i", str(video_only), "-i", str(voice_wav), "-i", str(sfx)]
-    graph = [f"[2:a]aresample=48000,volume=0.55,atrim=0:{end_all:.3f}[sx]"]
-    finish = CFG.get("render", {}).get("finish_look", True)
-    look = "noise=alls=5:allf=t,vignette=angle=PI/6"   # light film grain + soft vignette
-    if ass_path:
-        ass_rel = os.path.relpath(ass_path, ROOT).replace("\\", "/").replace(":", "\\:")
-        fonts_rel = os.path.relpath(ASSETS / "fonts", ROOT)
-        graph.insert(0, f"[0:v]ass='{ass_rel}':fontsdir='{fonts_rel}'" + (f",{look}" if finish else "") + "[v]")
-    elif finish:
-        graph.insert(0, f"[0:v]{look}[v]")
-    if ass_path or finish:
-        vmap, vcodec = ["-map", "[v]"], ["-c:v", "libx264", "-preset", "medium", "-crf", "20", "-profile:v", "high",
-                                         "-pix_fmt", "yuv420p", "-maxrate", "12M", "-bufsize", "24M", "-r", str(fps)]
-    else:  # picture is already finished (Remotion): copy it untouched
-        vmap, vcodec = ["-map", "0:v"], ["-c:v", "copy"]
-    voice = f"[1:a]aresample=48000,apad=whole_dur={end_all:.3f}[vo]"
+    # Two passes: sound first (to a wav), then picture + that wav. One FFmpeg graph mixing video and 3 audio
+    # inputs froze at the very end of an 8.6-min video (all threads waiting, no error).
+    mixed = work / "mix.wav"
+    inputs = ["-i", str(voice_wav), "-i", str(sfx)]
+    st = "aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo"   # FFmpeg 5 (cloud) needs one layout
+    graph = [f"[0:a]aresample=48000,{st},apad=whole_dur={end_all:.3f}[vo]",
+             f"[1:a]aresample=48000,{st},volume=0.55,atrim=0:{end_all:.3f}[sx]"]
     if music:
         bed = work / "music_bed.wav"
         music_bed(music, words, end_all, bed, seed, long)
         inputs += ["-i", str(bed)]
-        graph += [voice, "[3:a]aresample=48000[md]", "[vo][sx][md]amix=inputs=3:duration=first:normalize=0[mix]"]
+        graph += [f"[2:a]aresample=48000,{st}[md]", "[vo][sx][md]amix=inputs=3:duration=first:normalize=0[mix]"]
         print(f"  [render] music: {music.name} ({mood or 'any'} mood)")
     else:
-        graph += [voice, "[vo][sx]amix=inputs=2:duration=first:normalize=0[mix]"]
-    graph.append(f"[mix]loudnorm=I={a['loudness_lufs']}:TP=-1.5:LRA=11,aresample=48000[a]")
+        graph += ["[vo][sx]amix=inputs=2:duration=first:normalize=0[mix]"]
+    graph.append(f"[mix]loudnorm=I={a['loudness_lufs']}:TP=-1.5:LRA=11,aresample=48000,{st}[a]")
     run(["ffmpeg", "-nostdin", "-y", "-v", "error", *inputs, "-filter_complex", ";".join(graph),
-         *vmap, "-map", "[a]", "-t", f"{end_all:.3f}", *vcodec,
-         "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", str(out_path)])
+         "-map", "[a]", "-t", f"{end_all:.3f}", "-c:a", "pcm_s16le", "-ar", "48000", "-ac", "2", str(mixed)],
+        timeout=300 + end_all)
+    now = loudness(mixed)              # one-pass loudnorm lands 1-2 dB off: correct it exactly in the final pass
+    gain = a["loudness_lufs"] - now if now is not None else 0.0
+    finish = CFG.get("render", {}).get("finish_look", True)
+    look = "noise=alls=5:allf=t,vignette=angle=PI/6"   # light film grain + soft vignette
+    vf = []
+    if ass_path:
+        ass_rel = os.path.relpath(ass_path, ROOT).replace("\\", "/").replace(":", "\\:")
+        fonts_rel = os.path.relpath(ASSETS / "fonts", ROOT)
+        vf.append(f"ass='{ass_rel}':fontsdir='{fonts_rel}'")
+    if finish:
+        vf.append(look)
+    if vf:
+        vcodec = ["-vf", ",".join(vf), "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-profile:v", "high",
+                  "-pix_fmt", "yuv420p", "-maxrate", "12M", "-bufsize", "24M", "-r", str(fps)]
+    else:  # picture is already finished (Remotion): copy it untouched
+        vcodec = ["-c:v", "copy"]
+    run(["ffmpeg", "-nostdin", "-y", "-v", "error", "-i", str(video_only), "-i", str(mixed),
+         "-map", "0:v", "-map", "1:a", "-t", f"{end_all:.3f}", *vcodec,
+         "-af", f"volume={gain:.2f}dB,alimiter=limit=0.89:level=false",
+         "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", str(out_path)],
+        timeout=600 + 4 * end_all)
+    mixed.unlink(missing_ok=True)
     fix_loudness(out_path, a["loudness_lufs"])
 
 
@@ -354,9 +371,9 @@ def render(*, kind: str, scenes: list[dict], timings: list[tuple[float, float]],
     seg_dir.mkdir(parents=True)
     shots = plan_shots(kind=kind, scenes=scenes, timings=timings, total=total, stock=stock, seed=seed)
     jobs = [{**sh, "w": w, "h": h, "fps": fps, "out": seg_dir / f"{i:04d}.mp4"} for i, sh in enumerate(shots)]
-    workers = max(1, (os.cpu_count() or 2) // 2)
-    print(f"  [render] {len(jobs)} cuts, {workers} at a time")
-    with ThreadPoolExecutor(workers) as pool:
+    n = workers()
+    print(f"  [render] {len(jobs)} cuts, {n} at a time")
+    with ThreadPoolExecutor(n) as pool:
         list(pool.map(_segment, jobs))
     concat = work / "concat.txt"
     concat.write_text("".join(f"file '{j['out'].resolve()}'\n" for j in jobs))

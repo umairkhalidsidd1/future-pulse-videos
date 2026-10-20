@@ -14,6 +14,7 @@ Read this + CLAUDE.md (project notes and "Lessons learned") first in a new sessi
 - **Hosting:** the Mac is too slow (the 8.6-min history video took 25+ min just to draw). Owner chose
   **Modal** (free $30/month credits; est. ~$15-20 use; ~1-2 h/day). Backups: Contabo ~€7.50, OVH ~$12.
 - **Review first:** one full day's batch must be reviewed by the owner before posting is switched on.
+- **Look:** keep the full Remotion engine for every video (no plain engine). Long videos 25 fps, Shorts 30 fps.
 - Delete rendered videos from disk 2 days after all of that day's uploads succeeded (YouTube keeps them).
 - Owner wants: simple English, plain reports, a dashboard/notifications showing when work runs,
   continuous research and learning from mistakes (add to CLAUDE.md "Lessons learned").
@@ -37,18 +38,24 @@ Read this + CLAUDE.md (project notes and "Lessons learned") first in a new sessi
 - Remotion templates in `remotion/src` incl. `templates/Infographics.tsx` (map with Natural Earth PD data,
   timeline, chart).
 
-## Running right now
-- Test render of `long:history-0` (Battle of Navarino, 8.6 min, 1,276 words) on the Mac. Log:
-  `out/history_long.log`; done marker `out/history_long.done`. After it: render its 2 Shorts
-  (`short:history-0:5`, `short:history-0:4`) and review.
+## Where things stand (2026-10-20 evening)
+- **Modal works but its free limit is tiny for this account:** after ~$1.03 of tests Modal said "Workspace has
+  exceeded its spend limit" (no card on file, so nothing can be charged). Measured on 8 cores: the 8.6-min
+  history video drew in 624 s once and 3182 s another time; mix 316 s; ~$0.44 per long video. Full 6+9/day
+  would be ~$30-90/month there. modal_app.py stays (job/plan/work/tick/switch/dashboard) for later.
+- **Owner wants free only.** Next: Oracle Always Free (2 ARM cores, 12 GB since the 2026 cut; est. 3-6 long +
+  6-9 Shorts/day). Owner must sign up (card check) and create the VM; then set it up like modal_app.py's image.
+  Hostinger KVM 4 (~$10-15/mo, ~double on renewal) is the paid backup.
+- Review files on the Mac: out/review/history-0/ (long.mp4 = cloud render BEFORE the picture fixes; short_4 =
+  with Wikipedia paintings; short_5 = before). The re-made long video with paintings is NOT made yet.
+- Fixed today: FFmpeg mix freeze (2-pass + timeouts), cloud FFmpeg 5.1 stereo format, Wikimedia previews (UA +
+  standard sizes: Wikipedia photos were never approved before), era-aware picture check, cloud core count.
 
 ## Next steps
-1. Owner creates a Modal account (modal.com/signup was opened in Chrome). Then: `pip install modal`,
-   `modal token new` (owner approves in browser).
-2. Build `modal_app.py`: image (Python 3.12, FFmpeg, Node 22, Chrome deps, requirements, remotion npm),
-   a Modal Volume for data/, out/, models/, cache/ and assets/music; secrets (ask owner before uploading
-   keys); a 15-min cron that runs one job (max 1 container); dashboard as a private web endpoint
-   (token in URL); optional ntfy.sh phone notifications.
+1. DONE: Modal account, `modal token new`, `modal_app.py` (job / plan / tick timer / switch / dashboard),
+   `scripts/modal_secrets.py`. Measure time + cost of the first cloud job, then decide 25 fps / lighter blur.
+2. `modal deploy modal_app.py` switches on the 20-min timer (makes videos, holds them for review). Only
+   after the owner's go. Optional: ntfy.sh phone notifications.
 3. Speed/cost: blurred backgrounds via FFmpeg instead of CSS blur; long videos at 25 fps.
 4. Plan + render one full day's batch on Modal → owner review.
 5. Then: owner picks 4 channel names, creates channels; `scripts/youtube_auth.py` per channel →

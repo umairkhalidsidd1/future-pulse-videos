@@ -5,7 +5,6 @@ much better than re-transcribing with Whisper (±0.1-0.5 s). Long audio is first
 with a quick Whisper pass, so wav2vec2 only ever sees short pieces.
 """
 import difflib
-import os
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -13,7 +12,7 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 
-from .config import CFG, MODELS
+from .config import CFG, MODELS, workers
 
 W2V_MODEL = "facebook/wav2vec2-base-960h"
 FRAME = 320 / 16000          # wav2vec2 gives one score column per 20 ms
@@ -56,7 +55,7 @@ def spoken(word: str) -> str:
 def _w2v():
     import torch
     from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
-    torch.set_num_threads(max(1, (os.cpu_count() or 2) // 2))
+    torch.set_num_threads(workers())
     cache = str(MODELS / "hf")
     proc = Wav2Vec2Processor.from_pretrained(W2V_MODEL, cache_dir=cache)
     model = Wav2Vec2ForCTC.from_pretrained(W2V_MODEL, cache_dir=cache).eval()

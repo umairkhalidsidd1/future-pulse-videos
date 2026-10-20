@@ -35,6 +35,13 @@ for d in (DATA / "plans", CACHE, OUT, MODELS):
     d.mkdir(parents=True, exist_ok=True)
 
 
+def workers() -> int:
+    """Cores the heavy steps may use: half of the Mac (it is shared with other work), or FACTORY_CPUS in the
+    cloud (os.cpu_count() there reports the whole host, not our share)."""
+    n = os.environ.get("FACTORY_CPUS")
+    return max(1, int(n)) if n else max(1, (os.cpu_count() or 2) // 2)
+
+
 def secret(name: str) -> str | None:
     value = os.environ.get(name, "").strip()
     return value or None

@@ -1,8 +1,8 @@
 # Project notes for Claude
 
-Automated faceless video channel (tech & future niche, English). Python 3.12 in `.venv` (made with uv).
-GitHub Actions (`.github/workflows/daily.yml`) runs `python -m pipeline auto` 6×/day. Each run does ONE job
-from `config.yaml → channel.job_order`. State lives in `data/plans/<date>.json` and is committed by the bot.
+Automated faceless video factory: 4 channels (space, history, business, geography), English. Python 3.12 in `.venv` (made with uv).
+Runs on Modal (`modal_app.py`: image, volume "video-factory", secret "video-factory-keys", 20-min timer that does
+ONE job). State lives in `data/plans/<date>.json` on the volume. The old GitHub workflow is disabled.
 
 - Decisions (from the user): original scripts only (no reuploads), fully automatic posting (no Telegram approval),
   1 long + 5 Shorts per day, public repo, official APIs only (no browser automation, no instagrapi).
@@ -51,3 +51,28 @@ from `config.yaml → channel.job_order`. State lives in `data/plans/<date>.json
 - Long videos must be 8+ minutes: only then does YouTube allow mid-video ads.
 - Pixabay returns 429 when downloads go too fast (a long video needs ~150 files): stock._polite keeps it to ~1
   request per 0.8 s and retries after 20 s.
+- FFmpeg froze (0% CPU, no error, 75 min) at the end of an 8.6-min video when ONE graph mixed the picture and
+  3 sound inputs with -t. Now: sound mixed first to a wav, then picture + wav; every FFmpeg/Remotion run has a
+  timeout so a freeze can't block the factory. If a process sits at 0% CPU, `sample <pid>` shows what it waits on.
+- Remotion "delayRender ... Setting the current frame ... not cleared" = the machine was too busy (Mac load 7-29
+  from other projects), not a bad clip (the clip on screen was a normal 10 s file). It retries with half the tabs.
+- In the cloud, os.cpu_count() and the load average are the whole host's, not ours: use config.workers()
+  (FACTORY_CPUS) and skip the busy-Mac check there.
+- Posting off (FACTORY_UPLOAD=0 / no POSTING_ON switch) marks jobs "held for review", else they re-ran every tick.
+- `modal run`/`deploy` copies the project while it builds: editing ANY copied file during that time stops the
+  build ("was modified during build process"). Notes (*.md) are no longer copied; don't edit code mid-build.
+- Modal: a program sees only the cores REQUESTED (cpu=(1,8) showed 1 core), and Python's counts there are wrong
+  (24 on an 8-core machine). modal_app._cores() counts like Remotion (min of nproc and Node availableParallelism).
+- Modal fires schedules even during `modal run` tests, and re-runs a call whose container you stop. The timer
+  exists only with `FACTORY_DEPLOY=1 modal deploy`; never run planning and a job at the same time (same plan file).
+- The cloud's FFmpeg is Debian's 5.1 (Mac has 8): audio graphs must force one format
+  (aformat ... channel_layouts=stereo) or 5.1 fails "Cannot select channel layout". Test FFmpeg changes on the
+  cloud with a 10-second clip before a full run.
+- Modal speed (8 cores): the 8.6-min history video drew 15,547 frames in 624 s (Mac: 25+ min, then failed).
+- Wikimedia answers 403 to requests without a User-Agent, and 400 to non-standard thumbnail sizes (320, 1600 px
+  fail; 250/330/500/960/1280/1920 work). The picture check fetched previews without one, so NO Wikipedia photo
+  was ever approved (history videos were all Pixabay). Every Wikimedia request sends WIKI_UA; stock._wm_thumb.
+- The picture check must know the story's subject and era (Stock(topic=...)): told only the narration line, it
+  approved a modern cruise ship for an 1827 "squadron" and modern soldiers for 1820s "Russian armies".
+- Busy Mac: Remotion with 7 tabs failed ("Visited http://localhost:3000/index.html but got no response");
+  the automatic retry with half the tabs worked. Long videos are 25 fps (owner's choice), Shorts 30 fps.

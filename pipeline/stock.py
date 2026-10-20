@@ -120,6 +120,16 @@ def _plain(html: str) -> str:
     return " ".join(re.sub(r"<[^>]+>", " ", html or "").split())[:80]
 
 
+def _wm_thumb(url: str, width: int) -> str:
+    """A Wikimedia preview of `width` px. Wikimedia only serves fixed sizes (250, 330, 500, 960, 1280, 1920...):
+    320 or 1600 give error 400. Works for scaled links (/1920px-...) and for links to the original file."""
+    base = url.split("?")[0]
+    if re.search(r"/\d+px-[^/]+$", base):
+        return re.sub(r"/\d+px-([^/]+)$", rf"/{width}px-\1", base)
+    m = re.match(r"(https://upload\.wikimedia\.org/wikipedia/[^/]+)/(\w/\w\w/)([^/]+)$", base)
+    return f"{m.group(1)}/thumb/{m.group(2)}{m.group(3)}/{width}px-{m.group(3)}" if m else url
+
+
 def _wiki(title: str) -> list[dict]:
     """Real photos from a Wikipedia article (files on Wikimedia Commons). Only public domain, CC0 and CC BY:
     'share-alike' and 'non-commercial' licences are skipped. Each photo carries its credit line."""
@@ -127,7 +137,7 @@ def _wiki(title: str) -> list[dict]:
         return []
     data = _cached_get(WIKI_API, {"action": "query", "format": "json", "titles": title, "redirects": 1,
                                   "generator": "images", "gimlimit": 40, "prop": "imageinfo",
-                                  "iiprop": "url|size|extmetadata|mime", "iiurlwidth": 1600}, WIKI_UA)
+                                  "iiprop": "url|size|extmetadata|mime", "iiurlwidth": 1920}, WIKI_UA)
     out = []
     for p in data.get("query", {}).get("pages", {}).values():
         ii = (p.get("imageinfo") or [{}])[0]
@@ -141,7 +151,7 @@ def _wiki(title: str) -> list[dict]:
         url = ii.get("thumburl") or ii.get("url", "")
         artist = _plain(md.get("Artist", {}).get("value", "")) or "unknown"
         out.append({"id": "wiki_" + re.sub(r"[^A-Za-z0-9]+", "_", p["title"])[:80], "url": url, "kind": "image",
-                    "duration": 999, "tall": h > w, "thumb": re.sub(r"/\d+px-", "/320px-", url),
+                    "duration": 999, "tall": h > w, "thumb": _wm_thumb(url, 330),
                     "credit": f"{p['title'].removeprefix('File:')} by {artist}, {lic}, via Wikimedia Commons"})
     return out
 
@@ -180,8 +190,9 @@ def _polite(url: str):
 
 
 class Stock:
-    def __init__(self, vertical: bool, seed: str):
+    def __init__(self, vertical: bool, seed: str, topic: str = ""):
         self.vertical = vertical
+        self.topic = topic                      # tells the picture check the subject and era of the story
         self.rng = random.Random(seed)
         self.used_now: set[str] = set()
         self.recent: list[str] = json.loads(USED.read_text()) if USED.exists() else []
@@ -271,7 +282,7 @@ class Stock:
             more = [c for c in self._candidates(sc.get("visual", "technology"), sc.get("visual_alt", ""), max(8, n + 4))
                     if c["id"] not in seen]
             cands.append((real + more)[:12 if self.vertical else 8])
-        approved = rank_clips(scenes, cands)
+        approved = rank_clips(scenes, cands, self.topic)
         result = []
         for si, (n, cs) in enumerate(zip(needs, cands)):
             if approved is None:          # check couldn't run: best search matches
@@ -312,15 +323,15 @@ class Stock:
 
 
 def _thumb(url: str) -> bytes | None:
-    try:
-        r = requests.get(url, timeout=20)
+    try:                      # without a User-Agent Wikimedia answers 403: no Wikipedia photo was ever approved
+        r = requests.get(url, timeout=20, headers=WIKI_UA)
         r.raise_for_status()
         return r.content if len(r.content) > 500 else None
     except requests.RequestException:
         return None
 
 
-def rank_clips(scenes: list[dict], cands: list[list[dict]]) -> list[list[int]] | None:
+def rank_clips(scenes: list[dict], cands: list[list[dict]], topic: str = "") -> list[list[int]] | None:
     """Ask Gemini which preview pictures fit each scene's words (10 scenes per request).
     Returns, per scene, the indexes of fitting clips (best first), or None if the check can't run."""
     import base64
@@ -330,11 +341,16 @@ def rank_clips(scenes: list[dict], cands: list[list[dict]]) -> list[list[int]] |
         return None
     with ThreadPoolExecutor(8) as pool:
         thumbs = [list(pool.map(_thumb, [c.get("thumb", "") for c in cs])) for cs in cands]
-    system = ("You are a video editor choosing B-roll stock footage for a tech news video. "
+    system = ("You are a video editor choosing B-roll footage and pictures for a documentary video. "
               "Return only valid JSON.")
+    about = (f"The video is about: {topic}. " if topic else "") + (
+        "Match the time period: if the story happens in the past, modern things (cars, modern ships or planes, "
+        "phones, screens, modern uniforms or guns, people in modern clothes, modern buildings) score 0-2 unless "
+        "the line is about today. Period paintings, engravings, old maps, old documents, historic photos and "
+        "timeless shots (open sea, sky, landscapes with nothing modern) fit the past. ")
     approved: list[list[int]] = [[] for _ in scenes]
     for start in range(0, len(scenes), 10):
-        parts = [{"text": "For each scene below you see the narration and numbered preview pictures of stock clips. "
+        parts = [{"text": about + "For each scene below you see the narration and numbered preview pictures of clips. "
                           "Score EVERY clip from 0 to 10 for how well it fits what is being said: 9-10 shows "
                           "exactly that, 6-8 clearly related, 4-5 loosely related but fine as background "
                           "(e.g. a lab for a science line), 0-3 unrelated or odd. Brand names mean the COMPANY or "

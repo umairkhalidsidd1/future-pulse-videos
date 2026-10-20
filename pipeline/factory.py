@@ -6,6 +6,7 @@ Shorts (they reuse the long video's voice and word timings). Uploads are schedul
 Mac can render whenever it is free and YouTube publishes at the planned US peak times.
 """
 import json
+import os
 import random
 import time
 import traceback
@@ -154,7 +155,7 @@ def build_long(plan: dict, video: dict, job_id: str) -> dict:
     clips, credits = base.draw(kind="long", scenes=scenes, timings=timings, total=total, words=words, wav=wav,
                                work=work, out=out, seed=video["id"] + plan["date"], day=plan["date"],
                                hook=doc["thumbnail_text"], extra_cards=cards, whoosh=whoosh,
-                               mood=doc.get("music_mood"), look=ch.get("look"))
+                               mood=doc.get("music_mood"), look=ch.get("look"), topic=_about(video, ch))
     status.step(job_id, "thumbnail")
     source = clips[0] if clips else out
     thumb = thumbnail.make(source, doc["thumbnail_text"], work / "thumbnail.jpg", badge="",
@@ -207,7 +208,8 @@ def build_short(plan: dict, video: dict, ci: int, job_id: str) -> dict:
     out = work / f"short_{ci}.mp4"
     _, credits = base.draw(kind="short", scenes=scenes, timings=timings, total=total, words=words, wav=wav,
                            work=work, out=out, seed=f"{video['id']}-{ci}{plan['date']}", day=plan["date"],
-                           hook=chap["hook_text"], mood=doc.get("music_mood"), look=ch.get("look"))
+                           hook=chap["hook_text"], mood=doc.get("music_mood"), look=ch.get("look"),
+                           topic=_about(video, ch))
     tags = [t for t in doc.get("tags", [])][:8]
     title = chap.get("short_title") or chap["title"]
     desc = (f"{chap['title']}\nFull video: \"{doc['title']}\" on our channel.\n\n#Shorts "
@@ -219,6 +221,12 @@ def build_short(plan: dict, video: dict, ci: int, job_id: str) -> dict:
 
 
 # ---------- running jobs ----------
+
+def _about(video: dict, ch: dict) -> str:
+    """What the picture check is told about the story (subject + era), e.g. 'The Battle of Navarino, 1827'."""
+    t = video.get("topic", {})
+    return "; ".join(x for x in (t.get("title", ""), t.get("thesis", ""), ch.get("niche", "")) if x)[:400]
+
 
 def run(plan: dict, job: dict, upload: bool = True) -> dict:
     kind, _, rest = job["id"].partition(":")
@@ -235,6 +243,8 @@ def run(plan: dict, job: dict, upload: bool = True) -> dict:
     if upload:
         status.step(job["id"], "uploading to YouTube")
         publish(job, built)
+    else:                                     # posting is off: keep the finished video for the owner's review
+        job["status"]["youtube"] = "held for review"
     status.event("done", f"{label} finished ({built['duration'] / 60:.1f} min)", file=str(built["video"]))
     status.notify("Video factory: finished", f"{label} ready ({built['duration'] / 60:.1f} min)")
     return built
@@ -262,7 +272,7 @@ def publish(job: dict, built: dict):
 
 def _ready(job: dict, plan: dict) -> bool:
     st = job["status"]
-    finished = bool(st) and all(v in ("done", "not set up") for v in st.values())
+    finished = bool(st) and all(v in ("done", "not set up", "held for review") for v in st.values())
     if finished or job["attempts"] >= MAX_ATTEMPTS or job.get("waiting") == plan["date"]:
         return False
     if job["id"].startswith("short:"):
@@ -315,8 +325,12 @@ def next_job(upload: bool = True) -> bool:
     day = today()
     plan = base.load_plan(day)
     if not plan or not plan.get("factory") or set(channels()) - set(plan.get("planned_channels", [])):
-        status.step("plan", "planning today's videos")
-        plan = make_plan(day)
+        if os.environ.get("FACTORY_NO_PLAN"):      # cloud: planning runs on its own small machine (modal plan)
+            if not plan or not plan.get("factory"):
+                return False
+        else:
+            status.step("plan", "planning today's videos")
+            plan = make_plan(day)
     for job in plan["jobs"]:
         if not _ready(job, plan):
             continue

@@ -74,4 +74,6 @@ def paused() -> bool:
 
 
 def mac_load() -> tuple[float, int]:
+    if os.environ.get("FACTORY_CPUS"):       # cloud machine: ours alone (its load average is the whole host's)
+        return 0.0, int(os.environ["FACTORY_CPUS"])
     return os.getloadavg()[0], os.cpu_count() or 1

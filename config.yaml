@@ -137,7 +137,7 @@ short:
 long:
   width: 1920
   height: 1080
-  fps: 30
+  fps: 25                         # 17% less drawing than 30, looks the same on YouTube (owner chose this)
   target_minutes: [6, 10]
   cut_seconds: 3.6
 
