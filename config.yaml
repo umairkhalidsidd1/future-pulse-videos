@@ -1,15 +1,78 @@
 # Main settings for the daily video machine.
 # Change things here, not in the code.
 
-channel:
-  name: "Reality Shockwaves"      # your YouTube channel name, used in scripts
-  niche: "technology and the future: AI, Elon Musk and his companies, gadgets, space, EVs, robots, science breakthroughs"
+channel:                          # settings shared by every channel
+  name: "Factory"                 # only used when a channel has no name of its own
   language: "en"
-  timezone: "America/New_York"    # the "day" of the plan is counted in this timezone
-  stories_per_day: 5
-  # Ordered list of today's jobs. Each GitHub run does the first unfinished one.
-  job_order: ["short:0", "short:1", "long", "short:2", "short:3", "short:4"]
-  avoid_repeat_days: 14           # don't pick a story we covered in the last N days
+  timezone: "America/New_York"    # the "day" of the plan is counted in this timezone (US audience)
+  avoid_repeat_days: 365          # never repeat a topic a channel covered in the last N days
+
+# One entry per YouTube channel. Each has its own topics, voice, music, look and daily amounts, so videos
+# from different channels never share one template (YouTube's "materially varied" rule).
+# Channel names are placeholders until the real channels are created.
+channels:
+  space:
+    cards: "stat, compare, chart, map (where on Earth or in the sky)"
+    name: "Space Channel"
+    niche: "space and science: missions, discoveries, planets, stars, black holes, telescopes, how the universe works"
+    style: "awe-filled but precise science explainer; every video tied to a real mission, discovery or paper"
+    voice: {engine: gemini, gemini_voice: "Charon", on_limit: wait}
+    music_moods: [inspiring, curious]
+    look: {cardStyle: dark, captionY: 0.6, hookTilt: -2, highlight: "00E5FF", keyword: "FFE600"}
+    long_per_day: 2
+    shorts_per_day: 3
+    post_hours: [11, 15, 18, 20, 21]          # US Eastern; long videos take the first slots
+    category_id: "28"                         # Science & Technology
+    secrets: SPACE                            # uses YT_REFRESH_TOKEN_SPACE (falls back to YT_REFRESH_TOKEN)
+    topic_feeds:
+      - https://www.space.com/feeds/all
+      - https://www.nasa.gov/news-release/feed/
+      - https://phys.org/rss-feed/space-news/
+  history:
+    cards: "map, timeline, quote (only real quotes), stat"
+    name: "History Channel"
+    niche: "history documentaries: empires, wars, inventions, lost cities, turning points, everyday life in the past"
+    style: "calm documentary storyteller; vivid scenes, real dates and people, one surprising insight per chapter"
+    voice: {engine: gemini, gemini_voice: "Gacrux", on_limit: wait}
+    music_moods: [inspiring, curious]
+    look: {cardStyle: light, captionY: 0.62, hookTilt: 1, highlight: "FF9F1C", keyword: "FFE600"}
+    long_per_day: 2
+    shorts_per_day: 3
+    post_hours: [12, 16, 19, 20, 22]
+    category_id: "27"                         # Education
+    secrets: HISTORY
+    on_this_day: true                         # use Wikipedia's "on this day" events as timely hooks
+    topic_feeds: []
+  business:
+    cards: "chart, stat, compare, timeline"
+    name: "Business Channel"
+    niche: "business and company stories: how famous companies rose, failed or changed; founders, rivalries, strategy"
+    style: "sharp business storyteller; concrete numbers, cause and effect, NEVER financial advice"
+    voice: {engine: kokoro, kokoro_voice: "am_michael"}
+    music_moods: [upbeat, energetic]
+    look: {cardStyle: accent, captionY: 0.6, hookTilt: 0, highlight: "39FF14", keyword: "FFE600"}
+    long_per_day: 1
+    shorts_per_day: 2
+    post_hours: [13, 17, 21]
+    category_id: "27"
+    secrets: BUSINESS
+    topic_feeds:
+      - https://feeds.arstechnica.com/arstechnica/business
+      - https://techcrunch.com/category/startups/feed/
+  geography:
+    cards: "map (often), stat, compare, chart"
+    name: "Geography Channel"
+    niche: "geography and geopolitics explainers: why borders, cities, rivers, islands and countries are the way they are"
+    style: "curious map explainer; maps and numbers, neutral and factual on politics, no sides taken"
+    voice: {engine: kokoro, kokoro_voice: "bf_emma"}
+    music_moods: [curious, inspiring]
+    look: {cardStyle: dark, captionY: 0.58, hookTilt: 2, highlight: "FF3D7F", keyword: "00E5FF"}
+    long_per_day: 1
+    shorts_per_day: 1
+    post_hours: [14, 20]
+    category_id: "27"
+    secrets: GEOGRAPHY
+    topic_feeds: []
 
 trends:
   max_age_hours: 36
@@ -28,9 +91,16 @@ trends:
 
 llm:
   # Tried in order. If a model name stops existing, the next one is used.
-  gemini_models: ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite"]
-  groq_models: ["openai/gpt-oss-120b", "llama-3.3-70b-versatile"]
-  vision_models: ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.8-flash", "gemini-3.7-flash"]  # checks clip previews (lite = higher free limits)
+  # Tried in this order. Each model has its OWN free daily limit, so more models = more free capacity.
+  # gemini-3.8-flash writes best but has a tiny free quota; Groq's gpt-oss-120b is a strong free backup
+  # (~1,000 requests/day, but only ~8K tokens per minute: the code waits a minute when that is hit).
+  models: ["gemini:gemini-3.8-flash", "groq:openai/gpt-oss-120b", "gemini:gemini-3.7-flash",
+           "gemini:gemini-3.6-flash", "gemini:gemini-3-flash-preview", "gemini:gemini-3.5-flash",
+           "groq:qwen/qwen3.8-27b", "gemini:gemini-3.5-flash-lite", "gemini:gemini-3.1-flash-lite",
+           "groq:openai/gpt-oss-20b"]
+  gemini_models: ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.6-flash"]   # only for the old news flow
+  groq_models: ["openai/gpt-oss-120b"]
+  vision_models: ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-3-flash-preview"]  # checks clip previews (lite = higher free limits)
   temperature: 0.9
   fact_check: true                # second AI pass that checks the script against the sources
 
@@ -45,6 +115,11 @@ voice:
   # Backup when Gemini's limit is used up
   kokoro_voice: "af_heart"
   target_wpm: {short: 160, long: 150}   # pro pace from research: Shorts 150-165, long videos ~150
+
+long_script:
+  chapters: [7, 9]                # each chapter stands alone, so the best ones become Shorts
+  chapter_words: [90, 140]        # about 35-55 seconds each (ideal Short length)
+  total_words: [1100, 1600]       # about 8-10 minutes: 8+ minutes allows mid-video ads (more money)
 
 short:
   width: 1080
@@ -65,6 +140,9 @@ long:
   fps: 30
   target_minutes: [6, 10]
   cut_seconds: 3.6
+
+cleanup:
+  keep_days: 2                    # delete rendered videos from the Mac 2 days after ALL of that day's uploads succeeded
 
 render:
   engine: "remotion"              # remotion = pro look (cards, animated captions). ffmpeg = simple backup

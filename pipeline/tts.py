@@ -24,16 +24,23 @@ class VoiceError(RuntimeError):
     pass
 
 
+class VoiceWait(RuntimeError):
+    """The channel's own voice is not available today (free limit used up). The job waits; the channel's
+    voice is never swapped for another one."""
+
+
 # ---------- Gemini TTS ----------
 
-def _gemini(model: str, text: str) -> np.ndarray:
+def _gemini(model: str, text: str, voice_name: str | None = None) -> np.ndarray:
+    from .status import count
     v = CFG["voice"]
+    count(f"voice {model}")
     key = secret("GEMINI_API_KEY")
     if not key:
         raise VoiceError("GEMINI_API_KEY not set")
     body = {"contents": [{"parts": [{"text": f"{v['style'].rstrip()}\n#### TRANSCRIPT\n{text}"}]}],
             "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {
-                "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": v["gemini_voice"]}}}}}
+                "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice_name or v["gemini_voice"]}}}}}
     r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
                       json=body, headers={"x-goog-api-key": key}, timeout=600)
     if r.status_code != 200:
@@ -122,11 +129,13 @@ def _kokoro():
     return Kokoro(str(MODELS / FILES[0]), str(MODELS / FILES[1]))
 
 
-def _kokoro_say(text: str) -> np.ndarray:
+def _kokoro_say(text: str, voice_name: str | None = None) -> np.ndarray:
     v = CFG["voice"]
     for a, b in (("AI's", "A.I.'s"), (" AI ", " A.I. "), ("&", " and "), ("%", " percent"), ("—", ", ")):
         text = f" {text} ".replace(a, b).strip()
-    audio, rate = _kokoro().create(text, voice=v["kokoro_voice"], speed=1.0, lang="en-us",
+    voice = voice_name or v["kokoro_voice"]
+    lang = "en-gb" if voice.startswith(("bf_", "bm_")) else "en-us"
+    audio, rate = _kokoro().create(text, voice=voice, speed=1.0, lang=lang,
                                    sentence_pause=0.12, clause_pause=0.05)
     return np.asarray(audio, dtype=np.float32)
 
@@ -170,28 +179,31 @@ def _tempo(audio: np.ndarray, factor: float) -> np.ndarray:
     return out
 
 
-def synth(scenes: list[dict], out_wav: Path, kind: str = "short") -> tuple[None, float]:
+def synth(scenes: list[dict], out_wav: Path, kind: str = "short", voice: dict | None = None) -> tuple[None, float]:
     """Speaks the whole script into out_wav. Returns (None, length in seconds); exact word and scene
-    times come from align.align_script afterwards."""
+    times come from align.align_script afterwards. `voice` is a channel's own voice, e.g.
+    {"engine": "gemini", "gemini_voice": "Charon", "on_limit": "wait"} or {"engine": "kokoro", "kokoro_voice": "bf_emma"}."""
     v = CFG["voice"]
+    voice = voice or {}
     pieces = _chunks(scenes, v.get("max_words_per_request", 240))
     script = " ".join(sc["text"] for sc in scenes)
     words = len(script.split())
     import hashlib
     import json
-    stamp = hashlib.sha1(json.dumps([script, v, kind], sort_keys=True).encode()).hexdigest()
+    stamp = hashlib.sha1(json.dumps([script, v, kind, voice], sort_keys=True).encode()).hexdigest()
     stamp_file = out_wav.with_suffix(".stamp")
     if out_wav.exists() and stamp_file.exists() and stamp_file.read_text() == stamp:
         total = sf.info(str(out_wav)).duration
         print(f"  [tts] same script as before: reusing the voice-over ({total:.1f} s)")
         return None, total
     audio, engine = None, None
-    for model in v.get("gemini_models", []):
+    models = [] if voice.get("engine") == "kokoro" else v.get("gemini_models", [])
+    for model in models:
         try:
             parts = []
             for piece in pieces:
                 plain = " ".join(sc["text"] for sc in piece)
-                part = _trim(_gemini(model, speech_text(piece)))
+                part = _trim(_gemini(model, speech_text(piece), voice.get("gemini_voice")))
                 expected = len(plain.split()) / 150 * 60
                 if not 0.5 * expected < len(part) / RATE < 1.8 * expected:
                     raise VoiceError(f"odd length {len(part) / RATE:.0f}s for ~{expected:.0f}s of text")
@@ -203,9 +215,12 @@ def synth(scenes: list[dict], out_wav: Path, kind: str = "short") -> tuple[None,
             break
         except (VoiceError, requests.RequestException) as e:
             print(f"  [tts] {safe_err(e)}; trying the next voice engine")
+    if audio is None and models and voice.get("on_limit") == "wait":
+        raise VoiceWait("this channel's Gemini voice is not available right now (daily limit); the job waits")
     if audio is None:
-        audio = _trim(np.concatenate([_kokoro_say(" ".join(sc["text"] for sc in p)) for p in pieces]))
-        engine = f"kokoro ({v['kokoro_voice']})"
+        kv = voice.get("kokoro_voice")
+        audio = _trim(np.concatenate([_kokoro_say(" ".join(sc["text"] for sc in p), kv) for p in pieces]))
+        engine = f"kokoro ({kv or v['kokoro_voice']})"
 
     target = v["target_wpm"][kind]
     wpm = words / (len(audio) / RATE / 60)

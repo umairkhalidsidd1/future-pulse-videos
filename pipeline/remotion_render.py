@@ -15,7 +15,8 @@ from .captions import _groups
 from .config import CFG, ROOT
 
 REMOTION = ROOT / "remotion"
-CARD_TEMPLATES = {"headline", "stat", "compare", "list", "quote", "outro", "chapter", "slam"}
+CARD_TEMPLATES = {"headline", "stat", "compare", "list", "quote", "outro", "chapter", "slam", "map", "timeline",
+                  "chart"}
 AGGREGATORS = {"Hacker News", "Google Trends"}
 
 

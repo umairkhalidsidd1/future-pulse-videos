@@ -13,12 +13,15 @@
     "@remotion/cli": "4.0.537",
     "@remotion/fonts": "4.0.537",
     "@remotion/transitions": "4.0.537",
+    "d3-geo": "^3.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remotion": "4.0.537"
   },
   "devDependencies": {
     "@remotion/eslint-config-flat": "4.0.537",
+    "@types/d3-geo": "^3.1.1",
+    "@types/geojson": "^7946.0.16",
     "@types/react": "19.2.7",
     "@types/web": "0.0.166",
     "eslint": "10.12.0",

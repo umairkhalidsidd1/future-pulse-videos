@@ -28,7 +28,12 @@ def _cached_get(url: str, params: dict, headers: dict) -> dict:
     path = SEARCH_CACHE / f"{key}.json"
     if path.exists() and time.time() - path.stat().st_mtime < 86400:
         return json.loads(path.read_text())
+    _polite(url)
     r = requests.get(url, params=params, headers=headers, timeout=30)
+    if r.status_code == 429:
+        time.sleep(20)
+        _polite(url)
+        r = requests.get(url, params=params, headers=headers, timeout=30)
     r.raise_for_status()
     data = r.json()
     path.write_text(json.dumps(data))
@@ -162,6 +167,18 @@ def _nasa(query: str) -> list[dict]:
     return out
 
 
+_last_pixabay = [0.0]
+
+
+def _polite(url: str):
+    """Pixabay blocks clients that download too fast (HTTP 429): at most ~1 request every 0.8 s."""
+    if "pixabay" in url:
+        wait = 0.8 - (time.time() - _last_pixabay[0])
+        if wait > 0:
+            time.sleep(wait)
+        _last_pixabay[0] = time.time()
+
+
 class Stock:
     def __init__(self, vertical: bool, seed: str):
         self.vertical = vertical
@@ -208,9 +225,13 @@ class Stock:
         if path.exists() and path.stat().st_size > 10_000:
             return path
         last = None
-        for url in [item["url"], *item.get("alt_urls", [])]:   # NASA: not every size exists for every photo
+        for url in [item["url"], *item.get("alt_urls", [])] * 2:   # NASA: not every size exists; 2nd round = retry
+            _polite(url)
             try:
                 with requests.get(url, stream=True, timeout=120, headers=WIKI_UA) as r:
+                    if r.status_code == 429:                       # too fast: wait, then the retry round
+                        time.sleep(20)
+                        raise requests.HTTPError("429 Too Many Requests")
                     r.raise_for_status()
                     with open(path, "wb") as f:
                         for chunk in r.iter_content(1 << 20):
@@ -249,7 +270,7 @@ class Stock:
             seen = {c["id"] for c in real}
             more = [c for c in self._candidates(sc.get("visual", "technology"), sc.get("visual_alt", ""), max(8, n + 4))
                     if c["id"] not in seen]
-            cands.append((real + more)[:12])
+            cands.append((real + more)[:12 if self.vertical else 8])
         approved = rank_clips(scenes, cands)
         result = []
         for si, (n, cs) in enumerate(zip(needs, cands)):

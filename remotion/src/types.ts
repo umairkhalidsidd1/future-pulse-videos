@@ -30,6 +30,9 @@ export type Look = {
 
 export type HeadlineData = {source: string; title: string; date?: string; highlight?: string[]};
 export type SlamData = {text: string};
+export type MapData = {label: string; lat: number; lon: number; zoom?: number; highlight?: string[]};
+export type TimelineData = {title?: string; events: {year: string; label: string}[]};
+export type ChartData = {title: string; bars: {label: string; value: number}[]; unit?: string; prefix?: string};
 export type StatData = {value: number; prefix?: string; suffix?: string; decimals?: number; label: string};
 export type CompareData = {title?: string; leftLabel: string; leftValue: string; rightLabel: string; rightValue: string};
 export type ListData = {title: string; items: string[]};
@@ -45,7 +48,10 @@ export type Card =
   | {from: number; duration: number; template: "quote"; data: QuoteData}
   | {from: number; duration: number; template: "outro"; data: OutroData}
   | {from: number; duration: number; template: "chapter"; data: ChapterData}
-  | {from: number; duration: number; template: "slam"; data: SlamData};
+  | {from: number; duration: number; template: "slam"; data: SlamData}
+  | {from: number; duration: number; template: "map"; data: MapData}
+  | {from: number; duration: number; template: "timeline"; data: TimelineData}
+  | {from: number; duration: number; template: "chart"; data: ChartData};
 
 export type CaptionWord = {text: string; startMs: number; endMs: number; key: boolean};
 export type CaptionPage = {startMs: number; endMs: number; words: CaptionWord[]};

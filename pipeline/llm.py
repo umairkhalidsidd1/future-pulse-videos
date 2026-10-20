@@ -65,30 +65,51 @@ def _parse(text: str):
         raise
 
 
-def ask_json(system: str, prompt: str, temperature: float | None = None, validate=None):
-    """Ask the first working model. `validate(result)` may raise to reject an answer and try again.
-    Raises LLMError if every model fails."""
+def ask_json(system: str, prompt: str, temperature: float | None = None, validate=None, max_tries: int = 6):
+    """Ask the first working model. `validate(result)` may raise to reject an answer: the reason is printed
+    and sent back to the AI on the next try ("you wrote 900 words, need 1,150"), so it can fix it.
+    At most `max_tries` answers are requested, so one bad script can never block the whole day."""
+    from .status import count
     temperature = CFG["llm"]["temperature"] if temperature is None else temperature
-    attempts = [(_gemini, m) for m in CFG["llm"]["gemini_models"]]
-    attempts += [(_groq, m) for m in CFG["llm"]["groq_models"]]
-    errors = []
+    order = CFG["llm"].get("models") or ([f"gemini:{m}" for m in CFG["llm"]["gemini_models"]]
+                                         + [f"groq:{m}" for m in CFG["llm"]["groq_models"]])
+    attempts = [(_groq if p == "groq" else _gemini, m) for p, _, m in (x.partition(":") for x in order)]
+    errors, feedback, tries = [], "", 0
     for fn, model in attempts:
-        for retry in range(2):
+        for retry in range(3 if fn is _groq else 2):
+            if tries >= max_tries:
+                raise LLMError(f"No acceptable answer after {tries} tries:\n  " + "\n  ".join(errors[-6:]))
+            ask = prompt + (f"\n\nYOUR PREVIOUS ANSWER WAS REJECTED: {feedback}\nFix exactly that and answer again "
+                            f"with the complete JSON." if feedback else "")
             try:
-                result = _parse(fn(model, system, prompt, temperature))
+                raw = fn(model, system, ask, temperature)
+            except (LLMError, requests.RequestException) as e:
+                msg = " ".join(str(e).split())[:200]
+                errors.append(f"{model}: {msg}")
+                print(f"  [llm] {model} unavailable: {msg[:120]}")
+                per_minute = fn is _groq and "HTTP 429" in msg and ("per minute" in msg or "TPM" in msg or "RPM" in msg)
+                if per_minute:                              # Groq's per-minute limit: wait, then the same model
+                    print("  [llm] Groq per-minute limit: waiting 60 s")
+                    time.sleep(60)
+                    continue
+                if any(x in msg for x in ("not set", "HTTP 404", "HTTP 400", "HTTP 429", "HTTP 413")):
+                    break                                   # missing / quota used up / too big: next model
+                time.sleep(20 if "HTTP 503" in msg else 8)  # "high demand" passes after a short wait
+                continue
+            tries += 1
+            count(f"text {model}")
+            try:
+                result = _parse(raw)
                 if not isinstance(result, dict):
-                    raise LLMError("answer is not a JSON object")
+                    raise ValueError("the answer is not a JSON object")
                 if validate:
                     validate(result)
                 print(f"  [llm] answered by {model}")
                 return result
-            except (LLMError, json.JSONDecodeError, requests.RequestException, KeyError, IndexError,
-                    TypeError, ValueError) as e:
-                errors.append(f"{model}: {e}")
-                msg = str(e)
-                if "not set" in msg or "HTTP 404" in msg or "HTTP 400" in msg:
-                    break  # this model/provider can't work; try the next one
-                time.sleep(5 if retry == 0 else 0)
+            except (json.JSONDecodeError, KeyError, IndexError, TypeError, ValueError) as e:
+                feedback = " ".join(str(e).split())[:300]
+                errors.append(f"{model}: rejected: {feedback}")
+                print(f"  [llm] answer from {model} rejected: {feedback}")
     raise LLMError("All AI models failed:\n  " + "\n  ".join(errors[-8:]))
 
 

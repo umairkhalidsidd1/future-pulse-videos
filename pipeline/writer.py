@@ -10,7 +10,8 @@ from .config import CFG
 from .llm import ask_json
 from .trends import fetch_article
 
-CH = CFG["channel"]
+# The old single-channel news flow (kept for `python -m pipeline test`); the factory uses channel_system().
+CH = {"name": "Factory", "niche": "technology and the future", "language": "en", **CFG["channel"]}
 
 SYSTEM = f"""You are the head writer of "{CH['name']}", a faceless YouTube / TikTok / Instagram channel about
 {CH['niche']}. Language: {CH['language']}.
@@ -56,7 +57,13 @@ Use cards on about 40% of scenes, never on the first scene, never on two scenes 
 - {"template": "quote", "text": "...", "who": "Name", "where": "where they said it"} : ONLY a quote that appears
   WORD FOR WORD in the SOURCES. Max 20 words. Otherwise no quote card.
 - {"template": "slam", "text": "FIVE GIGAWATTS BY 2039"} : the single most striking fact in 2-4 big words, once
-  per video, on a scene that says those words."""
+  per video, on a scene that says those words.
+- {"template": "map", "label": "Navarino Bay", "lat": 36.93, "lon": 21.68, "zoom": 6, "highlight": ["Greece"]} :
+  WHERE something happened. Real coordinates; zoom 1 (world) to 8 (a city); "highlight" = English country names.
+- {"template": "timeline", "title": "Road to Navarino", "events": [{"year": "1821", "label": "max 4 words"}, ...]} :
+  3-4 dated events, ONLY dates that appear in the SOURCES.
+- {"template": "chart", "title": "Ships at Navarino", "bars": [{"label": "Allies", "value": 27}, ...], "unit": "",
+  "prefix": ""} : 2-5 bars comparing numbers that ALL appear in the SOURCES."""
 
 VISUAL_RULES = """VISUAL RULES: every scene has "visual": a 1-3 word STOCK FOOTAGE search query for something concrete and
 filmable that MATCHES what is being said (e.g. "electric car highway", "robot arm factory", "rocket launch",
@@ -120,6 +127,26 @@ def clean_card(c):
             items = [_short(x, 36) for x in c.get("items", []) if str(x).strip()][:4]
             return {"template": "list", "title": _short(c.get("title", "Key points"), 34), "items": items} \
                 if len(items) >= 2 else None
+        if t == "map":
+            lat, lon = float(c.get("lat")), float(c.get("lon"))
+            if not (-85 <= lat <= 85 and -180 <= lon <= 180):
+                return None
+            return {"template": "map", "label": _short(c.get("label", ""), 30) or "Here", "lat": lat, "lon": lon,
+                    "zoom": max(1.0, min(9.0, float(c.get("zoom") or 4))),
+                    "highlight": [_short(x, 40) for x in c.get("highlight", []) if str(x).strip()][:3]}
+        if t == "timeline":
+            ev = [{"year": _short(e.get("year", ""), 10), "label": _short(e.get("label", ""), 34)}
+                  for e in c.get("events", []) if isinstance(e, dict) and str(e.get("year", "")).strip()][:4]
+            return {"template": "timeline", "title": _short(c.get("title", ""), 34), "events": ev} if len(ev) >= 2 else None
+        if t == "chart":
+            bars = []
+            for b in c.get("bars", [])[:5]:
+                if isinstance(b, dict):
+                    bars.append({"label": _short(b.get("label", ""), 16),
+                                 "value": float(str(b.get("value")).replace(",", "").replace("$", ""))})
+            return {"template": "chart", "title": _short(c.get("title", ""), 34), "bars": bars,
+                    "unit": _short(c.get("unit") or "", 6), "prefix": _short(c.get("prefix") or "", 3)} \
+                if len(bars) >= 2 and all(b["label"] for b in bars) else None
         if t == "slam":
             text = _short(c.get("text", ""), 40)
             return {"template": "slam", "text": text} if 1 <= len(text.split()) <= 5 else None
@@ -151,6 +178,16 @@ def verify_cards(scenes: list[dict], facts: str) -> list[dict]:
             forms = {f"{v:,.0f}", f"{v:.0f}", f"{v:,.{c['decimals']}f}", f"{v:.{c['decimals']}f}"}
             if not any(_squash(f) in plain for f in forms):
                 print(f"  [cards] dropped a number not found in the sources: {v}")
+                s["card"] = None
+        elif c["template"] == "chart":
+            def found(v):
+                return any(_squash(f) in plain for f in {f"{v:,.0f}", f"{v:.0f}", f"{v:g}"})
+            if not all(found(b["value"]) for b in c["bars"]):
+                print(f"  [cards] dropped a chart with numbers not found in the sources: {c['title']}")
+                s["card"] = None
+        elif c["template"] == "timeline":
+            if not all(_squash(e["year"]) in plain for e in c["events"]):
+                print(f"  [cards] dropped a timeline with dates not found in the sources: {c['title']}")
                 s["card"] = None
     return scenes
 
@@ -403,3 +440,190 @@ Return JSON: {{"issues": ["what you fixed"], "scenes": [same shape as input]}}""
             print(f"  [fact-check] fixed: {issue}")
         return fixed
     return scenes
+
+
+# ---------- long videos in stand-alone chapters (the multi-channel factory) ----------
+
+def _check_doc(r):
+    for key in ("title", "thumbnail_text"):
+        if not str(r.get(key, "")).strip():
+            raise ValueError(f"missing {key}")
+    _check_scenes(r.get("intro"), 2)
+    _check_scenes(r.get("outro"), 1)
+    chs = r.get("chapters")
+    lo, hi = CFG["long_script"]["chapters"]
+    if not isinstance(chs, list) or len(chs) < lo:
+        raise ValueError(f"needs at least {lo} chapters")
+    for c in chs:
+        if not isinstance(c, dict):
+            raise ValueError("bad chapter")
+        _check_scenes(c.get("scenes"), 3)
+        c["title"] = str(c.get("title") or "Next").strip()[:60]
+        c["hook_text"] = str(c.get("hook_text") or c["title"]).strip()[:40]
+        c["bridge"] = str(c.get("bridge") or "").strip()
+        try:
+            c["clip_score"] = float(c.get("clip_score", 5))
+        except (TypeError, ValueError):
+            c["clip_score"] = 5.0
+        if is_unfinished(c["scenes"][-1]["text"]):
+            raise ValueError("a chapter ends unfinished")
+    if is_unfinished(r["outro"][-1]["text"]):
+        raise ValueError("the outro ends unfinished")
+    words = sum(len(s["text"].split()) for part in [r["intro"], r["outro"]] + [c["scenes"] for c in chs]
+                for s in part)
+    need = int(CFG["long_script"]["total_words"][0] * 0.9)
+    if words < need:
+        raise ValueError(f"script too short: {words} words, need at least {need}")
+    if r.get("music_mood") not in ("energetic", "upbeat", "curious", "inspiring"):
+        r["music_mood"] = "curious"
+    r.setdefault("description", "{CHAPTERS}")
+    if not isinstance(r.get("tags"), list):
+        r["tags"] = []
+
+
+def channel_system(ch: dict) -> str:
+    return f"""You are the head writer of a faceless YouTube channel about {ch['niche']}.
+Voice of the channel: {ch['style']}. Language: English.
+
+TRUTH RULES (most important):
+- Use ONLY facts found in the SOURCES. Never invent numbers, dates, quotes, names or claims.
+- Where historians or scientists disagree, or something is uncertain, say so ("historians still debate...").
+- Never write fake first-person quotes from real people. No medical, legal or financial advice.
+- Titles and hooks create curiosity, but the video must deliver exactly what they promise.
+
+Return ONLY valid JSON that matches the requested shape."""
+
+
+SCENE_SHAPE = ('{"text": "...", "visual": "...", "visual_alt": "...", "wiki": "...", "keywords": ["..."], '
+               '"card": null}')
+
+
+def _check_outline(r):
+    lo, hi = CFG["long_script"]["chapters"]
+    for key in ("title", "thumbnail_text"):
+        if not str(r.get(key, "")).strip():
+            raise ValueError(f"missing {key}")
+    chs = r.get("chapters")
+    if not isinstance(chs, list) or not lo <= len(chs) <= hi + 1:
+        raise ValueError(f"needs {lo}-{hi} chapters, got {len(chs) if isinstance(chs, list) else 0}")
+    for c in chs:
+        if not isinstance(c, dict) or not str(c.get("title", "")).strip() or not str(c.get("point", "")).strip():
+            raise ValueError("every chapter needs a title and a point")
+
+
+def _check_part(minimum_words: int, minimum_scenes: int = 3):
+    def check(r):
+        _check_scenes(r.get("scenes"), minimum_scenes)
+        n = sum(len(x["text"].split()) for x in r["scenes"])
+        if n < minimum_words:
+            raise ValueError(f"too short: {n} words, write at least {minimum_words}")
+        if is_unfinished(r["scenes"][-1]["text"]):
+            raise ValueError("the last line is unfinished")
+    return check
+
+
+def write_doc(topic: dict, ch: dict, facts: str) -> dict:
+    """A long video (8-10 min) of 4-6 stand-alone chapters. Written IN PARTS (outline, then every chapter,
+    then intro/outro), because AI models only write ~700 words reliably per answer."""
+    lo_c, hi_c = CFG["long_script"]["chapters"]
+    lo_w, hi_w = CFG["long_script"]["chapter_words"]
+    system = channel_system(ch)
+    src = facts[:24000]
+    base = f"""TOPIC: {topic['title']}
+THE QUESTION THE VIDEO ANSWERS: {topic.get('question', '')}
+OUR POINT OF VIEW: {topic.get('thesis', '')}
+FAVOURITE ON-SCREEN CARDS FOR THIS CHANNEL: {ch.get('cards', '')}
+
+SOURCES:
+{src}"""
+
+    # 1) outline
+    outline = ask_json(system, f"""{base}
+
+Plan a long YouTube video (8-10 minutes) as {lo_c}-{hi_c} chapters. Each chapter is ONE complete idea that
+also works alone as a Short. Order them so curiosity builds; the main question is answered around 70-80% of the
+way through, followed by a final twist or insight.
+
+Return JSON: {{"title": "max 60 characters: the named thing + a specific number or change, curious but accurate",
+"thumbnail_text": "2-4 words ALL CAPS, true", "description": "3-4 lines, then the token {{CHAPTERS}} on its own
+line, then 3-5 hashtags", "tags": ["10-15 tags"], "pinned_comment": "a question that starts a discussion",
+"music_mood": "energetic|upbeat|curious|inspiring",
+"chapters": [{{"title": "a short QUESTION for the chapter card", "point": "the one idea of this chapter",
+"facts": ["2-4 key facts with numbers/dates, copied from the SOURCES"], "hook_text": "2-6 words ALL CAPS for the
+Short's first frame", "clip_score": <1-10: how well it works alone as a Short>}}]}}""",
+                       temperature=0.7, validate=_check_outline)
+    titles = [c["title"] for c in outline["chapters"]]
+
+    # 2) every chapter on its own
+    chapters = []
+    for i, c in enumerate(outline["chapters"]):
+        nxt = titles[i + 1] if i + 1 < len(titles) else ""
+        part = ask_json(system, f"""{base}
+
+THE VIDEO'S CHAPTERS: {json.dumps(titles, ensure_ascii=False)}
+WRITE CHAPTER {i + 1}: "{c['title']}"
+ITS POINT: {c['point']}
+KEY FACTS: {json.dumps(c.get('facts', []), ensure_ascii=False)}
+
+Write EXACTLY 6 scenes. Each scene is 2 full spoken sentences of 12-16 words each (so about 130 words in
+total). It must work ALONE as a Short:
+- the first line is a hook that makes sense with no context (never "as we saw", "next", "meanwhile");
+- one complete idea with at least one hard number or date from the SOURCES;
+- the last line is a strong, complete closing line.
+Also write "bridge": ONE sentence that leads into the next chapter{f' ("{nxt}")' if nxt else ''}
+{'(use "" because this is the last chapter)' if not nxt else ''}.
+
+{SCRIPT_RULES}
+
+{CARD_RULES}
+
+{VISUAL_RULES}
+
+Return JSON: {{"scenes": [{SCENE_SHAPE}], "bridge": "..."}}""", validate=_check_part(70), max_tries=5)
+        chapters.append({"title": c["title"][:60], "hook_text": str(c.get("hook_text") or c["title"])[:40],
+                         "clip_score": float(c.get("clip_score") or 5), "bridge": str(part.get("bridge") or ""),
+                         "scenes": part["scenes"]})
+        print(f"  [writer] chapter {i + 1}/{len(titles)} written")
+
+    # 3) intro and outro
+    ends = ask_json(system, f"""{base}
+
+THE VIDEO'S CHAPTERS: {json.dumps(titles, ensure_ascii=False)}
+Write the INTRO and the OUTRO of this long video.
+- intro: EXACTLY 4 scenes of 2 sentences each (about 110 words). Open cold on the most surprising TRUE detail,
+  pose the question, promise the payoff. No "welcome", no "in this video".
+- outro: EXACTLY 3 scenes of 2 sentences each (about 70 words): a question for the comments tied to our point of
+  view, then ask to subscribe.
+
+{SCRIPT_RULES}
+
+{VISUAL_RULES}
+
+Return JSON: {{"intro": [{SCENE_SHAPE}], "outro": [{SCENE_SHAPE}]}}""",
+                   validate=lambda r: (_check_part(80)({"scenes": r.get("intro")}),
+                                       _check_part(35, 2)({"scenes": r.get("outro")})), max_tries=5)
+    doc = {k: outline.get(k) for k in ("title", "thumbnail_text", "description", "tags", "pinned_comment",
+                                         "music_mood")}
+    doc.update({"intro": ends["intro"], "outro": ends["outro"], "chapters": chapters})
+    _check_doc(doc)
+    return doc
+
+
+def check_doc(doc: dict, facts: str) -> dict:
+    """Fact-check the whole long script against the sources in 3 batches (fewer AI requests), then check every
+    card's numbers and quotes. A batch that comes back in the wrong shape keeps its original scenes."""
+    parts = [doc["intro"]] + [c["scenes"] for c in doc["chapters"]] + [doc["outro"]]
+    n = len(parts)
+    groups = [list(range(i, min(n, i + (n + 2) // 3))) for i in range(0, n, (n + 2) // 3)]
+    for g in groups:
+        flat = [s for i in g for s in parts[i]]
+        checked = fact_check(flat, facts)
+        if len(checked) == len(flat):
+            k = 0
+            for i in g:
+                parts[i][:] = checked[k:k + len(parts[i])]
+                k += len(parts[i])
+    doc["intro"], doc["outro"] = verify_cards(parts[0], facts), verify_cards(parts[-1], facts)
+    for c, p in zip(doc["chapters"], parts[1:-1]):
+        c["scenes"] = verify_cards(p, facts)
+    return doc

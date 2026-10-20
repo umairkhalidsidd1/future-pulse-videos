@@ -1,6 +1,7 @@
 import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig} from "remotion";
 import {BOLD, CONDENSED, HEAVY} from "../fonts";
 import {Card, Look, Theme} from "../types";
+import {ChartCard, MapCard, TimelineCard} from "./Infographics";
 
 // Cards slide in over the moving footage, like on news channels. All designs are our own (no logos).
 
@@ -192,12 +193,15 @@ export const CardView: React.FC<{card: Card; theme: Theme; vertical: boolean; lo
       case "outro": return <Outro d={card.data} theme={theme} vertical={vertical} />;
       case "chapter": return <Chapter d={card.data} theme={theme} vertical={vertical} />;
       case "slam": return <Slam d={card.data} theme={theme} vertical={vertical} />;
+      case "map": return <MapCard d={card.data} theme={theme} vertical={vertical} />;
+      case "timeline": return <TimelineCard d={card.data} theme={theme} vertical={vertical} />;
+      case "chart": return <ChartCard d={card.data} theme={theme} vertical={vertical} />;
       default: return null;
     }
   })();
   return (
     <AbsoluteFill>
-      {card.template !== "chapter" && card.template !== "slam" ? <Dim /> : null}
+      {!["chapter", "slam", "map"].includes(card.template) ? <Dim /> : null}
       {body}
     </AbsoluteFill>
   );

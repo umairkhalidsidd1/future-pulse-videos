@@ -1,0 +1,888 @@
+{
+ "date": "2026-10-20",
+ "factory": true,
+ "videos": [
+  {
+   "id": "history-0",
+   "channel": "history",
+   "topic": {
+    "title": "The Day Wooden Warships Died: The Battle of Navarino, 1827",
+    "question": "How did an unauthorized standoff in a calm bay spark the last great sea battle of the Age of Sail?",
+    "thesis": "Navarino shows how a battle nobody ordered can change the map of Europe.",
+    "wiki": [
+     "Battle of Navarino",
+     "Greek War of Independence"
+    ],
+    "url": "",
+    "sources": [
+     {
+      "title": "Battle of Navarino",
+      "source": "Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Battle_of_Navarino"
+     },
+     {
+      "title": "Greek War of Independence",
+      "source": "Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Greek_War_of_Independence"
+     }
+    ]
+   },
+   "doc": {
+    "title": "Navarino 1827: How a Calm Bay Ignited the Last Sail Battle",
+    "thumbnail_text": "LAST SAIL BATTLE",
+    "description": "In 1827 a diplomatic standoff turned into the final clash of wooden warships. We trace the politics, the fleets, and the surprise explosion of fire that reshaped Europe’s map.\n{CHAPTERS}\n#Navarino #GreekIndependence #AgeOfSail #HistoryDocumentary #NavalWar",
+    "tags": [
+     "Battle of Navarino",
+     "Greek War of Independence",
+     "Ottoman Empire",
+     "Egyptian fleet",
+     "Edward Codrington",
+     "Treaty of London 1827",
+     "Age of Sail",
+     "naval history",
+     "19th century wars",
+     "European diplomacy",
+     "British Navy",
+     "French Navy",
+     "Russian Navy",
+     "maritime battle",
+     "historical turning points"
+    ],
+    "pinned_comment": "What other ‘accidental’ battles do you think changed the course of history?",
+    "music_mood": "inspiring",
+    "intro": [
+     {
+      "text": "On 20 October 1827, wooden warships met their final showdown. The battle unfolded in Navarino Bay, a tranquil harbor turned arena for one fight.",
+      "visual": "bay",
+      "visual_alt": "water",
+      "wiki": "Navarino Bay",
+      "keywords": [
+       "Navarino Bay",
+       "battle"
+      ],
+      "card": null
+     },
+     {
+      "text": "Admiral Edward Codrington pushed his four‑ship squadron into the Ottoman line, defying orders. He intended a warning, but two cannons answered his bold gamble.",
+      "visual": "fleet",
+      "visual_alt": "ships",
+      "wiki": "Battle of Navarino",
+      "keywords": [
+       "Codrington",
+       "fleet"
+      ],
+      "card": null
+     },
+     {
+      "text": "The Ottoman‑Egyptian armada fielded roughly thirty‑six warships, including three ships of line. Their ranks also held fifteen large frigates and eighteen smaller corvettes, a formidable force.",
+      "visual": "warships",
+      "visual_alt": "navy",
+      "wiki": "Ottoman Empire",
+      "keywords": [
+       "warships",
+       "fleet size"
+      ],
+      "card": null
+     },
+     {
+      "text": "Allied firepower shattered the fleet, sinking over ten ships and crippling Ottoman sea power. The victory nudged European powers toward recognizing Greek independence, reshaping one continent’s map.",
+      "visual": "cannon fire",
+      "visual_alt": "cannon",
+      "wiki": "Greek War of Independence",
+      "keywords": [
+       "Allied victory",
+       "Greek independence"
+      ],
+      "card": null
+     }
+    ],
+    "outro": [
+     {
+      "text": "How did a manoeuvre by Admiral Codrington change the course of the Greek War of Independence? Share your thoughts below, and see how history still offers one surprise today.",
+      "visual": "discussion",
+      "visual_alt": "conversation",
+      "wiki": "",
+      "keywords": [
+       "Navarino",
+       "Europe"
+      ],
+      "card": null
+     },
+     {
+      "text": "The sinking of the Ottomans' Mediterranean fleet saved the fledgling Greek Republic from collapse. Two more military interventions were needed to finally secure independence.",
+      "visual": "cannon",
+      "visual_alt": "battle",
+      "wiki": "Battle of Navarino",
+      "keywords": [
+       "casualties",
+       "recognition"
+      ],
+      "card": null
+     }
+    ],
+    "chapters": [
+     {
+      "title": "What sparked the Greek revolt?",
+      "hook_text": "REBELLION IGNITED",
+      "clip_score": 7.0,
+      "bridge": "With the Greeks on the verge of defeat, why did Britain, France, and Russia finally decide to intervene?",
+      "scenes": [
+       {
+        "text": "The Ottoman Empire fell in 1453. Greeks lived under this rule for nearly four centuries. No major revolt succeeded until 1821.",
+        "visual": "ancient rome ruins",
+        "visual_alt": "ruins",
+        "wiki": "Fall of Constantinople",
+        "keywords": [
+         "1453",
+         "four centuries"
+        ],
+        "card": null
+       },
+       {
+        "text": "Secret societies planned the uprising for March 1821. The date was the Orthodox Annunciation. Rebels declared war on the Ottomans.",
+        "visual": "candle light face",
+        "visual_alt": "candle",
+        "wiki": "Filiki Eteria",
+        "keywords": [
+         "March 1821",
+         "Annunciation"
+        ],
+        "card": {
+         "template": "headline"
+        }
+       },
+       {
+        "text": "Why did the rebellion start that day? The plan was discovered early. Rebels had to launch sooner than expected.",
+        "visual": "old map hand",
+        "visual_alt": "map",
+        "wiki": "Greek War of Independence",
+        "keywords": [
+         "discovered",
+         "sooner"
+        ],
+        "card": null
+       },
+       {
+        "text": "By 1825, Egyptians controlled the Peloponnese. Ibrahim Pasha invaded with sixteen thousand soldiers. The Greek rebellion was on the brink of collapse.",
+        "visual": "soldier marching",
+        "visual_alt": "soldier",
+        "wiki": "Ibrahim Pasha",
+        "keywords": [
+         "1825",
+         "sixteen thousand"
+        ],
+        "card": {
+         "template": "stat",
+         "value": 16000.0,
+         "label": "Egyptian soldiers in 1825",
+         "prefix": "",
+         "suffix": "",
+         "decimals": 0
+        }
+       },
+       {
+        "text": "Greek forces numbered less than five thousand. They had no money and few ships. The Ottoman army seemed unstoppable at this moment.",
+        "visual": "empty battlefield",
+        "visual_alt": "battlefield",
+        "wiki": "Greek War of Independence",
+        "keywords": [
+         "five thousand",
+         "unstable"
+        ],
+        "card": null
+       },
+       {
+        "text": "This rebellion changed Europe's political map forever. It forced great powers into direct action. The age of empires began to shift.",
+        "visual": "europe map animation",
+        "visual_alt": "map",
+        "wiki": "Greek War of Independence",
+        "keywords": [
+         "Europe",
+         "action"
+        ],
+        "card": null
+       }
+      ]
+     },
+     {
+      "title": "Why did Britain, France, and Russia intervene?",
+      "hook_text": "TRIPLE POWER PLAY",
+      "clip_score": 8.0,
+      "bridge": "Next, we examine the size of the fleet waiting in that bay.",
+      "scenes": [
+       {
+        "text": "Three nations signed a treaty on a single July day in 1827. They aimed to stop Russian expansion in the Mediterranean.",
+        "visual": "historic ink pen signing",
+        "visual_alt": "quill pen",
+        "wiki": "Treaty of London (1827)",
+        "keywords": [
+         "treaty",
+         "1827"
+        ],
+        "card": null
+       },
+       {
+        "text": "The Treaty of London forced an immediate armistice on both sides. It demanded Ottoman concessions for Greek autonomy within the empire.",
+        "visual": "old diplomatic map",
+        "visual_alt": "ancient map",
+        "wiki": "Treaty of London (1827)",
+        "keywords": [
+         "armistice",
+         "concessions"
+        ],
+        "card": {
+         "template": "headline"
+        }
+       },
+       {
+        "text": "A secret clause hid a dangerous threat inside the peace proposal. It allowed commanders to take all measures if the truce failed.",
+        "visual": "sealed letter envelope",
+        "visual_alt": "wax seal",
+        "wiki": "Treaty of London (1827)",
+        "keywords": [
+         "secret clause",
+         "threat"
+        ],
+        "card": null
+       },
+       {
+        "text": "Britain feared Russian hegemony in the Eastern Mediterranean waters. Public opinion strongly supported the Greek cause against the Ottomans.",
+        "visual": "stormy sea waves",
+        "visual_alt": "ocean storm",
+        "wiki": "Battle of Navarino",
+        "keywords": [
+         "Russia",
+         "Mediterranean"
+        ],
+        "card": null
+       },
+       {
+        "text": "The Powers wanted to preserve Ottoman territorial integrity as a check. They bound Russia to a joint intervention by treaty.",
+        "visual": "political globe rotation",
+        "visual_alt": "globe",
+        "wiki": "Battle of Navarino",
+        "keywords": [
+         "integrity",
+         "intervention"
+        ],
+        "card": null
+       },
+       {
+        "text": "This diplomatic mix aimed to secure Greek autonomy without total war. It set the stage for an accidental naval clash.",
+        "visual": "warship anchor chain",
+        "visual_alt": "ship anchor",
+        "wiki": "Battle of Navarino",
+        "keywords": [
+         "autonomy",
+         "clash"
+        ],
+        "card": {
+         "template": "timeline",
+         "title": "Road to Navarino",
+         "events": [
+          {
+           "year": "1821",
+           "label": "Greek revolt starts"
+          },
+          {
+           "year": "1827",
+           "label": "Treaty of London signed"
+          },
+          {
+           "year": "1827",
+           "label": "Battle of Navarino"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     {
+      "title": "How large was the Ottoman‑Egyptian fleet?",
+      "hook_text": "FLEET COUNT REVEALED",
+      "clip_score": 6.0,
+      "bridge": "Who commanded the Allied squadron facing this formidable yet vulnerable fleet?",
+      "scenes": [
+       {
+        "text": "How massive was the armada guarding the Ottoman interests in the Mediterranean sea?",
+        "visual": "Ottoman warship painting",
+        "visual_alt": "historic ship",
+        "wiki": "Naval history",
+        "keywords": [
+         "armada",
+         "Ottoman"
+        ],
+        "card": null
+       },
+       {
+        "text": "Historians note the fleet combined warships from the empire, Egypt, Algiers and Tunis together.",
+        "visual": "wooden sailing fleet",
+        "visual_alt": "sailing ship",
+        "wiki": "Ottoman Navy",
+        "keywords": [
+         "fleet",
+         "warships"
+        ],
+        "card": {
+         "template": "headline"
+        }
+       },
+       {
+        "text": "James assesses the actual effective strength as just three ships of the line.",
+        "visual": "ship of the line",
+        "visual_alt": "warship model",
+        "wiki": "Ship of the line",
+        "keywords": [
+         "effective",
+         "strength"
+        ],
+        "card": null
+       },
+       {
+        "text": "That same assessment counted fifteen large frigates alongside eighteen smaller corvettes in total.",
+        "visual": "frigate sailing ship",
+        "visual_alt": "historic boat",
+        "wiki": "Frigate",
+        "keywords": [
+         "frigates",
+         "corvettes"
+        ],
+        "card": {
+         "template": "chart",
+         "title": "Ottoman Ships",
+         "bars": [
+          {
+           "label": "Line",
+           "value": 3.0
+          },
+          {
+           "label": "Frigates",
+           "value": 15.0
+          },
+          {
+           "label": "Corvettes",
+           "value": 18.0
+          }
+         ],
+         "unit": "ships",
+         "prefix": ""
+        }
+       },
+       {
+        "text": "Another official report by Letellier listed about sixty total warships in the bay.",
+        "visual": "harbor filled ships",
+        "visual_alt": "port view",
+        "wiki": "Navarino Bay",
+        "keywords": [
+         "sixty",
+         "warships"
+        ],
+        "card": null
+       },
+       {
+        "text": "The Egyptian squadron specifically contributed two ships of the line and five frigates.",
+        "visual": "egyptian fleet model",
+        "visual_alt": "ancient ship",
+        "wiki": "Eyalet of Egypt",
+        "keywords": [
+         "Egyptian",
+         "squadron"
+        ],
+        "card": null
+       }
+      ]
+     },
+     {
+      "title": "Who commanded the Allied squadron?",
+      "hook_text": "CODRINGTON'S ORDERS",
+      "clip_score": 7.0,
+      "bridge": "What unauthorized move triggered the clash between these massive wooden fleets?",
+      "scenes": [
+       {
+        "text": "ViceAdmiral Edward Codrington took command after spending forty four years at sea. He famously fought at Trafalgar before leading this Mediterranean campaign.",
+        "visual": "admiral portrait",
+        "visual_alt": "sea captain",
+        "wiki": "Edward Codrington",
+        "keywords": [
+         "Edward Codrington",
+         "Trafalgar"
+        ],
+        "card": null
+       },
+       {
+        "text": "The British government gave him strict orders on twenty August eighteen twenty seven. He had to enforce an armistice between the warring factions.",
+        "visual": "historic document",
+        "visual_alt": "parchment",
+        "wiki": "Treaty of London (1827)",
+        "keywords": [
+         "orders",
+         "armistice"
+        ],
+        "card": {
+         "template": "timeline",
+         "title": "Road to Navarino",
+         "events": [
+          {
+           "year": "1821",
+           "label": "Greek revolt begins"
+          },
+          {
+           "year": "1825",
+           "label": "Egyptian forces land"
+          },
+          {
+           "year": "1827",
+           "label": "Treaty of London"
+          }
+         ]
+        }
+       },
+       {
+        "text": "Codrington completely lacked diplomatic finesse and openly despised it in others. He was an impetuous fighting sailor who sympathized deeply with the Greeks.",
+        "visual": "naval officer",
+        "visual_alt": "ship captain",
+        "wiki": "Edward Codrington",
+        "keywords": [
+         "diplomatic finesse",
+         "sailor"
+        ],
+        "card": null
+       },
+       {
+        "text": "He brought together powerful Allied warships from Britain, France, and Russia. These combined fleets sailed into the Mediterranean to confront the Ottomans.",
+        "visual": "warship fleet",
+        "visual_alt": "sailing ship",
+        "wiki": "Battle of Navarino",
+        "keywords": [
+         "Allied warships",
+         "Mediterranean"
+        ],
+        "card": {
+         "template": "map",
+         "label": "Navarino Bay",
+         "lat": 36.93,
+         "lon": 21.68,
+         "zoom": 6.0,
+         "highlight": [
+          "Greece"
+         ]
+        }
+       },
+       {
+        "text": "Historians still debate whether such an unyielding commander was truly suitable. His instructions required enormous tact to prevent an accidental escalation.",
+        "visual": "old map",
+        "visual_alt": "navigation",
+        "wiki": "Edward Codrington",
+        "keywords": [
+         "commander",
+         "instructions"
+        ],
+        "card": null
+       },
+       {
+        "text": "Codrington prepared his squadron to execute the commands of the Treaty of London. His veteran experience would soon be tested inside a calm bay.",
+        "visual": "ocean waves",
+        "visual_alt": "sea",
+        "wiki": "Battle of Navarino",
+        "keywords": [
+         "Treaty of London",
+         "squadron"
+        ],
+        "card": null
+       }
+      ]
+     },
+     {
+      "title": "What unauthorized move triggered the clash?",
+      "hook_text": "UNAUTHORIZED STANDOFF",
+      "clip_score": 9.0,
+      "bridge": "How did the battle unfold?",
+      "scenes": [
+       {
+        "text": "Calm waters hid a deadly trap in the Greek bay. Admiral Codrington made a move no one officially ordered.",
+        "visual": "calm sea sunset",
+        "visual_alt": "ocean",
+        "wiki": "Navarino Bay",
+        "keywords": [
+         "Codrington",
+         "unauthorized"
+        ],
+        "card": null
+       },
+       {
+        "text": "On 20 October 1827, Allied ships anchored in the bay. They ignored the Ottoman commander's refusal to leave.",
+        "visual": "sailing ships anchor",
+        "visual_alt": "ships",
+        "wiki": "Battle of Navarino",
+        "keywords": [
+         "20 October 1827",
+         "anchored"
+        ],
+        "card": {
+         "template": "map",
+         "label": "Navarino Bay",
+         "lat": 36.93,
+         "lon": 21.68,
+         "zoom": 6.0,
+         "highlight": [
+          "Greece"
+         ]
+        }
+       },
+       {
+        "text": "Codrington wanted the Ottoman fleet to sail out immediately. The commander refused, creating a tense naval standoff.",
+        "visual": "sailboat close up",
+        "visual_alt": "sail",
+        "wiki": "Edward Codrington",
+        "keywords": [
+         "refused",
+         "standoff"
+        ],
+        "card": null
+       },
+       {
+        "text": "The Greeks were on the brink of total defeat by then. No one expected a single day to change everything.",
+        "visual": "fortress ruins",
+        "visual_alt": "ruins",
+        "wiki": "Greek War of Independence",
+        "keywords": [
+         "defeat",
+         "change"
+        ],
+        "card": null
+       },
+       {
+        "text": "One accidental shot from a British ship changed the situation. The calm bay instantly became a war zone.",
+        "visual": "cannon smoke",
+        "visual_alt": "smoke",
+        "wiki": "Battle of Navarino",
+        "keywords": [
+         "accidental shot",
+         "war zone"
+        ],
+        "card": null
+       },
+       {
+        "text": "This unauthorized move saved the Greek revolution from collapse. The Age of Wooden Warships just ended.",
+        "visual": "explosion water",
+        "visual_alt": "fire",
+        "wiki": "Battle of Navarino",
+        "keywords": [
+         "saved",
+         "ended"
+        ],
+        "card": {
+         "template": "slam",
+         "text": "AGE OF SAIL ENDS"
+        }
+       }
+      ]
+     },
+     {
+      "title": "How did the battle unfold?",
+      "hook_text": "FLAMES OF NAVARINO",
+      "clip_score": 9.0,
+      "bridge": "Let us examine what immediate consequences followed this historic destruction.",
+      "scenes": [
+       {
+        "text": "Wooden warships gathered tightly inside Navarino Bay on the twentieth day of October in 1827. Why did a brief cannonade suddenly ignite such a massive conflagration?",
+        "visual": "wooden warships",
+        "visual_alt": "sailing ships",
+        "wiki": "Battle of Navarino",
+        "keywords": [
+         "Navarino Bay",
+         "conflagration"
+        ],
+        "card": null
+       },
+       {
+        "text": "The entire naval engagement lasted under one single hour while most vessels fought strictly at anchor. How did superior Allied gunnery overwhelm the Ottoman and Egyptian forces?",
+        "visual": "naval battle",
+        "visual_alt": "ocean waves",
+        "wiki": "Naval artillery",
+        "keywords": [
+         "superior",
+         "gunnery"
+        ],
+        "card": {
+         "template": "stat",
+         "value": 1827.0,
+         "label": "year of the battle",
+         "prefix": "",
+         "suffix": "",
+         "decimals": 0
+        }
+       },
+       {
+        "text": "Imperial warships together with regional squadrons faced devastating firepower from British, French, and Russian fleets. Which side suffered the total destruction of their Mediterranean fleet?",
+        "visual": "cannon fire",
+        "visual_alt": "explosion",
+        "wiki": "Warship",
+        "keywords": [
+         "firepower",
+         "fleet"
+        ],
+        "card": null
+       },
+       {
+        "text": "Dense smoke filled the calm waters as wooden hulls splintered under relentless cannon shot. What made this violent clash unique in the annals of naval warfare?",
+        "visual": "thick smoke",
+        "visual_alt": "smoke",
+        "wiki": "Age of Sail",
+        "keywords": [
+         "wooden",
+         "hulls"
+        ],
+        "card": null
+       },
+       {
+        "text": "This engagement stands as the last major naval battle in history fought entirely with sailing ships. How did such traditional wooden vessels meet their ultimate technological end?",
+        "visual": "sailing ship",
+        "visual_alt": "ship at sea",
+        "wiki": "Ship of the line",
+        "keywords": [
+         "sailing ships",
+         "naval battle"
+        ],
+        "card": null
+       },
+       {
+        "text": "Decisive Allied victory shattered the Ottoman forces and permanently altered the geopolitical map of Europe. What immediate consequences followed this unexpected maritime catastrophe?",
+        "visual": "burning ship",
+        "visual_alt": "fire",
+        "wiki": "Battle of Navarino",
+        "keywords": [
+         "decisive",
+         "victory"
+        ],
+        "card": null
+       }
+      ]
+     },
+     {
+      "title": "What were the immediate consequences?",
+      "hook_text": "GREEK AUTONOMY ENSURED",
+      "clip_score": 8.0,
+      "bridge": "Why is Navarino a turning point for Europe?",
+      "scenes": [
+       {
+        "text": "The destruction of the Ottoman fleet made Greek independence much more likely across the region. Did this single clash finally halt the long campaign in the Mediterranean?",
+        "visual": "burning ship",
+        "visual_alt": "naval battle",
+        "wiki": "Battle of Navarino",
+        "keywords": [
+         "Greek independence",
+         "Ottoman fleet"
+        ],
+        "card": null
+       },
+       {
+        "text": "Further military interventions in the conflict secured the ultimate outcome for the struggling rebel forces. Russian armies marched during the Russo Turkish War of 1828 to 1829.",
+        "visual": "marching army",
+        "visual_alt": "soldiers",
+        "wiki": "Russo-Turkish War (1828–1829)",
+        "keywords": [
+         "military interventions",
+         "Russo Turkish War"
+        ],
+        "card": {
+         "template": "timeline",
+         "title": "Post-Navarino",
+         "events": [
+          {
+           "year": "1827",
+           "label": "Navarino Battle"
+          },
+          {
+           "year": "1828",
+           "label": "Russian War"
+          },
+          {
+           "year": "1829",
+           "label": "Adrianople Treaty"
+          }
+         ]
+        }
+       },
+       {
+        "text": "A French expeditionary force also arrived in the Peloponnese to force the withdrawal of Ottoman troops. What official document finally recognized the autonomy of the Greek state?",
+        "visual": "military camp",
+        "visual_alt": "soldiers",
+        "wiki": "French Morea expedition",
+        "keywords": [
+         "French expeditionary force",
+         "Peloponnese"
+        ],
+        "card": null
+       },
+       {
+        "text": "The Treaty of Adrianople in 1829 officially recognized Greek autonomy under the terms of the settlement. Ottoman forces had to accept the new political reality in the Balkans.",
+        "visual": "historic document",
+        "visual_alt": "parchment",
+        "wiki": "Treaty of Adrianople (1829)",
+        "keywords": [
+         "Treaty of Adrianople",
+         "Greek autonomy"
+        ],
+        "card": null
+       },
+       {
+        "text": "After nine years of bitter warfare, Greece was recognized as an independent state under the协议. Could the Great Powers have prevented this massive shift in European borders?",
+        "visual": "greece ancient",
+        "visual_alt": "ruins",
+        "wiki": "Greek War of Independence",
+        "keywords": [
+         "independent state",
+         "warfare"
+        ],
+        "card": null
+       },
+       {
+        "text": "The fateful bay of Navarino permanently altered the balance of power across the entire continent. Wooden warships had fought their final great battle in the calm waters.",
+        "visual": "ocean bay",
+        "visual_alt": "sea",
+        "wiki": "Pylos",
+        "keywords": [
+         "Navarino",
+         "wooden warships"
+        ],
+        "card": null
+       }
+      ]
+     },
+     {
+      "title": "Why is Navarino a turning point for Europe?",
+      "hook_text": "MAP OF EUROPE REDRAWN",
+      "clip_score": 7.0,
+      "bridge": "",
+      "scenes": [
+       {
+        "text": "The 1827 battle prevented the destruction of the fledgling Greek Republic. Allied forces from Britain, France, and Russia decisively defeated Ottoman and Egyptian forces.",
+        "visual": "Mediterranean sea",
+        "visual_alt": "ocean",
+        "wiki": "Battle of Navarino",
+        "keywords": [
+         "Mediterranean",
+         "European"
+        ],
+        "card": null
+       },
+       {
+        "text": "By preserving Ottoman territorial integrity as a check on Russia, Britain and France aimed to prevent Russian hegemony. Which strategic power was seen as a major geostrategic threat?",
+        "visual": "geography map",
+        "visual_alt": "map",
+        "wiki": "Russian Empire",
+        "keywords": [
+         "Russian",
+         "buffer"
+        ],
+        "card": {
+         "template": "map",
+         "label": "Eastern Mediterranean",
+         "lat": 39.0,
+         "lon": 35.0,
+         "zoom": 4.0,
+         "highlight": [
+          "Greece",
+          "Turkey"
+         ]
+        }
+       },
+       {
+        "text": "The intervention aimed to secure Greek autonomy while preserving Ottoman territorial integrity. Two more military interventions were required to finally secure Greek independence.",
+        "visual": "ancient monument",
+        "visual_alt": "ruins",
+        "wiki": "Modern Greece",
+        "keywords": [
+         "Greek state",
+         "1830"
+        ],
+        "card": null
+       },
+       {
+        "text": "The naval battle happened more by accident than by design as a result of a manoeuvre by Admiral Edward Codrington. Did the commander intend to force the Ottoman commander to obey instructions?",
+        "visual": "vintage parchment",
+        "visual_alt": "map",
+        "wiki": "Edward Codrington",
+        "keywords": [
+         "diplomacy",
+         "Europe"
+        ],
+        "card": null
+       },
+       {
+        "text": "Following the conflict, a French expeditionary force was sent to the Peloponnese to force the withdrawal of Ottoman forces. Russia also intervened through the Russo-Turkish War.",
+        "visual": "military fortress",
+        "visual_alt": "castle",
+        "wiki": "Peloponnese",
+        "keywords": [
+         "French",
+         "Peloponnese"
+        ],
+        "card": {
+         "template": "timeline",
+         "title": "Road to Independence",
+         "events": [
+          {
+           "year": "1821",
+           "label": "Greek revolt begins"
+          },
+          {
+           "year": "1827",
+           "label": "Battle of Navarino"
+          },
+          {
+           "year": "1828",
+           "label": "Russo-Turkish War begins"
+          }
+         ]
+        }
+       },
+       {
+        "text": "Navarino was the last major naval battle in history to be fought entirely with sailing ships. Wooden warships fought at anchor before being destroyed by Allied firepower.",
+        "visual": "wooden ship",
+        "visual_alt": "ship",
+        "wiki": "Age of Sail",
+        "keywords": [
+         "Navarino",
+         "warships"
+        ],
+        "card": null
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "jobs": [
+  {
+   "attempts": 0,
+   "status": {},
+   "links": {},
+   "id": "long:history-0",
+   "channel": "history",
+   "title": "Navarino 1827: How a Calm Bay Ignited the Last Sail Battle",
+   "post_at": "2026-10-20T16:00:00Z"
+  },
+  {
+   "attempts": 0,
+   "status": {},
+   "links": {},
+   "id": "short:history-0:5",
+   "channel": "history",
+   "title": "How did the battle unfold?",
+   "post_at": "2026-10-20T20:00:00Z"
+  },
+  {
+   "attempts": 0,
+   "status": {},
+   "links": {},
+   "id": "short:history-0:4",
+   "channel": "history",
+   "title": "What unauthorized move triggered the clash?",
+   "post_at": "2026-10-20T23:00:00Z"
+  }
+ ],
+ "planned_channels": []
+}

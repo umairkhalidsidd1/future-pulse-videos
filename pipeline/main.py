@@ -6,6 +6,13 @@
   python -m pipeline test            offline test: sample scripts, no keys, no uploads
   python -m pipeline rewrite [short:2 ... long]   rewrite today's scripts with the current rules (same stories)
   python -m pipeline batch           render ALL of today's videos without uploading (for review)
+
+  Multi-channel factory (config.yaml -> channels):
+  python -m pipeline factory               do the next job (what the Mac's timer runs); uploads
+  python -m pipeline factory-plan          plan today's videos for every channel
+  python -m pipeline factory-batch         make all of today's videos now, no upload (for review)
+  python -m pipeline factory-job <job id>  make one job, no upload (e.g. long:history-0)
+  python -m pipeline dashboard             rebuild out/dashboard.html
 """
 import json
 import random
@@ -39,7 +46,7 @@ def save_plan(plan: dict):
 
 
 def make_plan(day: str) -> dict:
-    n = CFG["channel"]["stories_per_day"]
+    n = CFG["channel"].get("stories_per_day", 5)
     print("[plan] finding trending stories")
     candidates = trends.collect()
     if len(candidates) < n:
@@ -63,7 +70,7 @@ def make_plan(day: str) -> dict:
     plan = {"date": day, "stories": stories}
     write_scripts(plan, [f"short:{i}" for i in range(len(stories))] + ["long"])
     plan.update({
-            "jobs": [{"id": j, "attempts": 0, "status": {}, "links": {}} for j in CFG["channel"]["job_order"]
+            "jobs": [{"id": j, "attempts": 0, "status": {}, "links": {}} for j in CFG["channel"].get("job_order", ["short:0", "short:1", "long"])
                      if j == "long" or int(j.split(":")[1]) < len(stories)]})
     save_plan(plan)
     trends.add_history([s["title"] for s in stories])
@@ -383,6 +390,21 @@ def main(argv: list[str]):
         run_job(plan, {"id": argv[1], "attempts": 0, "status": {}, "links": {}}, upload=False)
     elif cmd == "test":
         test()
+    elif cmd.startswith("factory") or cmd == "dashboard":
+        from . import factory, status
+        if cmd == "factory":
+            factory.next_job(upload=True)
+        elif cmd == "factory-plan":
+            factory.make_plan(today())
+        elif cmd == "factory-batch":
+            factory.batch(upload=False)
+        elif cmd == "factory-job":
+            plan = load_plan(today()) or factory.make_plan(today())
+            job = next(j for j in plan["jobs"] if j["id"] == argv[1])
+            factory.run(plan, job, upload=False)
+            save_plan(plan)
+        else:
+            status.set_status(status.read_status().get("state", "idle"))
     elif cmd == "rewrite":
         plan = load_plan(today())
         which = argv[1:] or [j["id"] for j in plan["jobs"]]
